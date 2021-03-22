@@ -1,0 +1,85 @@
+#+begin_export html
+<style>
+img {
+display: block;
+margin-top: 60px;
+margin-bottom: 60px;
+margin-left: auto;
+margin-right: auto;
+width: 70%;
+height: 100%;
+class: center;
+}
+</style>
+#+end_export
+
+
+Here are some Notes about the topic of my Master Thesis - Bayesian
+Networks.
+
+Note that most of these Notes are based on /Probabilistic Graphical
+Models - Principles and Techniques/ ([[https://www.amazon.de/Probabilistic-Graphical-Models-Principles-Computation/dp/0262013193][Koller and Friedman]]).
+
+* Bayesian Networks
+  :LOGBOOK:
+  CLOCK: [2021-02-15 Mon 10:57]--[2021-02-15 Mon 11:22] =>  0:25
+  :END:
+  
+The general outlook.
+
+So recall that in general you have three elements in Bayesian
+Networks:
+
+- Representation
+
+  - how do you represent the joint probability of the events as a
+    network (i.e. as a graph data structure)? Can such structure
+    represent the joint in a compact way due to the conditional
+    independence relations?
+
+    *Note 1:* that such compact formulation is one of the key benefits of
+    Bayesian Networks as it really gives the possibility of shrinking
+    the amount of parameters needed to describe the full joint
+    probability leveraging the independence structure among the RVs.
+
+    *Note 2:* this formulation is /transparent/, i.e. highly
+    understandable also to non-AI experts. It is so to say highly
+    explainable and in this new buzz of /explainable AI/ a solid
+    option.
+  
+- Inference
+
+  - given some information about some Parent variables, how can I
+    infer/compute the distribution of the children in the Network?
+  
+- Learning
+
+  - given some observed data, how can I use such information to
+    construct / (infer) / learn the  /structure/ of the network?
+
+  - given some observed data, how can I learn the /parameters/ of the
+    network? I.e. how can I use the information content of the data to
+    derive some plausible parameterization of the network.
+
+
+So these are the main tasks you have to deal with in Bayesian
+Networks. Basically you can do all of the three in a very simple way,
+which is from a theoretical standpoint very concrete and
+straightforward or you can start to consider all the aspects of the
+problem going quickly towards more complex situations.
+
+
+** Inference
+
+   An important exercise for inference is to query
+   distributions. I.e. the task is to compute
+
+   $$
+
+   *Continued on Blog*.
+
+
+
+
+
+

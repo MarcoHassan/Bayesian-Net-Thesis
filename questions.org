@@ -1,0 +1,12 @@
+* Questions to be clarified during the call
+
+
+** TODO questions Radu
+
+*** Bayesian approach
+
+    - Bayesian; made up data. (Uncertain evidence)
+
+    - So take the bayesian approach and apply uncertain evidence
+
+    - Have to understand if you can use EM algorithm in there

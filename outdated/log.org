@@ -1,0 +1,25 @@
+* Thesis Notes and General Time management
+
+** EM - Hard assignment
+   :LOGBOOK:
+   CLOCK: [2021-02-09 Tue 09:50]--[2021-02-09 Tue 10:15] =>  0:25
+   :END:
+
+
+   So here it is different. Instead of considering all of the possible
+   data completion possibilities, you just choose the one with the
+   highest likelihood and go on with this completion and compute the
+   parameters according to this. 
+
+   So this is fundamentally different as in the /soft assignment/,
+   i.e. the classical EM algorithm what you actually do is to compute
+   the parameters considering all of the possible completions and
+   compute the parameters based on some average of these. 
+
+
+   
+
+
+
+
+

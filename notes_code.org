@@ -1,0 +1,67 @@
+* Some general notes on Merlin
+
+
+** From call with Radu of 18/03/2021
+
+      - To run the code: dataset -> file to
+
+     bte, cte -> exact inference.
+
+     bmw, jjlp -> approximate inference.
+
+     task -> mar (marginal), pr (probability of evidence),
+
+     positive -> if 0 probabilities.
+
+     iterations -> controls approximation schemas
+
+     init-factors -> initialization of parameters.
+
+     lock-factors -> some of the parameters you keep them fixed.
+
+     output format -> json,
+
+     .uai -> format, txt format, to represent graphical model.
+
+     preable -> first entry, number of variables. second row the
+     number of conditional parameters for each variables  - third line
+     number of factors. 4 and 5th line arguments of function.
+
+     cancer.uai -> see syntax for bayesian network. line 5 - 9 (first
+     argument number , last number the child, all of the other parents).
+
+** General Code Structure
+
+
+
+   #+begin_src plantuml :file ~/Desktop/Thesis/images/strucutre.png
+   @startuml
+   class Merlin
+   Merlin : set arguments, \ni.e. file of interes, \noutput format etc.
+   Merlin : read the passed model in the uai format.
+
+   circle main
+
+   class graphical_model
+
+   note top of graphical_model: this parses the uai file into a graph strucutre.
+
+   circle main
+   note top of main: this is the main runtime. \n it will parse the arguments you pass via CLI\n and instantiate the Merlin engine.
+
+   class Merlin
+   note left: here is defined the general engine for running the code. \nCreating an engine allows you to initialize your operations \nand pass to it your arguments of the CLI.
+
+   main <|-- Merlin    
+   graphical_model <|-- Merlin      
+
+   Object <|-- ArrayList
+
+
+   ArrayList : Object[] elementData
+   ArrayList : size()
+   @enduml
+   #+end_src
+
+   #+RESULTS:
+   [[file:~/Desktop/Thesis/images/strucutre.png]]

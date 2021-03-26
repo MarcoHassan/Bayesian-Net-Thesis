@@ -1,0 +1,12 @@
+* Some Typical Bayesian Networks used for research
+
+
+  https://www.bnlearn.com/bnrepository/
+
+
+  
+* Python Library for such applications
+
+  https://pgmpy.org/
+
+  check also this - it seems to be well done: https://pomegranate.readthedocs.io/en/latest/index.html

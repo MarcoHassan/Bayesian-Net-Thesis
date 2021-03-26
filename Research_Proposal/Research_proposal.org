@@ -325,4 +325,4 @@
 \newpage
 
 bibliographystyle:unsrt
-bibliography:literature/references.bib
+bibliography:../literature/references.bib

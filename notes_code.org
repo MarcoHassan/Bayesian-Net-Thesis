@@ -1,6 +1,5 @@
 * Some general notes on Merlin
 
-
 ** From call with Radu of 18/03/2021
 
       - To run the code: dataset -> file to
@@ -30,38 +29,120 @@
      cancer.uai -> see syntax for bayesian network. line 5 - 9 (first
      argument number , last number the child, all of the other parents).
 
+
 ** General Code Structure
 
-
-
-   #+begin_src plantuml :file ~/Desktop/Thesis/images/strucutre.png
+   #+begin_src plantuml :file ./images/strucutre.png
    @startuml
+
+   /' Class and Variables Declaration '/
    class Merlin
-   Merlin : set arguments, \ni.e. file of interes, \noutput format etc.
-   Merlin : read the passed model in the uai format.
-
+   class EM
    circle main
-
    class graphical_model
+   class cte
 
-   note top of graphical_model: this parses the uai file into a graph strucutre.
+   /'General Notes and Comments'/
 
-   circle main
-   note top of main: this is the main runtime. \n it will parse the arguments you pass via CLI\n and instantiate the Merlin engine.
+       /'Graphical Model'/
+       note top of graphical_model: this parses the uai file into a graph strucutre.
 
-   class Merlin
-   note left: here is defined the general engine for running the code. \nCreating an engine allows you to initialize your operations \nand pass to it your arguments of the CLI.
+       /'Main'/
+       note bottom of main: this is the main runtime. \n it will parse the arguments you pass via CLI\n and instantiate the Merlin engine.
 
-   main <|-- Merlin    
-   graphical_model <|-- Merlin      
+       /'Merlin'/
+       note left of Merlin: here is defined the general engine for running the code. \nCreating an engine allows you to initialize your operations \nand pass to it your arguments of the CLI.
+       note right of Merlin: note that the souce is in the run function. \nThere depending on the task selected you select \na different algo for the engine. \nSee for instance merlin::em. 
 
-   Object <|-- ArrayList
+       /'EM'/
+       note left of EM: this runs the EM algorithm. \nThe class inherits form graphical models.
+       note left: inherits just cte.h. \nAsk Radu if it just works with cte and not approximate inference.
+
+       /'cte'/
+       note right of cte: exact inference method. clique tree. 
 
 
-   ArrayList : Object[] elementData
-   ArrayList : size()
+   /'Diagram Structure and References'/
+
+       /'Calls'/
+       Merlin <|-down- main    
+       EM <|-- Merlin
+
+       /'Inheritance'/
+       graphical_model .. EM
+       cte .. EM
+
+
+   /' Class Functions '/
+
+       /'Merlin'/
+       Merlin : set arguments, \ni.e. file of interes, \noutput format etc.
+       Merlin : read the passed model in the uai format.
+       Merlin : run() - runs the engine; here s.run() runs the aglo
+       Merlin : init() - checks paramters and return fals if smth not working
+
+       /'EM Algorithm'/
+
    @enduml
    #+end_src
-
+   
    #+RESULTS:
-   [[file:~/Desktop/Thesis/images/strucutre.png]]
+   [[file:./images/strucutre.png]]
+
+
+** .uai structure is important for developing the graph and pass it along.
+
+///
+/// \brief Factor for graphical models.
+///
+/// Table based representation of a factor for graphical models. A 
+/// factor encodes a potential (sometimes a probability distribution)
+/// defined over a subset of discrete random variables, called a *scope*, and 
+/// associates each configuration of the variables in the scope with a 
+/// positive real value (sometimes a probability value). The scope is assumed
+/// to be sorted lexicogaphically (e.g., [x1,x2,x3]) Also, the indexing of
+/// configurations in the factor table is assumed to be based on the BigEndian
+/// convention, namely the *first* variable in the ordered scope changes
+/// the fastest, then the *second* variable changes its value and so on.
+/// For example, consider a factor over binary variables [x1,x2,x3].
+/// The corresponding factor table is indexed as follows (internally):
+///
+/// 0: [0,0,0]    4: [0,0,1]
+/// 1: [1,0,0]    5: [1,0,1]
+/// 2: [0,1,0]    6: [0,1,1]
+/// 3: [1,1,0]    7: [1,1,1]
+
+factor logic and indexing is different from the =.uai= representation
+and this is described above.
+
+
+   
+** Parameter for the algorithm
+
+      #+begin_example
+   "Order=MinFill" << ","
+   << "Infer=CTE" << ","
+   << "Iter=" << m_iterations << ","
+   << "Debug=" << (m_debug ? "1" : "0") << ","
+   << "Threshold=" << m_threshold << ","
+   << "Init=" << initMethod;
+   #+end_example
+
+   arguments for instantiation the EM.
+
+   - he has a stopping criteria check at each iteration.
+   
+** wmb bucket
+
+   best approximate inference algorithm.
+
+** graphical_model
+
+   from uai  variable create factors vector.
+
+   fixup at the end: from factor creates nodes and edges. (creates the graph).
+
+   you will not be worked with graph - you work with list of factors now.
+
+
+   

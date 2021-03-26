@@ -1,0 +1,15 @@
+* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [0/1]
+  :PROPERTIES:
+  :CATEGORY: Bayesian_Net_Thesis
+  :END:
+
+** TODO understand what he means by you work with a list of factors
+
+   he said that the graph representation in the code is there but is
+   not actually used.
+
+   apparently you convert everything into factor format and then work
+   from there.
+
+   there is also this twist that he mentioned in the factor
+   interpretation there. check at this file [[file:merlin/include/factor.h]]

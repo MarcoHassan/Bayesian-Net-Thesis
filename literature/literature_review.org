@@ -1,0 +1,247 @@
+# -*- mode:org; mode:reftex; indent-tabs-mode:nil; tab-width:2 -*-
+#+TITLE: Literature Review
+#+AUTHOR:    Marco Hassan
+#+LANGUAGE:  en
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_HEADER: \usepackage[margin=0.5in]{geometry}
+#+LATEX: \setlength\parindent{0pt}
+#+LATEX_HEADER: \usepackage{parskip}
+
+\newpage
+
+* Scope
+
+  This file summarizes some interesting literature that is important
+  to consider for your work.
+
+  You can write down here some papers with major ideas.
+
+* Literature Review
+
+** Mrad et all - On the types of Uncertainty
+   :LOGBOOK:
+   CLOCK: [2021-03-22 Mon 16:03]--[2021-03-22 Mon 16:28] =>  0:25
+   :END:
+  
+   - cite:Mrad_2015
+
+   Literature review. Say that the distinction among the different
+   types of evidence is not clear.
+
+   Three types of /uncertain evidence/:
+
+   + likelihood evidence
+   + fixed probabilistic evidence
+   + non-fixed probabilistic evidence
+
+   The authors state that often it is not clear the difference among
+   the three and they are not treated well enough. I.e. many engines
+   and frameworks do not make such distinctions well enough so that
+   you do not account for the difference among the three when doing
+   propagation work.
+
+   General loop in inference:
+
+   [[file:~/Desktop/Bayesian_Net_Thesis/images/inference_loop.png]]
+
+
+*** Definitions      
+
+    Nice *definition of Bayesian Networks*:
+
+    #+begin_quote
+    Bayesian networks are probabilistic graphical models that provide a
+    powerful way to embed knowledge and to update one’s beliefs about
+    target variables given new information about other variables./
+    #+end_quote
+
+    On *evidence*:
+
+    #+begin_quote
+    A piece of evidence is also called a finding or an observation, and
+    evidence refers to a set of findings.
+    #+end_quote
+
+    *Definition Variable Instantiation:*
+
+    #+begin_quote
+    A finding on a variable commonly refers to an instantiation of the
+    variable.  This can be represented by a vector with one element
+    equal to 1, corresponding to the state the variable is in, and all
+    other elements equal to zero. This type of evidence is usually
+    referred to as *hard evidence* though other terms are sometimes used.
+    #+end_quote
+
+    Note that hard fininding/evidence = observation.
+
+    *Definition Uncertain Evidence:*
+   
+    #+begin_quote
+    This paper focuses on another type of evidence that cannot be
+    represented by such vectors: uncertain evidence
+    #+end_quote
+
+
+    *Definition Likelihood Evidence:*
+
+    #+begin_quote
+    Likelihood evidence is applicable when there is uncertainty about the
+    veracity of an observation, such as, for example, the information
+    given by an imperfect sensor
+    #+end_quote
+
+    *Definition Probabilistic Evidence:*
+
+    #+begin_quote
+    In contrast probabilistic evidence can be regarded as a *new
+    probability distribution* on a variable arising from a new
+    observation after creation of the model. This is dissimilar to
+    likelihood evidence where the *original probability distribution is
+    not challenged*, only ones belief in it and which may be amended
+    with new likelihood evidence.
+    #+end_quote
+
+   
+*** Two possibilities for uncertain input
+
+    1. the uncertainty bears on the meaning of the input; the
+       existence of the input itself is uncertain, due to, for
+       instance, the /unreliability of the source that supplies
+       inputs/
+
+    2. the input is a partial description of a probability measure
+
+    
+*** Likelihood Evidence
+
+    Here observation is uncertain due to unreliable source of
+    information. We are in case 1. above.
+
+    This is clear. You got it and is straightforward.
+
+    Here the observation itself *is* uncertain.
+
+    Likelihood evidence / findings are defined as follows:
+
+    [[file:~/Desktop/Bayesian_Net_Thesis/images/Bildschirmfoto_2021-03-22_um_17.42.33.png]]
+
+    Note therefore that the probability is not assigned as P (x_i |
+    evidence) but rather the contrary. Watch out to this as I guess
+    that you interpreted it in the wrong way so far.
+
+    *Note* likelihood evidence is specified /without a prior/. As a
+    consequence, propagating likelihood evidence takes into account
+    the *beliefs in the variable*  before the evidence. 
+
+    I.e. you propagate based on the likelihood not based on evidence.
+
+    To understand this read the following and check example 1.
+
+    *important* what follows is key to be inserted in the literature
+    review. The likelihood evidence *does not incorporate* any prior
+    knowledge. See example 1 in the paper. I.e. it is ment to be seen
+    as an /external application that delivers the likelihood of a
+    variable realization/.  It does not account however the
+    probabilistic structure implied by the model.
+
+    Note also that the sum of the above likelihood ratios does not
+    have to sum to 1 so it is not a probability metric.
+
+    The key takeway is:
+
+    #+begin_quote
+In order to update the belief in the value of the character, the
+information provided by the OCR (the vector of similarity) has to be
+combined with the prior knowledge about the frequency of
+letters. Moreover, the result of propagation is not fixed since belief
+in X can be further modified by other information.
+
+For example you can leverage information about the adjacent characters.
+    #+end_quote
+
+*** Probabilistic evidence.
+
+    This encompasses uncertain evidence specified by a local
+    probability distribution.
+
+    It can be broken down into two further sub-categories.
+
+    - fixed probabilistic evidence <=> soft evidence as in cite:Valtorta_2002.
+      
+    - not-fixed probabilistic evidence
+
+    Note that the terms /fixed/ and /non-fixed/ capture the expected
+    behavior of the posterior probability after further evidence is
+    obtained.
+
+    Recall that in =likelihood evidence= we said that the sum of the
+    entries does not sum to 1 and *does not represent in this sense
+    any local probability structure as it does not consider the structure of the network*.
+
+    In contrast in /probabilistic evidence/ there is another meaning
+    of uncertain input. Here in fact the evidence is specified by a
+    *local probability* distribution. This no matter if we are talking
+    about /fixed/ or /non-fixed/ probabilistic evidence. *Both are
+    ultimately* probabilistic evidences.
+
+    So this is basically it and the definition goes as follows:
+
+    #+begin_quote
+A probabilistic finding on a variable X ∈ X is specified by a local
+probability distribution R(X) that defines a constraint on the belief
+in X after this information has been propagated; it describes the
+state of beliefs in the variable X “all things considered”. A
+probabilistic finding is fixed (or not) when the distribution R(X) can
+not be (or can be) modified by the propagation of other
+findings. Probabilistic evidence is a set of probabilistic findings.
+    #+end_quote
+
+    So you understand that the conditioning on other variables makes
+    the difference.
+
+    *Note the following when propagating:* 3 A probabilistic finding
+    R(X) on a variable X of a Bayesian network *replaces any prior
+    belief or knowledge on X*. As a consequence, the prior P (X) is not
+    used in the propagation of R(X), and any previous finding or
+    belief on X is lost.
+
+    So the idea is that an expert call can overwrite any prior
+    belief. [[label:question-where-does-the-probabilistic-finding-come-from]]
+
+    Note the following definition. This will be key to understand
+    fixed vs. non-fixed probabilistic evidence. In fact the meat is
+    all there.
+
+    [[file:~/Desktop/Bayesian_Net_Thesis/images/Bildschirmfoto_2021-03-26_um_12.14.27.png]]
+
+
+    Note that the last equality holds in the case of fixed
+    probabilistic evidence. This is in fact the key result.
+
+    Note that as mentioned a couple of times already /fixed-evidence/
+    implies that we do not alter Q(X) when propagating new evidence (in
+    all cases where the evidence does come to X, i.e for all variables
+    but this). 
+
+    This means that any kind of evidence received on other variables after fixed
+    probabilistic evidence makes it necessary to re-propagate previous
+    fixed probabilistic evidence together with the new evidence, in
+    order to keep the former probabilistic evidence fixed.
+
+    
+    
+    
+*** In table 1 different papers that were dealing with Likelihood evidence at inference time.
+
+   
+** Cite For np-hard problem of exact and approximate inference methods:
+
+   cite:Dagum_1993,Cooper_1990
+
+   
+   \newpage
+ 
+ bibliography:/Users/marcohassan/Desktop/Bayesian_Net_Thesis/literature/references.bib
+ bibliographystyle:unsrt

@@ -46,6 +46,8 @@
 
    [[file:~/Desktop/Bayesian_Net_Thesis/images/inference_loop.png]]
 
+*** In table 1 different papers that were dealing with Likelihood evidence at inference time.
+
 
 *** Definitions      
 
@@ -161,6 +163,7 @@ in X can be further modified by other information.
 For example you can leverage information about the adjacent characters.
     #+end_quote
 
+
 *** Probabilistic evidence.
 
     This encompasses uncertain evidence specified by a local
@@ -208,7 +211,7 @@ findings. Probabilistic evidence is a set of probabilistic findings.
     belief on X is lost.
 
     So the idea is that an expert call can overwrite any prior
-    belief. [[label:question-where-does-the-probabilistic-finding-come-from]]
+    belief. [[label:question-where-does-the-probabilistic-finding-come-from
 
     Note the following definition. This will be key to understand
     fixed vs. non-fixed probabilistic evidence. In fact the meat is
@@ -230,18 +233,356 @@ findings. Probabilistic evidence is a set of probabilistic findings.
     fixed probabilistic evidence together with the new evidence, in
     order to keep the former probabilistic evidence fixed.
 
-    
-    
-    
-*** In table 1 different papers that were dealing with Likelihood evidence at inference time.
+    #+begin_quote
+Fixed probabilistic evidence behaves as hard evidence in that the
+specified evidence remains unchanged after its propagation, and still
+remains unchanged after the arrival of other information on the same
+case.
+    #+end_quote
 
-   
+    #+begin_quote
+*Definition:* A not-fixed probabilistic finding on X can be
+modified by further evidence on *any variable* in the model
+    #+end_quote
+
+    To make sense about such fixed and non-fixed probabilistic
+    evidence you can check at the examples in the paper. (ex 3 -
+    4). It is pretty much straightforward the concept when you look at
+    it in simple examples. People should be more to the point at
+    times.
+
+    *Note* important that in order to be considered /fixed
+    probabilistic/ findings you usually require that the R(X) is given
+    with the property of /all things considered/, i.e. considering all
+    of the variables in the network. In such a way even if new
+    evidence arrives in the network it does not affect R(X) when
+    making inference as the information is already included in the
+    probabilistic fixed evidence.
+
+    Note that you can think of fixed probabilistic evidence as a
+    constraint on the posterior probability.
+
+    
+*** On the big difference among likelihood and evidence
+
+    1. for probabilistic evidence the distribution is specified “all
+       things considered” whereas for likelihood evidence the
+       likelihood ratio is without prior knowledge or belief
+
+    2. propagation: while probabilistic evidence remains unchanged by
+       updating the observed variables, likelihood evidence has to be
+       combined with previous beliefs in order to update the belief in
+       the observed variable(s).
+
+    So these two are the major differences and you can think in the
+    next couple of days how you can integrate your algorithm to deal
+    with such type of evidence.
+
+
+*** Interesting concept extended probabilistic finding.
+
+    This is defined as follows:
+
+    [[file:~/Desktop/Bayesian_Net_Thesis/images/Bildschirmfoto_2021-03-26_um_16.41.09.png]]
+
+
+    Given such definition it is then written in the paper that:
+
+    #+begin_quote
+The extended notion of probabilistic evidence can be handled for
+evidence updating by the introduction of an observation node
+[69]. This technique allows the reformulation of extended
+probabilistic evidence into probabilistic evidence on a single new
+observation variable.
+    #+end_quote
+
+    i.e. check this paper 69 cause this is in fact very similar to
+    what was done in your case.
+
+
+    
+*** On propagation of likelihood and probabilistic evidence
+
+    Here the paper discusses the two separately.
+
+    On the one hand you deal with propagation of likelihood via the
+    method of Pearl often encountered and discussed in the paper.
+
+    On the other hand you use Jeffery's method to deal with
+    propagation in the case of probabilistic evidence.
+
+
+    
+**** Pearl's Method
+
+     Virtual evidence refers to Pearl’s idea of interpreting a
+     likelihood finding on an event *as a hard finding on some virtual
+     event that only depends on this event* [61]. The virtual evidence
+     method provides a convenient way of incorporating evidence with
+     uncertainty in a Bayesian network.
+
+     I.e. this is the idea you extend the network with a virtual node
+     and you assign a hard finding to it and state that the
+     probability of such hard finding is defined by the likelihood
+     ratios.
+
+     The hard evidence on the added node is propagated using a
+     classical inference algorithm in the Bayesian network.
+
+     So recall now that the likelihood evidence entries given L(X) in
+     express the following condition P(o | X). For the posterior after
+     propagating we are interested in Q(X) = P(X |O = o) or consistent
+     with the notation of Koller and Friedman P(X | E = e).
+
+     Where the P(X | O = o) depends on the following:
+
+     [[file:~/Desktop/Bayesian_Net_Thesis/images/Bildschirmfoto_2021-03-26_um_17.12.45.png]]
+
+     It should now immediately be clear the property discussed
+     before - i.e. that the posterior in the case of the likelihood
+     *depends on the prior belief in X* and has in fact to bbe
+     combined with that and propagated in order to come to the
+     posterior.
+
+**** Jeffery's Method
+
+     Here we are again interested in propagating in the bayesian
+     network and ultimately get the posterior probability for P(X |
+     evidence).
+
+     The issue here is that for such a model when we propagate and
+     compute the posterior we must consider the local probability
+     distribution R(X) and its implications - i.e. how this will be
+     updated. I.e. we cannot blindly compute the posterior but we
+     rather have to understand how the information flows in the
+     network and influences R(X). 
+
+
+     The issue moreover is that we cannot treat R(X) as a
+     hard-evidence and then propagate keeping such constraint as R(X)
+     is in fact *not a hard evidence* but rather is a probabilistic
+     evidence representing a CPD . So we need a way to come up with
+     hard-evidence or something similar as done by the method of
+     Pearl in order then to propagate. I.e. we have to deal with such
+     condition. (cite and look at 64)
+
+     Moreover it follows that
+
+     A probabilistic finding R(X) requires a *reconsideration of the
+     joint probability distribution P* because it replaces the existing
+     prior on the variable X. (and recall that the joint is
+     /conditional * prior/.
+
+     I.e.
+
+     #+begin_quote
+The propagation of probabilistic evidence requires the
+replacement of the initial probability distribution P by
+another probability distribution Q that reflects the beliefs in
+the variables of the model after accepting the probabilistic
+evidence.
+     #+end_quote
+
+     This replacement is not definitive: it lasts as long as the
+     specific observed case holds.
+
+     Jeffrey’s approach for this problem is known as “probability
+     kinematics” and it is based on the following points:
+
+     - The posterior probability distribution on the observed variable
+       X Q(X) is unchanged: Q(X) = R(X),
+
+     - conditional probability distribution of other variables given X
+       remains invariant under the observation: Q(X \ {X} | X) = P (X
+       \ {X} | X).
+
+     - It follows then the following Jeffery's Rule:
+
+       [[file:~/Desktop/Bayesian_Net_Thesis/images/Bildschirmfoto_2021-03-26_um_18.04.54.png]]
+
+       This is how you define the CPD of each variables and from there
+       you can finally compute the joint.
+
+       *Note the following!!*
+
+       [[file:~/Desktop/Bayesian_Net_Thesis/images/Bildschirmfoto_2021-03-26_um_18.07.55.png]]
+
+       Understand it cause also here it seems that everything is
+       pretty straightforward and extendible as there is a clear
+       pipeline:
+
+       probabilistic evidence -> likelihood evidence -> hard evidence.
+
+       And so then you can maybe apply the same algorithm there.
+
+       Check this ratio might be bigger than 1?
+
+       Note that in the conclusion it is written that you apply such a
+       method to /non-fixed/ probabilistic evidence. For the case of
+       /fixed/ probabilistic evidence you work in a different way
+       using constrained algorithms as discussed in the next section. 
+
+       Propagating this likelihood finding L(X) with Pearl’s method
+       provides the same results as propagating R(X) by Jeffrey’s
+       rule.
+
+       In case of *several probabilistic findings*, the method of
+       converting probabilistic findings into likelihood findings does
+       not preserve probabilistic findings. A simple example can be
+       found in [15, 64]. --> this because it is immediate to see that
+       the jeffery's condition are violated. Then Q(X1) != R1(X1) or
+       Q(X2) != R2(X2) depending on the order of propagation.
+
+       It therefore holds that the inclusion of several pieces of
+       probabilistic evidence with Jeffrey’s rule *does not commute*. In
+       other words, final beliefs *depend on the order of arrival of the
+       probabilistic findings*.
+
+
+       The next section deals with the propagation of several pieces
+       of fixed probabilistic findings, such that their order does not
+       modify the final belief.
+
+**** Dealing with several pieces of probabilistic evidence
+
+     /Iterative Proportional Fitting Procedure (IPFP) algorithm/, which
+     is an iterative method of revising a probability distribution to
+     respect a set of given probability constraints in the form of
+     posterior marginal probability distributions over a subset of
+     variables.
+
+     I think this is in fact what the paper I mentioned in the
+     research proposal deals with: cite:Masegosa_2016.
+
+     However, the IPFP works on full joint distributions, and thus is
+     not directly applicable to belief update in Bayesian
+     networks. Too big network for this. infeasible for larger ones
+     since it needs to literally modify each entry of the joint
+     probability distribution table at each iteration.
+
+     Solution use /big clique algorithm/ is a variation of the
+     junction tree algorithm.
+
+     
+*** Nice debate to include: change model or propagate probabilistic evidence as discussed so far?
+
+    [[file:~/Desktop/Bayesian_Net_Thesis/images/Bildschirmfoto_2021-03-26_um_19.19.24.png]]
+
+
+    Would maybe be nice to include this in the thesis discussion.
+
+
+*** ISSUE
+
+    [[label:issue_have-still-to-understand-why-propagation-is-necessary]]
+    If it is at the end of the network - say in one leaf then
+    such propagation might not be needed. If not then I see the
+    point. Make such reasonings and make them more explicit at some
+    point when you will have the time.
+
+
+
+     
 ** Cite For np-hard problem of exact and approximate inference methods:
 
    cite:Dagum_1993,Cooper_1990
 
+
+** Masegosa 2016 - learning from incomplete data with qualitative influences
+
+   I think that this is one type of probabilistic evidence as
+   discussed in Mrad et all.
+
+   No actually it is not. It is rather another different type of
+   evidence. You neither specify a likelihood evidence nor you specify
+   an "all things considered" conditional probability density.
+
+   You rather have an expert setting some constraints of the form this
+   influence must be bigger than x. Or this increases or decreases the
+   probability /on that/.
+
+   So you would actually have to learn parameters that respects such
+   constraints. If you move in the space of the MLE after properly
+   defining the likelihood the problem is simply the one of a
+   constrained maximization problem that you can solve with the usual
+   Lagrange multiplier technique. In the case of the EM you just have
+   to check if the properties apply. If they do then you are more less
+   set.
+
+   This paper takes a different approach. Instead of working with
+   Lagrange multipliers they augment the EM to respect the various
+   constraints.
+
+   The two algorithms they mention are:
+
+   1. /isotonic regression EM:/
+
+   2. /qirEM/ builds upon the isotonic regression by reducing the
+      computational burden.
+
+   The essential idea is that /isotonic regression/ produces the
+   constrained MLE without having to go through constraints themselves
+   explicitly. 
+
+   #+begin_quote
+   Such that as a bottom line you can use the following:
+   
+   We propose to augment the maximization step of the EM algorithm
+   with the isotonic regression in order to obtain parameter estimates
+   that satisfy the order constraints from incomplete data. This
+   algorithm, called irEM, requires the application of the isotonic
+   regression in each iteration of EM.
+   #+end_quote
+
+   Qir tries to reduce the computational complexity by applying the
+   isotonic regression step just one time after convergence. What are
+   the guarantees of all of that then?
+
+   Note however that to achieve this Qir needs convex optimization in
+   the M-step. Due to the acceptance of just qualitative influences
+   such optimization can be done in polynomial time.
+
+   2.1 defines the problem with missing evidence as in the
+   book. Pretty 1:1 and nothing new. You sum over all possible
+   completions.
+
+   2.2 also standard results of friedman and koller.
+
+   /Definition - Partially Ordered Set:/ -> is used to understand
+   isotonic regression. Ok so nothing special. it is just a set of
+   relations /smaller_equal/ or /greater_equal/ that completely order
+   your set.
+
+   Definition of isotonic regression is then the following:
+
+   [[file:~/Desktop/Bayesian_Net_Thesis/images/Bildschirmfoto_2021-03-27_um_18.36.31.png]]
+
+   Note that f^* should be inserted in place of f(z) above and then
+   you should minimize this.
+
+   Check then at the example in the paper to understand how this
+   partial order translates to the case of a Bayesian network. Nothing
+   wild. Just have to keep track a bit of notation.
+
+   Then basically the idea for the general MLE with complete data is
+   to leverage the global decomposition property.
+
+   Very easy irAlg then you just simply take the isotonic regression
+   from the respective CPT parameters. You just have to make more
+   explicit such link of the parameters and read about it once more
+   the relation with the partial order.
+
+   Once this is done everything is pretty much straightforward. You
+   just do an isotonic regression over this.
+
+
+** ISSUEs tracker
+
+   [[ref:issue_have-still-to-understand-why-propagation-is-necessary]]
+
+   [[ref:question-where-does-the-probabilistic-finding-come-from]]
    
    \newpage
- 
+   
  bibliography:/Users/marcohassan/Desktop/Bayesian_Net_Thesis/literature/references.bib
  bibliographystyle:unsrt

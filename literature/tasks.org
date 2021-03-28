@@ -1,0 +1,7 @@
+* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [0/0]
+  :PROPERTIES:
+  :CATEGORY: Bayesian_Net_Thesis
+  :END:
+
+** TODO understand the merlin factor structure
+   SCHEDULED: <2021-03-28 Sun 09:00>

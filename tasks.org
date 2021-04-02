@@ -1,15 +1,62 @@
-* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [0/1]
+* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [1/5]
   :PROPERTIES:
   :CATEGORY: Bayesian_Net_Thesis
   :END:
 
-** TODO understand what he means by you work with a list of factors
 
-   he said that the graph representation in the code is there but is
-   not actually used.
 
-   apparently you convert everything into factor format and then work
-   from there.
+** TODO Questions
 
-   there is also this twist that he mentioned in the factor
-   interpretation there. check at this file [[file:merlin/include/factor.h]]
+
+*** Just clarify order of training data entries
+
+    do not really get it... how do you read then out training data?
+
+    training data are given with =.dat= file format.
+
+    So i think that the entries there represents the variables in
+    order as usual.
+
+    =x_0, x_1, ....=
+
+    and this respect the same order as the one given in the =.uai=
+    file as notation.
+
+
+
+** TODO for next week
+
+   - understand how you can specify this prior likelihood to be well
+     behaved.
+
+   - understand how you can specify the prior for the cancer
+     network. (have to specify MAR property for it).
+
+
+** DONE understand why global decomposition with complete data and why not with missing
+   CLOSED: [2021-04-02 Fri 17:16]
+   :PROPERTIES:
+   :WILD_NOTIFIER_NOTIFY_BEFORE: 30 10 5
+   :END:
+   :LOGBOOK:
+   CLOCK: [2021-04-02 Fri 14:58]--[2021-04-02 Fri 15:23] =>  0:25
+   CLOCK: [2021-04-02 Fri 14:27]--[2021-04-02 Fri 14:52] =>  0:25
+   CLOCK: [2021-04-02 Fri 12:36]--[2021-04-02 Fri 12:41] =>  0:05
+   CLOCK: [2021-04-02 Fri 12:11]--[2021-04-02 Fri 12:36] =>  0:25
+   CLOCK: [2021-04-02 Fri 11:20]--[2021-04-02 Fri 11:29] =>  0:09
+   CLOCK: [2021-04-02 Fri 10:16]--[2021-04-02 Fri 10:41] =>  0:25
+   CLOCK: [2021-04-02 Fri 09:45]--[2021-04-02 Fri 10:10] =>  0:25
+   CLOCK: [2021-04-02 Fri 08:58]--[2021-04-02 Fri 09:23] =>  0:25
+   :END:
+
+   Check at the mind map.
+
+
+** TODO solve exercise 19.20 to understand how EM generalizes to the case of MAP bayesian estim.
+   SCHEDULED: <2021-04-03 Sat 10:00>
+
+** TODO add jeffery's method and pearl method into the mind map
+   SCHEDULED: <2021-04-04 Sun 10:00>
+   :PROPERTIES:
+   :WILD_NOTIFIER_NOTIFY_BEFORE: 30 10 5
+   :END:

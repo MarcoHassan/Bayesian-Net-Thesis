@@ -1,4 +1,7 @@
 * Some general notes on Merlin
+  :LOGBOOK:
+  CLOCK: [2021-03-29 Mon 17:20]--[2021-03-29 Mon 17:46] =>  0:26
+  :END:
 
 ** From call with Radu of 18/03/2021
 
@@ -71,13 +74,14 @@
        /'Inheritance'/
        graphical_model .. EM
        cte .. EM
+       graphical_model .. factors
 
 
    /' Class Functions '/
 
        /'Merlin'/
        Merlin : set arguments, \ni.e. file of interes, \noutput format etc.
-       Merlin : read the passed model in the uai format.
+       Merlin : read the passed model in the uai format. \nand extracts the factors of the model.
        Merlin : run() - runs the engine; here s.run() runs the aglo
        Merlin : init() - checks paramters and return fals if smth not working
 
@@ -90,7 +94,248 @@
    [[file:./images/strucutre.png]]
 
 
+** Reminder of c++
+   
+*** Pointers and Addresses
+
+    The general syntax is the following:
+
+    [[file:images/Bildschirmfoto_2021-03-28_um_16.58.48.png]]
+
+
+    Note that this is the difference among adress reference &variable
+    and pointer. A pointer is a separate object. It can changes
+    referenced object. If you declare a reference when initializing a
+    variable say =a = &x= you are creating an alias for the object
+    x. This reference cannot change at a later point. and the variable
+    has not an address in memory that references =a= itself. This is
+    different when working with pointers.
+
+    often references are used when declaring functions. these are
+    passed as arguments. as you do not have to pass entire objects to
+    the function then but rather you point to the objects of interest
+    in memory.
+
+   
+*** typedef
+
+    this is a simple way to give a new name to your specified
+    objects.
+
+    For instance you might rephrase an =unsigned char= to a =BYTE= by:
+    
+    =typedef unsigned char BYTE=
+
+    
+
+*** constructors and member initialization functions
+
+    #+BEGIN_SRC cpp
+factor(factor const& f) :
+  v_(f.v_), t_(f.t_), c_(f.c_) {
+};
+    #+END_SRC
+
+    This is the /member initializer notation/.
+
+    Understand the initializer notation in the following example:
+
+    #+BEGIN_SRC cpp
+class Box {
+public:
+    // Default constructor
+    Box() {} // with no elemnts
+
+    // Initialize a Box with equal dimensions (i.e. a cube)
+    explicit Box(int i) : m_width(i), m_length(i), m_height(i) // member init list
+    {} 
+
+    // Initialize a Box with custom dimensions
+    Box(int width, int length, int height)
+        : m_width(width), m_length(length), m_height(height)
+    {}
+
+    int Volume() { return m_width * m_length * m_height; }
+
+private:
+    // Will have value of 0 when default constructor is called.
+    // If we didn't zero-init here, default constructor would
+    // leave them uninitialized with garbage values.
+    int m_width{ 0 };
+    int m_length{ 0 };
+    int m_height{ 0 };
+};
+    #+END_SRC
+
+    The general page for understanding constructors [[https://docs.microsoft.com/en-us/cpp/cpp/constructors-cpp?view=msvc-160][is this]].
+
+    Another example for the constructor is this:
+
+    #+BEGIN_SRC cpp 
+class TelList
+{
+private:
+  Element v[MAX]; // The array and the current
+  int count; // number of elements
+public:
+  TelList(){ count = 0;}
+}
+    #+END_SRC
+
+
+*** size_t
+
+    this is used everywhere in the code. and I needed to make sense of
+    it. turns out that it is a standard library method.
+
+    =std::size_t= can store the maximum size of a theoretically possible
+    object of any type (including array). A type whose size cannot be
+    represented by =std::size_t= is ill-formed (since C++14) On many
+    platforms (an exception is systems with segmented addressing)
+    =std::size_t= can safely store the value of any non-member pointer,
+    in which case it is synonymous with std::uintptr_t.
+
+    =std::size_t= is commonly used for array indexing and loop
+    counting. Programs that use other types, such as unsigned int, for
+    array indexing may fail on, e.g. 64-bit systems when the index
+    exceeds UINT_MAX or if it relies on 32-bit modular arithmetic.
+
+
+*** arrays
+
+    #+BEGIN_SRC cpp
+#include <iostream>
+#include <iomanip>
+using namespace std;
+int main()
+{
+const int MAXCNT = 10; // Constant
+float arr[MAXCNT], x; // Array, temp. variable so like this you
+		      // declare both the array as the temporal
+		      // variable x as floats.
+int i, cnt; // Index, quantity
+cout << "Enter up to 10 numbers \n"
+<< "(Quit with a letter):" << endl;
+for( i = 0; i < MAXCNT && cin >> x; ++i)
+arr[i] = x;
+cnt = i;
+cout << "The given numbers:\n" << endl;
+for( i = 0; i < cnt; ++i)
+cout << setw(10) << arr[i];
+cout << endl;
+return 0;
+}
+    #+END_SRC
+
+    An array contains multiple objects of identical types stored
+    sequentially in memory.
+
+
+    The definition includes the array name and the type and number of
+    array elements.
+
+    An example:
+
+    #+BEGIN_SRC cpp
+    int myFirstArray[10]; // Array name
+    #+END_SRC
+
+    If you want to initialize the arrays directly when you initialize
+    them use the following notation passing a list with the elements:
+
+    #+BEGIN_SRC cpp
+    int num[3] = { 30, 50, 80 };
+    #+END_SRC
+
+    If the array length is explicitly stated in the definition and is
+    larger than the number of initial values, any remaining array
+    elements are set to zero.
+
+    Locally defined arrays are created on the stack at program
+    runtime. Arrays that occupy a large amount of memory (e.g., more
+    than one kbyte) should be defined as global or static.
+
+    you can also use arrays to save objects of a given class. this can
+    be done in the following way:
+
+    #+BEGIN_SRC cpp 
+    <class_name> myArray[10] // where 10 = dimension.
+    #+END_SRC
+
+    Such class arrays can be initialized using class arrays
+
+    #+BEGIN_SRC cpp 
+    Result temperatureTab[24] =
+    { // this is your class array. containing all of the objects you
+      // will save in the array in memory.
+    Result( -2.5, 0,30,30),
+    Result( 3.5), // At present time
+    4.5, //  Instead of using a constructor with one argument, you can
+	 //  simply supply the argument. The default constructor is
+	 //  then called for the remaining elements.
+    Result( temp1), // Copy constructor
+    temp2 // Just so
+    };
+    #+END_SRC
+
+
+    If the size of an array is not stated explicitly, the number of
+    values in the initialization list defines the size of the array.
+
+    The public interface of the objects in the array is available for
+    use as usual. I.e. you can call methods in the following way:
+
+    #+BEGIN_SRC cpp 
+    temperatureTab[2].setTime( 2,30,21);
+    #+END_SRC
+    
+
+*** vectors
+
+    Vectors are implemented in the =standard template library=.
+
+    Specifically used to work with dynamic data, C++ vectors *may
+    expand depending on the elements they contain*. That makes it
+    different from a fixed-size array.
+
+    C++ vectors can automatically manage storage. It is efficient if
+    you add and delete data often.
+
+    In C++ vectors, automatic reallocation happens whenever the total
+    amount of memory is used.
+
+    The syntax for declaring a vector is the following
+
+    #+BEGIN_SRC cpp 
+    vector <type> variable (elements)
+    #+END_SRC
+
+    So for instance
+
+    #+BEGIN_SRC cpp 
+    vector <int> rooms (9);
+    #+END_SRC
+
+    Note that the number of elements is optional. this because as
+    mentioned we can enlarge or decrease the size of the vectors at
+    runtime.
+
+    To resize a vector to match a given shape - i.e. number of
+    elements use the following structure:
+
+    #+BEGIN_SRC cpp 
+    rooms.resize(shape)
+    #+END_SRC    
+
+
 ** .uai structure is important for developing the graph and pass it along.
+
+   Note that factors are general function mapping from a domain of
+   variables (D) to the real numbers. It is therefore a general
+   function but it is used in our sense as a map from network
+   variables to probability functions. (usually - i.e. if the order is
+   meaningful in the sense that the multiplication of factors follows
+   the conditional independence structure and factors represent ).
 
 ///
 /// \brief Factor for graphical models.
@@ -112,11 +357,38 @@
 /// 2: [0,1,0]    6: [0,1,1]
 /// 3: [1,1,0]    7: [1,1,1]
 
-factor logic and indexing is different from the =.uai= representation
-and this is described above.
+   factor logic and indexing is different from the =.uai= representation
+   and this is described above.
 
+   Note that it is important this piece of code:
 
+   #+begin_example
+   The scope is assumed to be sorted lexicogaphically (e.g., [x1,x2,x3])
+   #+end_example
+
+   Also, the indexing of configurations in the factor table is assumed to
+   be based on the BigEndian, namely the *first* variable in the ordered
+   scope changes the fastest, then the *second* variable changes its
+   value and so on.
+
+   I.e. for each factor you have a /factor table/ that maps your Val(D)
+   to real line. In this table there are all of the possible combinations
+   of Val(D). The question is then on how you keep record of these and
+   the solution is the BigEndian notation.
+
+   There is a function *convert_index*  - maybe not a function have to
+   understand that tomorrow. the syntax is not the one of a
+   function.
    
+   These are in fact both classes that are defined in this file
+   [[file:merlin/include/index.h]].
+
+   I just do not manage to find the size_t class. I wonder what this
+   is.
+
+*** Note that in the factor header also all of the functions for factor summation, entropy etc. are defined.
+
+
 ** Parameter for the algorithm
 
       #+begin_example
@@ -132,9 +404,11 @@ and this is described above.
 
    - he has a stopping criteria check at each iteration.
    
+
 ** wmb bucket
 
    best approximate inference algorithm.
+
 
 ** graphical_model
 
@@ -142,7 +416,189 @@ and this is described above.
 
    fixup at the end: from factor creates nodes and edges. (creates the graph).
 
-   you will not be worked with graph - you work with list of factors now.
+   you will not be worked with graph - you work with list of factors
+   now.
+
+   so here there is the entire flow: from uai to graphical models to
+   factors. here are also all of the functions to add factors, remove
+   factors etc.
 
 
+** understand how you pass structure and evidence
    
+   So basically the structure on how you pass things is separate and
+   well differentiated.
+
+   You pass the network itself with the associated CPT in the =.uai=
+   file.
+
+   You pass the evidence on which to update your parameters via the
+   =.evid= files.
+
+   Finally you pass the virtual evidence via the following file format
+   =.vevid=
+
+   The way you pass the parameters is described in the [[file:merlin/README.md][Readme]].
+
+   so the meat is all here:
+   
+*** uai format
+    :LOGBOOK:
+    CLOCK: [2021-03-29 Mon 15:23]--[2021-03-29 Mon 15:49] =>  0:26
+    :END:
+
+    to understand the uai format refer to [[https://www.cs.huji.ac.il/project/PASCAL/fileFormat.php][this source]].
+
+    consider now [[file:merlin/data/ChestClinic.uai][this file]]. this is the chestclinic file in the merlin
+    project.
+
+    I will discuss the notation of this here once more.
+
+    so there are essentially two sections in this kind of files.
+
+    the first section denotes the structure of the network. then in
+    the second you specify the CPT entries.
+
+    so for the first section the situation can look as follows:
+
+    The first integer in each line specifies the number of variables
+    in the clique, followed by the actual indexes of the variables.
+
+    #+begin_example
+BAYES                 // first line always specify the type of graphical model: bayes or markov
+8                     // the number of variables in your model
+ 2 2 2 2 2 2 2 2      // the number of possible outcomes per variable -> so here all binary
+8                     // the number of *factors*
+ 1 3                  // the first number represents the number of variables per factor - i.e. the scope of the factor
+ 2 0 1                // so here you have two variables involved for the factor.  
+ 3 4 2 5              // the other numbers that follow specify which variables are involved for each factor.
+ 3 1 5 7              // note that the numbers represent the index of the variables
+ 2 0 2                // in the 2 2 2 2 .... 2 above. the index starts from 0
+ 1 0                  // so for instance this represents the first variable above. 
+ 2 3 4                
+ 2 5 6                // last entry is the child. the previous are parents in CPT
+    #+end_example
+
+    Then in the second part you specify the actual CPD of the
+    factors. 
+
+    For the specific case you would have the following:
+
+    #+begin_example
+2   // this is the number of entries in the CPT for each factor. 
+ 0.01 0.99  // this follows the structure above. i.e. the first entry is for the third factor etc.
+
+ [x_4 = 0 is 0.001]
+
+4
+ 0.6 0.4 0.3 0.7  // have just to understand how these are expressed. here is where the little Endian cicks in.
+
+8
+ 1.0 0.0 1.0 0.0 1.0 0.0 0.0 1.0
+
+// x_5 = 0, x_3 = 0, x_6 = 0
+// x_5 = 0, x_3 = 0, x_6 = 1  // so here you always change the last one and the order stays the same as line 470.
+                              // go from right to left.
+
+// then this notation is changed in the factor.h to bigEndian which would be as follows. 
+
+// so here the definition is the following: Tuples are implicitly assumed in ascending order,
+// with the *last variable in the scope* as the 'least significant' i.e. the one you change faster. 
+// so in the above for instance you have three variables x_5, x_2, x_4. Then you understand that here
+// x_5 is the least signigicant. x_2 the most significant.
+// this means that for the above you should read it as follows:
+// [x_5 = 0, x_4 = 0, x_2 = 0]
+// [x_5 = 1, x_4 = 0, x_2 = 0]
+// [x_5 = 0, x_4 = 1, x_2 = 0]
+// [x_5 = 1, x_4 = 1, x_2 = 0]
+// [x_5 = 0, x_4 = 0, x_2 = 1]
+// [x_5 = 1, x_4 = 0, x_2 = 1]
+// [x_5 = 0, x_4 = 1, x_2 = 1]
+// [x_5 = 1, x_4 = 1, x_2 = 1]
+
+8
+ 0.9 0.1 0.8 0.2 0.7 0.3 0.1 0.9
+
+4
+ 0.1 0.9 0.01 0.99
+
+2
+ 0.5 0.5
+
+4
+ 0.05 0.95 0.01 0.99
+
+4
+ 0.98 0.02 0.05 0.95
+    #+end_example
+
+*** .evid
+
+    Evidence is specified in a separate file. This file has the same
+    name as the original network file but with an added =.evid=
+    suffix. For instance, problem.uai will have evidence in
+    =problem.uai.evid=.
+
+    the syntax is the following:
+
+    #+begin_example
+1 // first line => number of evidences samples
+2 1 0 2 1 // evidence in each sample, will be written in a new line. first entry = number of observed variables.
+          // then pairs. (<variable>, <value>) 
+    #+end_example
+
+    So in the example above you would specify that you observe just
+    two observations x_2 and x_3 (recall that indexing starts at 0).
+
+    where x_2 = 0, x_3 = 1.
+    
+*** .vevid
+
+    same idea here. same structure just you have likelihoods instead
+    of plain observations.
+
+    see for instance for the specific project the following:
+
+    #+begin_example
+    2  // number of evidence
+    1 2 0.6 0.8  // first entry = variable index. second entry = size of domain of variable. other entries 0 likelihoods
+    2 2 0.1 0.3
+    #+end_example
+
+
+
+*** also in this sense.. how is the flow evidence -> parameters -> uai.
+
+    cause theoretically this is how you would work. note the following
+    solution and interpretation.
+
+    apparently you need both. then you have the =--init-factors= entry
+    to overwrite the parameters that you are interested in and are in the
+    =.uai= file (i.e. you can initialize them either uniformly or
+    randomly).
+
+    if you do not overwrite I guess that the parameters of the =uai=
+    file are just taken as the initializers.
+
+    this is in fact how it works. with the new_thetas. in the em
+    algorithm that you compute and then pass to a new graphical_model
+    object instantiation.
+    
+
+
+*** training data
+
+    what is the difference between training data and evidence files?
+
+    evid files used for inference. train for parmaters.
+
+** note that factors are key not graphs 
+
+   he said that the graph representation in the code is there but is
+   not actually used.
+
+   apparently you convert everything into factor format and then work
+   from there.
+
+   there is also this twist that he mentioned in the factor
+   interpretation there. check at this file [[file:merlin/include/factor.h]]

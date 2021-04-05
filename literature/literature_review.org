@@ -130,6 +130,10 @@
 
     [[file:~/Desktop/Bayesian_Net_Thesis/images/Bildschirmfoto_2021-03-22_um_17.42.33.png]]
 
+
+    *Weird image; normalized or not? Cause there does not seem to be
+    any evidence in there.*
+    
     Note therefore that the probability is not assigned as P (x_i |
     evidence) but rather the contrary. Watch out to this as I guess
     that you interpreted it in the wrong way so far.
@@ -266,6 +270,7 @@ modified by further evidence on *any variable* in the model
     
 *** On the big difference among likelihood and evidence
 
+
     1. for probabilistic evidence the distribution is specified “all
        things considered” whereas for likelihood evidence the
        likelihood ratio is without prior knowledge or belief
@@ -312,8 +317,6 @@ observation variable.
     On the other hand you use Jeffery's method to deal with
     propagation in the case of probabilistic evidence.
 
-
-    
 **** Pearl's Method
 
      Virtual evidence refers to Pearl’s idea of interpreting a

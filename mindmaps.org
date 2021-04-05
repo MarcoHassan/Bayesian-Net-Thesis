@@ -1,9 +1,11 @@
 * MindMaps
 
-So basically the global decomposition of the MLE with complete data
-works as follows:
+** Global Decomposition
 
-#+begin_src plantuml :file ./images/mind_global_decomposition.png 
+   So basically the global decomposition of the MLE with complete data
+   works as follows:
+
+#+begin_src plantuml :file ./images/mind_global_decomposition.png :exports results
 (*) -right-> "use conditional independence structure of \nBayesian Networks to decompose \njoint likelihood in \nconditional terms"
 
 -right-> "you will have for the joint prob \na product concerning all of the \nvariables (index i) and instances (index m)"
@@ -24,8 +26,9 @@ works as follows:
 #+RESULTS:
 [[file:./images/mind_global_decomposition.png]]
 
+** Bayesian Learning - Complete, Missing and Partially Observed
 
-#+BEGIN_SRC plantuml :file ./images/mind_bayes_complete.png  :exports both
+#+BEGIN_SRC plantuml :file ./images/mind_bayes_complete.png  :exports results
 @startmindmap
 /'Styling'/
 <style>
@@ -60,6 +63,8 @@ node {
 
 /'Missing Data Case'/
 *****[#lightred] Missing Evidence
+******[#lightred] Note that on top of the result of the other path - i.e. the fact that individual likelihood CPDs do not decompose - also global decomposition is lost in the case of missing evidence. Such that ultimately your likelihood function will be a very messy function.
+
 ******[#lightred] Central Question for this sections is how do you specify Likelihood Function? \n\n I.e. what is the likelihood of Missing Evidence? \n\n we consider a model where you have true realizations governed by RVs and observables of such RV - a RV O - that specify if we observe the realizations of X or not. So actually two data generating processes.
 
   /'Likelihood via Observable'/
@@ -92,7 +97,9 @@ node {
   /'Likelihood Evidence'/
 ******[#ee9572] Likelihood evidence
 
-*******[#ee9572] TODO Describe Pearl's Method
+*******[#ee9572] Pearl's Method
+
+********[#ee9572] Here the idea is to convert the likelihood evidence into a hard-evidence on a virtual node. I.e. the idea is to augment the network by a virtual node where it's CPD initial parameterization is specified by the likelihood evidence passed to it.
 
   /'Probabilistic Evidence'/
 ******[#ee9572] Probabilistic evidence
@@ -105,4 +112,41 @@ node {
 [[file:./images/mind_bayes_complete.png]]
 
 
+** EM algorihtm Theory
 
+
+#+BEGIN_SRC plantuml :file ./images/em_theory.png  :exports results
+@startmindmap
+/'Styling'/
+<style>
+node {
+    Padding 12
+    Margin 3
+    HorizontalAlignment center
+    RoundCorner 40
+    MaximumWidth 200
+}
+</style>
+
+/'Expectation Maximization Algorithm - Functioning'/
+*[#008b8b] Expectation Maximization Algorithm
+
+**[#008b8b] The issue of missing data is that you try to solve two problems at once: learning the parameters, and hypothesizing values for the unobserved variables in each of the data cases. \n\n Each of these tasks is fairly easy when we have the solution to the other. \n \n Given complete data, we have the statistics, and we can estimate parameters using the MLE formulas we discussed previously. \n\n Conversely, given a choice of parameters, we can use probabilistic inference to hypothesize the likely values (or the distribution over possible values) for unobserved variables.
+
+***[#008b8b] Mathematical theories proved then the relation among the EM steps and the likelihood function - our objective function. We will treat them later and see that there is a tight realation among the two and that at each step the EM improves the likelihood.
+
+***[#008b8b] EM solves this chicken-egg problem iteratively. Start with a parameterization and impute the missing data based on such paramterization via an inference step. Then given complete data compute the new MLE parameterization and iterate.
+
+/'Expectation Step'/
+****[#8db6cd] Expectation Step
+*****[#8db6cd] So in a similar way to the likelihood function in the case of missing data where we had to marginalize the hidden variables out, we do a similar step in the EM algorihtm. I.e. we create synthetic networks with complete data. The difference is in that in the expectation step of the EM we take then an expectation of these bayed on the current paramterization (resulting from Maximization Step). I.e. we associate weights to it according to the parameterization (this can be reformulated into an inference step - see your notes).
+
+/'Maximization Step'/
+****[#cdaf95] Maximization Step
+*****[#cdaf95] Given the complete data observations for each instance of the network, and the weight associated to it by the expectation step we compute the new MLE by replacing the suffcient statistics of a complete data likelihood function by the expected sufficient statistics - i.e. the suffcient statistics as in the standard case where the observations entries of the sufficient statistics are weighted by the probability of observing them as computed in the expectation step.
+
+@endmindmap
+#+END_SRC
+
+#+RESULTS:
+[[file:./images/em_theory.png]]

@@ -1,12 +1,33 @@
 * Questions to be clarified during the call
 
-
 ** TODO questions Radu
 
-*** Bayesian approach
+*** TODO check with Radu, if that would actually be true - you would already be over.
 
-    - Bayesian; made up data. (Uncertain evidence)
+    - show him your tablet results.
+    
+    - just have to implement it in code but it should not be that
+      difficult.
 
-    - So take the bayesian approach and apply uncertain evidence
+    - consider in this sense to extend the thesis to deal with jeffer's
+      method and probabilistic evidence. i.e. that would be a natural
+      second step for the algorithm.
 
-    - Have to understand if you can use EM algorithm in there
+
+    
+
+
+*** TODO Just clarify order of training data entries
+
+    do not really get it... how do you read then out training data?
+
+    training data are given with =.dat= file format.
+
+    So i think that the entries there represents the variables in
+    order as usual.
+
+    =x_0, x_1, ....=
+
+    and this respect the same order as the one given in the =.uai=
+    file as notation.
+    

@@ -404,7 +404,7 @@ return 0;
 
    - he has a stopping criteria check at each iteration.
    
-
+     
 ** wmb bucket
 
    best approximate inference algorithm.
@@ -592,6 +592,7 @@ BAYES                 // first line always specify the type of graphical model: 
 
     evid files used for inference. train for parmaters.
 
+
 ** note that factors are key not graphs 
 
    he said that the graph representation in the code is there but is
@@ -602,3 +603,8 @@ BAYES                 // first line always specify the type of graphical model: 
 
    there is also this twist that he mentioned in the factor
    interpretation there. check at this file [[file:merlin/include/factor.h]]
+
+
+** Recall that in Pearls method the extended virtual node is always set to true.
+
+** IMPORTANT: note that the likelihood ratios are passed normalized in the IBM paper... so that they in fact represent probabilities P(obs | x_i)

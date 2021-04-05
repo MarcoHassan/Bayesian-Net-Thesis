@@ -1,33 +1,9 @@
-* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [1/5]
+* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [3/5]
   :PROPERTIES:
   :CATEGORY: Bayesian_Net_Thesis
   :END:
 
-
-
-** TODO Questions
-
-
-*** Just clarify order of training data entries
-
-    do not really get it... how do you read then out training data?
-
-    training data are given with =.dat= file format.
-
-    So i think that the entries there represents the variables in
-    order as usual.
-
-    =x_0, x_1, ....=
-
-    and this respect the same order as the one given in the =.uai=
-    file as notation.
-
-
-
 ** TODO for next week
-
-   - understand how you can specify this prior likelihood to be well
-     behaved.
 
    - understand how you can specify the prior for the cancer
      network. (have to specify MAR property for it).
@@ -52,11 +28,62 @@
    Check at the mind map.
 
 
-** TODO solve exercise 19.20 to understand how EM generalizes to the case of MAP bayesian estim.
-   SCHEDULED: <2021-04-03 Sat 10:00>
+** DONE solve exercise 19.20 to understand how EM generalizes to the case of MAP bayesian estim.
+   CLOSED: [2021-04-03 Sat 16:17] SCHEDULED: <2021-04-03 Sat 10:00>
 
-** TODO add jeffery's method and pearl method into the mind map
-   SCHEDULED: <2021-04-04 Sun 10:00>
-   :PROPERTIES:
-   :WILD_NOTIFIER_NOTIFY_BEFORE: 30 10 5
-   :END:
+   Pretty simple in the end. See tablet
+
+*** TODO reformulate and write down everything in a neat way to prepare for the discussion with Radu
+    SCHEDULED: <2021-04-05 Mon 10:00>
+
+*** TODO understand what are the assumptions for the above? global decomposition? etc.? (have to specify MAR property for it).
+
+*** TODO start to write this piece as for the thesis. Like this you can show it to Radu and you will have it ready for the thesis.    
+    
+*** DONE well behaved condition?
+    CLOSED: [2021-04-03 Sat 16:31]
+
+    can take derivative so that it is sufficiently easy to compute the
+    argmax of the sum of the two.
+
+
+** DONE understand if it does not break anything of the EM as in the paper
+   CLOSED: [2021-04-03 Sat 17:23] SCHEDULED: <2021-04-04 Sun 08:30>
+
+   this should be the case. we should be done like this. => just need
+   to implement it then.
+
+   => it does not to the best of my understanding so you should be
+   fine. You can easily extend the EM-algorithm to the Bayesian
+   Setting.
+   
+** DONE use template of other Thesis for the new one.
+
+
+** WAITING other possible generalizations
+   
+*** TODO add jeffery's method and pearl method into the mind map
+    SCHEDULED: <2021-04-05 Mon 10:00>
+    :PROPERTIES:
+    :WILD_NOTIFIER_NOTIFY_BEFORE: 30 10 5
+    :END:
+
+     - Investigate the relations: i.e. when you are under likelihood
+       evidence you propagate - the inference step is equal.
+
+     - when you are under probabilistic evidence you set limits to the
+       extent you propagate. i.e. it depends how new information will
+       flow in  the inference step as there the 5essential idea is that
+       you express already a probability - all else considered.
+
+*** TODO consider at some point the following enlargement of the EM algorithm (at least mention it in the thesis).
+
+     - https://www.math.kth.se/matstat/gru/Statistical%20inference/Lecture8.pdf
+
+
+*** TODO consider as well approximate inference
+
+     - Provare anche approximate inference for the above. Should work in
+       a similar way.
+
+     - Also here at the theoretical level nothing has changed.

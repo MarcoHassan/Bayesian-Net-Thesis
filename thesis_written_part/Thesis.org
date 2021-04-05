@@ -1,0 +1,212 @@
+#+LATEX_CLASS: article
+#+LATEX_HEADER: \usepackage{arxiv}
+#+OPTIONS: toc:nil
+
+#+begin_export latex
+\newtheorem{theorem}{Theorem}
+
+\title{Parameter Learning in Bayesian Networks under Uncertain Evidence  \textendash  \ An Exploratory Research.}
+\author{
+  Marco Hassan 	           	\\
+  Zurich, CH		\\
+  \\
+  \\
+  Master Thesis \\
+  Presented to the Eidgenossische Teschnische Hochschule Zurich \\
+  In Fulfillment Of the Requirements for \\ 
+  the Master of Science in Statistics \\
+  \\
+  Supervisor: PhD. Radu Marinescu \\
+  Co-Supervisor: Dr. Markus Kalisch \\
+  %% examples of more authors
+  %% \AND
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\   
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+}
+
+\begin{article}
+
+\maketitle
+#+end_export
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+* TODO Bayesian Networks Overview and Definition & Literature Review
+  
+* TODO Learning under Complete Evidence
+
+* TODO Types of Uncertain Evidence
+  
+* TODO on the nastiness of the Likelihood function
+
+  all good properties are gone when working with partially observed
+  data. write down why here. 
+  
+
+* The Mathematics of the EM
+
+  [[label:as-discussed-probably too soft. Have to make more explicit reference as it is 100% a reformulation][issue_citation_koller]]
+  
+  As discussed by cite:koller2009probabilistic it is possible to frame
+  the EM as a coordinate ascent optimization of an energy function we
+  will define next. Given such perspective we will be able to see the
+  following theorem
+
+  #+begin_export latex
+  \begin{theorem}
+  Write here formally that the likelihood improves at each iteration step
+  \end{theorem}
+  #+end_export
+
+  Consider the following energy function:
+
+  #+begin_export latex
+  \begin{equation} \label{eq:energy_functional}
+  F[P, Q] = E_Q[log (\tilde{P})] + H_Q (X)
+  \end{equation}
+  #+end_export
+
+  Where $\tilde{P}$ is an unnormalized state probability $P =
+  \frac{\tilde{P}}{Z}$ and $H_Q$ is the entropy of the observed
+  particles. [[label:double_check_particle_formulation]]
+
+  Using such energy functional [[ref:eq:energy_functional]] it is possible
+  to re-express the logarithm of the normalizing constant $Z$ as
+  follows:
+
+  #+begin_export latex
+  \begin{equation} \label{eq:energy_refurmolation}
+  log (Z) = F[P, Q] + D (Q||P)
+  \end{equation}  
+  #+end_export
+
+  where $D(Q||P)$ is the Kullback–Leibler divergence, or relative
+  entropy.
+
+  We will choose next the following distribution for the particle
+  distribution:
+
+  #+begin_export latex
+  \begin{equation} \label{eq:particle_distribution}
+  P (\mathscr{H} | \mathscr{D}, \theta) =   \frac{P (\mathscr{H}, \mathscr{D}| \theta)}{P (\mathscr{D}| \theta)}
+  \end{equation}
+  #+end_export
+
+  With this choice it becomes clear that $Z (\theta) = P (\mathscr{D}|
+  \theta)$ and $\tilde{P} = P (\mathscr{H}, \mathscr{D}| \theta)$ such
+  that $\tilde{P}$ represents the likelihood function of $\mathscr{H},
+  \mathscr{D}$ given the parameterization $\theta$:
+  
+  #+begin_export latex
+  \begin{equation} \label{eq:likelihood_particle}
+  \mathscr{L} (\theta: \mathscr{D}, \mathscr{H}) = P (\mathscr{H}, \mathscr{D}| \theta)
+  \end{equation}
+  #+end_export
+
+  
+
+  
+    
+
+  
+
+* Bayesian Parameter Learning
+
+  A natural question that arises is whether it is possible to
+  generalize the extended algorithm proposed by cite:Mrad_2015 to the
+  case of Bayesian Parameter Learning.
+
+  Recall that in Bayesian statistics rather than treating the
+  parameters of interest as fixed but unknown you treat them as random
+  variables themselves.
+
+  You would then specify a prior, i.e. a probability distribution, for
+  the data governing process of the parameters. This can be either a
+  non-informative prior or a prior based on your domain knowledge
+  expertise.
+
+  Such prior distribution would then be updated upon the arrival of
+  new observations according to the well known Bayes Rule. The result
+  is an updated posterior distribution from which you can compute your
+  statistics of interest.
+
+
+  #+begin_export latex
+  \begin{equation} \label{eq:bayes_formula}
+  P (\theta | \mathscr{D}) = \frac{P (\mathscr{D} | \theta) * P(\theta)}{P (\mathscr{D})} 
+  \end{equation}
+  #+end_export
+
+  It is straightforward to see that that the posterior is proportional
+  to a likelihood term $P (\mathscr{D} | \theta)$ multiplied by the
+  prior random variable distribution.
+
+  It is clear then, that depending on how you want to leverage the
+  information of your posterior you would require a different
+  mathematical exercise. I.e. in case you want to use as your
+  parameterization of choice the expected value you would need an
+  integration exercise and similar reasonings can be done for the
+  other metrics.
+
+  Another way you can set your parameters based on the posterior is by
+  choosing the most likely parameterization. This is termed as the
+  maximum a posteriori parameterization and is defined in mathematical
+  terms as follows:
+
+  #+begin_export latex
+  \begin{align} 
+  \tilde{\theta} =& \operatorname*{argmax}_{\theta} \frac{P (\mathscr{D} | \theta) * P(\theta)}{P (\mathscr{D})} \nonumber\\
+  \tilde{\theta} =& \operatorname*{argmax}_{\theta} P (\mathscr{D} | \theta) * P(\theta)\\ \label{eq:bayes_map}
+  \tilde{\theta} =& \operatorname*{argmax}_{\theta} log (P (\mathscr{D} | \theta)) + log (P(\theta)) \nonumber \\
+  score_{MAP} (\theta : \mathscr{D}) =& \ log (P (\mathscr{D} | \theta)) + log (P(\theta)) 
+  \end{align}
+  #+end_export
+
+  Where the last equation follows immediately from the properties of
+  the logarithm function. And the second equation from the fact that
+  the normalizing constant does not depend on the parameter of
+  interest.
+
+  Given the above last property it is possible to understand that the
+  conclusions from the previous chapter about the EM algorithm apply.
+
+  In particular it is possible to adjust the M-step of the EM
+  algorithm in order to have a properly working EM algorithm
+  maximizing the score map of [[ref:eq:bayes_map]]. This will be shown in
+  the next sections. 
+
+    #+Begin_export latex
+\end{article}
+  #+end_export  
+
+** Bayesian Parameter Learning - EM Generalization
+
+  
+ \newpage
+
+ bibliography:~/Desktop/Bayesian_Net_Thesis/literature/references.bib
+ bibliographystyle:unsrt
+
+
+  
+** TODO
+
+
+   - [[ref:double_check_particle_formulation]]
+   - [[ref:as-discussed-probably]]

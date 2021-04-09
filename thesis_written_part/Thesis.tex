@@ -1,0 +1,358 @@
+% Created 2021-04-09 Fri 11:56
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{listingsutf8}
+\usepackage{minted}
+\usepackage{arxiv}
+\author{Marco Hassan}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Marco Hassan},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1.91 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\newtheorem{theorem}{Theorem}
+
+\title{Parameter Learning in Bayesian Networks under Uncertain Evidence  \textendash  \ An Exploratory Research.}
+\author{
+  Marco Hassan 	           	\\
+  Zurich, CH		\\
+  \\
+  \\
+  Master Thesis \\
+  Presented to the Eidgenossische Teschnische Hochschule Zurich \\
+  In Fulfillment Of the Requirements for \\ 
+  the Master of Science in Statistics \\
+  \\
+  Supervisor: PhD. Radu Marinescu \\
+  Co-Supervisor: Dr. Markus Kalisch \\
+  %% examples of more authors
+  %% \AND
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\   
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+}
+
+\begin{article}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{{\bfseries\sffamily TODO} Bayesian Networks Overview and Definition \& Literature Review}
+\label{sec:org56a9b7a}
+
+\section{{\bfseries\sffamily TODO} Learning under Complete Evidence}
+\label{sec:org8d18d50}
+
+\section{{\bfseries\sffamily TODO} Types of Uncertain Evidence}
+\label{sec:org1142845}
+
+\section{{\bfseries\sffamily TODO} on the nastiness of the Likelihood function}
+\label{sec:orgc9f4478}
+
+all good properties are gone when working with partially observed
+data. write down why here. 
+
+
+\section{The Mathematics of the EM}
+\label{sec:org1454b51}
+As discussed by \cite{koller2009probabilistic} it is possible to frame
+the EM as a coordinate ascent optimization of an energy function we
+will define next. Given such perspective we will be able to see the
+following theorem
+
+\begin{theorem}\label{thm:one}
+Write here formally that the likelihood improves at each iteration step
+\end{theorem}
+
+Consider the following energy function:
+
+\begin{equation} \label{eq:energy_functional}
+F[P, Q] = E_Q[log (\tilde{P})] + H_Q (X)
+\end{equation}
+
+Where \(\tilde{P}\) is an unnormalized state probability \(P =
+  \frac{\tilde{P}}{Z}\) and \(H_Q\) is the entropy of the observed
+particles. 
+
+Using such energy functional \ref{eq:energy_functional} it is possible
+to re-express the logarithm of the normalizing constant \(Z\) as
+follows:
+
+\begin{equation} \label{eq:energy_refurmolation}
+log (Z) = F[P, Q] + D (Q||P)
+\end{equation}  
+
+where \(D(Q||P)\) is the Kullback–Leibler divergence, or relative
+entropy.
+
+We will choose next the following distribution for the particle
+distribution:
+
+\begin{equation} \label{eq:particle_distribution}
+P (\mathscr{H} | \mathscr{D}, \theta) =   \frac{P (\mathscr{H}, \mathscr{D}| \theta)}{P (\mathscr{D}| \theta)}
+\end{equation}
+
+With this choice it becomes clear that \(Z (\theta) = P (\mathscr{D}|
+  \theta)\) and \(\tilde{P} = P (\mathscr{H}, \mathscr{D}| \theta)\) such
+that \(\tilde{P}\) represents the likelihood function of \(\mathscr{H},
+  \mathscr{D}\) and \(Z (\theta)\) the likelihood function of
+\(\mathscr{D}\):
+
+\begin{align} \label{eq:likelihood_particle}
+\mathscr{L} (\theta: \mathscr{D}, \mathscr{H}) =& \ P (\mathscr{H}, \mathscr{D}| \theta)\\
+\mathscr{L} (\theta: \mathscr{D}) =& \ P (\mathscr{D}| \theta)
+\end{align}
+
+Such that using \ref{eq:energy_refurmolation}:
+
+\begin{align} \label{eq:likelihood_energy_functional_relation}
+l (\theta: \mathscr{D}) =& \ F_D[\theta, Q] + D (Q (\mathscr{H}) || P (\mathscr{H}| \theta, \mathscr{D})) \\
+l (\theta: \mathscr{D}) =& \ E_Q[l (\theta: \mathscr{D}, \mathscr{H})]+ H_Q (\mathscr {H}) + D (Q (\mathscr{H}) || P (\mathscr{H}| \theta, \mathscr{D}))
+\end{align}
+
+The above are two fundamental equations. It is in fact
+straightforward to see that as both the relative entropy as well as
+the entropy are non-negative the log-likelihood on the left hand
+side above is lower bound for the energy functional and the expected
+log-likelihood relative to Q, for any choice of Q.
+
+Moreover it is straightforward to see in the above that choosing the
+Q-measure as \(P (\mathscr{H}|\mathscr{D}, \theta)\) the relative term
+fades away such that the entropy measures the entropy term that in
+such case is the overall measure on the difference between the
+expected log-likelihood and the real log-likelihood. It is in fact
+clear that in such a case the log-likelihood and the energy
+functional are the one and the same thing.
+
+In this sense the relation between the energy functional and the
+log-likelihood is clear and we can think of the EM-algorithm as a
+coordinate ascent optimization of the energy functional. To see this
+consider the E-step and M-step as follows.
+
+\subsection{The Expectation Step}
+\label{sec:org8dfea9c}
+
+Consider the first coordinate ascent - Q, keeping \(\theta\)
+fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
+is then immediate that:
+
+\begin{align} \label{eq:q_optimum}
+Q^* =& \ P (\mathscr{H}|\mathscr{D}, \theta) \\
+F_D[\theta, Q^*] =& \ l (\theta: \mathscr{D}) \\
+F_D[\theta, Q^*] \geq& \ F_D[\theta, Q]
+\end{align}
+
+The reasoning on why the above is actual the searched maximum
+argument is the following: You have in general an upper bound on the
+energy functional given by log-likelihood. If you now choose the
+distribution Q in the way described above you know that you have
+reached the lower bound and that such upper bound is tight. I.e. it
+is straightforward to see that your are at the maximum for a given
+\(\theta\).
+
+Note that choosing \(Q^*\) you are in fact choosing the probability
+density by which you are going to weight the synthetically created
+complete data sets in your E-step, so that you can in fact
+interpret the E-step as the step involving the maximization of the
+energy functional along the Q coordinate.
+
+\subsection{The Maximization Step}
+\label{sec:orgc9c3389}
+
+This is the second coordinate ascent - \(\theta\). Here we look
+towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
+
+It follows then the following quoting from
+\cite{koller2009probabilistic}:
+
+"Suppose Q is fixed, because the only term in F that involves \(\theta\) is
+E\textsubscript{Q}[l (\(\theta\): \mathscr{D}, \mathscr{H})], the maximization is
+equivalent to maximizing the expected log-likelihood."
+
+It follows now that given the linearity of expectation it is
+possible to take the expectation of the sufficient statistics and
+maximizing for \(\theta\).
+
+This is in fact exactly the standard M-step of the EM algorithm so
+that we can interpret the M-step as the coordinate ascent along
+the second axis.
+
+Summarizing, by the fact that at each step the energy functional is optimized
+such that it increases it follows from the proposition above
+\ref{eq:likelihood_energy_functional_relation} that the log-likelihood
+increases such that theorem \ref{thm:one} is proved.
+
+\section{Bayesian Parameter Learning}
+\label{sec:org85aadd1}
+
+A natural question that arises is whether it is possible to
+generalize the extended algorithm proposed by \cite{Mrad_2015} to the
+case of Bayesian Parameter Learning.
+
+Recall that in Bayesian statistics rather than treating the
+parameters of interest as fixed but unknown you treat them as random
+variables themselves.
+
+You would then specify a prior, i.e. a probability distribution, for
+the data governing process of the parameters. This can be either a
+non-informative prior or a prior based on your domain knowledge
+expertise.
+
+Such prior distribution would then be updated upon the arrival of
+new observations according to the well known Bayes Rule. The result
+is an updated posterior distribution from which you can compute your
+statistics of interest.
+
+
+\begin{equation} \label{eq:bayes_formula}
+P (\theta | \mathscr{D}) = \frac{P (\mathscr{D} | \theta) * P(\theta)}{P (\mathscr{D})} 
+\end{equation}
+
+It is straightforward to see that that the posterior is proportional
+to a likelihood term \(P (\mathscr{D} | \theta)\) multiplied by the
+prior distribution.
+
+It is clear then, that depending on how you want to leverage the
+information of your posterior you would require a different
+mathematical exercise. I.e. in case you want to use as your
+parameterization of choice the expected value you would need an
+integration exercise and similar reasonings can be done for the
+other metrics.
+
+Another way you can set your parameters based on the posterior is by
+choosing the most likely parameterization. This is the maximum a
+posteriori parameterization and is defined in mathematical terms as
+follows:
+
+\begin{align} 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \frac{P (\mathscr{D} | \theta) * P(\theta)}{P (\mathscr{D})} \nonumber\\
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} P (\mathscr{D} | \theta) * P(\theta)\\ \label{eq:bayes_map}
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} log (P (\mathscr{D} | \theta)) + log (P(\theta)) \nonumber \\
+\nonumber \\ 
+score_{MAP} (\theta : \mathscr{D}) =& \ log (P (\mathscr{D} | \theta)) + log (P(\theta)) \nonumber\\
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} score_{MAP}(\theta : \mathscr{D})
+\end{align}
+
+Where the last equation follows immediately from the properties of
+the logarithm function. And the second equation from the fact that
+the normalizing constant does not depend on the parameter of
+interest.
+
+Given the above last property it is possible to understand that the
+conclusions from the previous chapter about the EM algorithm apply.
+
+In particular it is possible to adjust the M-step of the EM
+algorithm in order to have a properly working EM algorithm
+maximizing the score map of \ref{eq:bayes_map}. This will be shown in
+the next sections. 
+
+\end{article}
+
+\subsection{Bayesian Parameter Learning - EM Generalization}
+\label{sec:orgca91e40}
+
+Maximum a posteriori Bayesian Parameter Learning is a
+straightforward generalization of the discussion of \ref{math_em}.
+
+In fact noting that the score of the MAP estimator is defined as
+
+\begin{equation} 
+score_{MAP} (\theta : \mathscr{D}) =& \ log (P (\mathscr{D} | \theta)) + log (P(\theta)) 
+\end{equation}
+
+it is possible to see that the previous results apply.
+
+In order to see that define the following adjusted energy
+functional:
+
+\begin{equation} \label{eq:adj_energy_functional}
+\tilde{F}[P, Q] = E_Q[log (\tilde{P})] + H_Q (X) + log (P(\theta)) 
+\end{equation}
+
+Such that:
+
+\begin{align} \label{eq:adj_likelihood_energy_functional_relation}
+l (\theta: \mathscr{D}) + log (P(\theta)) =& \ \tilde{F}_D[\theta, Q] + D (Q (\mathscr{H}) || P (\mathscr{H}| \theta, \mathscr{D})) 
+\end{align}
+
+It follows immediately that maximizing the adjusted energy
+functional we are in fact maximizing the score-map such that the
+results of the previous section apply.
+
+The only question remaining is on how to optimize the adjusted
+energy functional via coordinate ascent optimization.
+
+Here it is straightforward to see that the E-step does not affect
+the adjusted metric but the M-step needs to be reformulated taking
+the effect of the prior into account.
+
+In order to see this consider our discussion in the previous
+chapter. The way you choose the Q distribution is unaffected and we
+will need to perform the same step in order to get the
+\(\operatorname*{argmax}_{Q} \tilde{F}_D[\theta, Q]\).
+
+However, what is affected is the optimization along the other
+coordinate. That is the computation of
+\(\operatorname*{argmax}_{\theta} \tilde{F}_D[\theta, Q]\) keeping Q
+fixed. In this case the terms depending on \(\theta\) is not limited to
+the expected likelihood E\textsubscript{Q}[l (\(\theta\): \mathscr{D}, \mathscr{H})]
+as was the case before but it is rather important to also consider
+the prior distribution \(P(\theta)\).
+
+
+-> have to write down the E and M step in terms of coordinate
+ascent optimization. would need it here then.
+
+
+
+
+\newpage
+
+\bibliography{../literature/references}
+\bibliographystyle{unsrt}
+
+
+\subsection{TODOs}
+\label{sec:org960a864}
+
+\subsubsection{{\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such}
+\label{sec:orgd936bd0}
+
+\subsubsection{{\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo}
+\label{sec:orgc21f04d}
+\end{document}

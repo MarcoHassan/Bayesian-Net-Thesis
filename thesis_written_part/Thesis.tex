@@ -1,4 +1,4 @@
-% Created 2021-04-11 Sun 17:27
+% Created 2021-04-11 Sun 17:57
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -73,23 +73,23 @@
 \newpage
 
 \section{{\bfseries\sffamily TODO} Bayesian Networks Overview and Definition \& Literature Review}
-\label{sec:org91e6603}
+\label{sec:org890149a}
 
 \section{{\bfseries\sffamily TODO} Learning under Complete Evidence}
-\label{sec:orgf595cb6}
+\label{sec:org559df44}
 
 \section{{\bfseries\sffamily TODO} Types of Uncertain Evidence}
-\label{sec:orgdd0d520}
+\label{sec:org6f0678e}
 
 \section{{\bfseries\sffamily TODO} on the nastiness of the Likelihood function}
-\label{sec:orgd94b8e8}
+\label{sec:org0d7b5a5}
 
 all good properties are gone when working with partially observed
 data. write down why here. 
 
 
 \section{The Mathematics of the EM}
-\label{sec:org9a7dee2}
+\label{sec:orgb0135ab}
 As discussed by \cite{koller2009probabilistic} it is possible to frame
 the EM as a coordinate ascent optimization of an energy function we
 will define next. Given such perspective we will be able to prove the
@@ -168,7 +168,7 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsection{The Expectation Step}
-\label{sec:orgf423868}
+\label{sec:org7e14f58}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -195,7 +195,7 @@ interpret the E-step as the step involving the maximization of the
 energy functional along the Q coordinate.
 
 \subsection{The Maximization Step}
-\label{sec:orgff341ee}
+\label{sec:org1af855b}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -222,7 +222,7 @@ log-likelihood increases such that theorem \ref{thm:one} is proved.
 
 
 \section{Bayesian Parameter Learning}
-\label{sec:org6b9ef25}
+\label{sec:orgcc3b816}
 
 A natural question that arises is whether it is possible to
 generalize the extended algorithm proposed by \cite{Mrad_2015} to the
@@ -279,7 +279,7 @@ interest.
 Given the above it is possible to understand that the conclusions
 from the previous chapter about the EM algorithm apply. The first
 term of \(score_{MAP}\) is exactly the likelihood term of the previous
-section. The only difference will be in the prior term.
+section. The only difference will be in the prior distribution term.
 
 We will show next that it is possible to adjust the M-step of the EM
 algorithm in order to have a properly working EM algorithm
@@ -289,7 +289,7 @@ exercise of the next section.
 \end{article}
 
 \subsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:orgb52646a}
+\label{sec:org53088bd}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -315,17 +315,18 @@ Such that:
 l (\theta: \mathscr{D}) + log (P(\theta)) =& \ \tilde{F}_D[\theta, Q] + D (Q (\mathscr{H}) || P (\mathscr{H}| \theta, \mathscr{D})) 
 \end{align}
 
-It follows immediately that choosing \(Q\) as \(P
-   (\mathscr{H}|\mathscr{D}, \theta)\) and maximizing the adjusted
-energy functional we are in fact maximizing the score-map such that
-the results of the previous section apply.
+It follows immediately that choosing \(Q\) as \(P (H|D, \theta)\) and
+maximizing the adjusted energy functional we are in fact maximizing
+the score-map such that the results of the previous section
+apply. 
 
 The only question remaining is on how to optimize the adjusted
 energy functional via coordinate ascent optimization.
 
-Here it is straightforward to see that the E-step does not affect
-the adjusted metric but the M-step needs to be reformulated taking
-the effect of the prior into account.
+Here it is straightforward to see that the adjusted metric does not
+affect E-step (we still choose Q in the very same way) but the
+M-step needs to be reformulated taking the effect of the prior into
+account.
 
 In order to see this consider our discussion in the previous
 chapter. The way you choose the Q distribution is unaffected and we
@@ -336,12 +337,12 @@ However, what is affected is the optimization along the other
 coordinate. That is the computation of
 \(\operatorname*{argmax}_{\theta} \tilde{F}_D[\theta, Q]\) keeping Q
 fixed. In this case the terms depending on \(\theta\) is not limited to
-the expected likelihood E\textsubscript{Q}[l (\(\theta\): \mathscr{D}, \mathscr{H})]
+the expected likelihood \(E_Q[l (\theta: \mathscr{D}, \mathscr{H})]\)
 as was the case before but it is rather important to also consider
 the prior distribution \(P(\theta)\).
 
-\subsection{Bayesian Parameter Learning - An Example}
-\label{sec:org2f32542}
+\subsection{Bayesian Parameter Learning - An example}
+\label{sec:orge58cdb1}
 
 An example for the extension of the EM algorithm to compute the
 maximum a posteriori parameter in the case of missing evidence is
@@ -351,7 +352,7 @@ The theory proceeds with the most classic network structure. The
 one of table conditional probability distributions where the
 realizations are distributed according to a multinomial
 distribution given the \(\theta\)\textsubscript{X\textsubscript{i} | Pa\textsubscript{X\textsubscript{i}}} local parameters and
-where possible realizations \(Val(X_i) = \{0,1 \}\).
+where possible realizations are binary, \(Val(X_i) = \{0,1 \}\).
 
 Specifying a Dirichlet distribution as the prior of such parameters
 we can compute the maximum a posteriori estimator.
@@ -365,17 +366,17 @@ introduction of the prior, we need to adapt the M-step to account
 for the influence of the latter.
 
 Consider in this sense the unnormalized probability for the
-Dirichlet-Multinomial distribution:
+Dirichlet-Multinomial posterior distribution:
 
 \begin{align} \label{eq:dirichlet-multinomial-score}
-P_\theta(X) = \frac{\Gamma(\sum_i x_i + 1)}{\prod_i \Gamma(x_i + 1)} \prod_i^K \theta_{x_i | Pa_i}^{x_i}  * \frac{1}{B(\alpha)} \prod_{i=1}^K \theta_{x_i | Pa_i}^{\alpha_i - 1}
+P(\theta | X) = \frac{\Gamma(\sum_i x_i + 1)}{\prod_i \Gamma(x_i + 1)} \prod_i^K \theta_{x_i | Pa_i}^{x_i}  * \frac{1}{B(\alpha)} \prod_{i=1}^K \theta_{x_i | Pa_i}^{\alpha_i - 1}
 \end{align}
 
 And consider the adjusted energy functional
 \ref{eq:adj_energy_functional} from which we can derive the new
 likelihood expression in the case of missing evidence by defining a
 new random variable \(Y\) expressing complete data observations
-\(<\mathscr{H} = h, \mathscr{D} = d>\):
+\((H, D)\):
 
 \begin{align} \label{eq:dirichlet-multinomial-likelihood}
 \tilde{F}[\theta, Q] =& \ E_Q[P_\theta(Y)] + H_Q (Y)
@@ -383,7 +384,8 @@ new random variable \(Y\) expressing complete data observations
 
 Such that taking the argument maximizing the likelihood of the
 adjusted energy functional \(\operatorname*{argmax}_{\theta}
-   \tilde{F}[\theta, Q]\) we are left with the following
+   \tilde{F}[\theta, Q]\) we are left with the following with y[m] as
+synthetically created complete observation <h[m], d[m]>:
 
 \begin{align} \label{eq:first-order-condition}
 \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\frac{\Gamma(\sum_i y[m]_i + 1)}{\prod_i \Gamma(y[m]_i + 1)} \prod_i^K \theta_{y_i | Pa{y_i}}^{y[m]_i} * \frac{1}{B(\alpha)} \prod_{i=1}^K \theta_{y_i | Pa{y_i}}^{\alpha_i - 1})] + H_Q (y[m]) \\
@@ -394,7 +396,7 @@ adjusted energy functional \(\operatorname*{argmax}_{\theta}
 \end{align}
 
 It follows given that by the linearity of the expectation and that
-\(y[m] = \{0,1\}\), we can re-express the above as:
+\(y[m]_i = \{0,1\}\), we can re-express the above as:
 
 \begin{align} \label{eq:solution1}
 \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K (\sum_m^M E_Q[M[y_i, Pa_{y_i}]] + \alpha_i - 1) * log(\theta_{y_i | Pa{y_i}})] 
@@ -405,7 +407,7 @@ where it holds
 \begin{align} \label{eq:expected_sufficient}
 \bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M E_Q[M[y_i, Pa_{y_i}]]\\
 \bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) \mathbbm{1}_{\{Y[m]_i = y[m]_i\}}\\
-\bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M P(y_i | \mathscr{D}[m] = d[m], \theta)
+\bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M P(y_i | d[m], \theta)
 \end{align}
 
 So that ultimately:
@@ -432,6 +434,15 @@ And inserting this in the first order condition and solving for
 \tilde{\theta}_{y_i | Pa{y_i}} =& \frac{\bar{M}[y_i, Pa_{y_i}] + \alpha_i - 1}{\sum_j \bar{M}[y_j, Pa_{y_j}] + \alpha_j - 1}
 \end{align}
 
+This will be the way you update the parameters in the M-step.
+
+It is straightforward to see from the above that it is possible to
+perform the same exercise in similar settings and as long as the
+prior distribution \(P(\theta)\) is well behaved such that we can
+compute the first derivative of it and get to an analytic solution
+for the M-step the correctness and convergence properties of EM
+apply to the score of the maximum a posteriori point estimate such
+that we will choose a local maximum point estimator.
 
 
 \newpage
@@ -441,11 +452,11 @@ And inserting this in the first order condition and solving for
 
 
 \subsection{TODOs}
-\label{sec:orgf57c3fc}
+\label{sec:orgfe0e29d}
 
 \subsubsection{{\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such}
-\label{sec:org58ab0fe}
+\label{sec:orge914909}
 
 \subsubsection{{\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo}
-\label{sec:orgd11368e}
+\label{sec:org6de11a2}
 \end{document}

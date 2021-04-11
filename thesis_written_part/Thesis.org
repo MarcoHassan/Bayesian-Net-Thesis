@@ -269,7 +269,7 @@
   Given the above it is possible to understand that the conclusions
   from the previous chapter about the EM algorithm apply. The first
   term of $score_{MAP}$ is exactly the likelihood term of the previous
-  section. The only difference will be in the prior term.
+  section. The only difference will be in the prior distribution term.
 
   We will show next that it is possible to adjust the M-step of the EM
   algorithm in order to have a properly working EM algorithm
@@ -312,17 +312,18 @@
    \end{align}
    #+end_export  
 
-   It follows immediately that choosing $Q$ as $P
-   (\mathscr{H}|\mathscr{D}, \theta)$ and maximizing the adjusted
-   energy functional we are in fact maximizing the score-map such that
-   the results of the previous section apply.
+   It follows immediately that choosing $Q$ as $P (H|D, \theta)$ and
+   maximizing the adjusted energy functional we are in fact maximizing
+   the score-map such that the results of the previous section
+   apply. 
 
    The only question remaining is on how to optimize the adjusted
    energy functional via coordinate ascent optimization.
 
-   Here it is straightforward to see that the E-step does not affect
-   the adjusted metric but the M-step needs to be reformulated taking
-   the effect of the prior into account.
+   Here it is straightforward to see that the adjusted metric does not
+   affect E-step (we still choose Q in the very same way) but the
+   M-step needs to be reformulated taking the effect of the prior into
+   account.
 
    In order to see this consider our discussion in the previous
    chapter. The way you choose the Q distribution is unaffected and we
@@ -333,11 +334,11 @@
    coordinate. That is the computation of
    $\operatorname*{argmax}_{\theta} \tilde{F}_D[\theta, Q]$ keeping Q
    fixed. In this case the terms depending on \theta is not limited to
-   the expected likelihood E_Q[l (\theta: \mathscr{D}, \mathscr{H})]
+   the expected likelihood $E_Q[l (\theta: \mathscr{D}, \mathscr{H})]$
    as was the case before but it is rather important to also consider
    the prior distribution $P(\theta)$.
    
-**  Bayesian Parameter Learning - An Example
+**  Bayesian Parameter Learning - An example
 
    An example for the extension of the EM algorithm to compute the
    maximum a posteriori parameter in the case of missing evidence is
@@ -347,7 +348,7 @@
    one of table conditional probability distributions where the
    realizations are distributed according to a multinomial
    distribution given the \theta_{X_i | Pa_{X_i}} local parameters and
-   where possible realizations $Val(X_i) = \{0,1 \}$.
+   where possible realizations are binary, $Val(X_i) = \{0,1 \}$.
 
    Specifying a Dirichlet distribution as the prior of such parameters
    we can compute the maximum a posteriori estimator.
@@ -361,11 +362,11 @@
    for the influence of the latter.
 
    Consider in this sense the unnormalized probability for the
-   Dirichlet-Multinomial distribution:
+   Dirichlet-Multinomial posterior distribution:
 
    #+begin_export latex
    \begin{align} \label{eq:dirichlet-multinomial-score}
-   P_\theta(X) = \frac{\Gamma(\sum_i x_i + 1)}{\prod_i \Gamma(x_i + 1)} \prod_i^K \theta_{x_i | Pa_i}^{x_i}  * \frac{1}{B(\alpha)} \prod_{i=1}^K \theta_{x_i | Pa_i}^{\alpha_i - 1}
+   P(\theta | X) = \frac{\Gamma(\sum_i x_i + 1)}{\prod_i \Gamma(x_i + 1)} \prod_i^K \theta_{x_i | Pa_i}^{x_i}  * \frac{1}{B(\alpha)} \prod_{i=1}^K \theta_{x_i | Pa_i}^{\alpha_i - 1}
    \end{align}
    #+end_export
 
@@ -373,7 +374,7 @@
    [[ref:eq:adj_energy_functional]] from which we can derive the new
    likelihood expression in the case of missing evidence by defining a
    new random variable $Y$ expressing complete data observations
-   $<\mathscr{H} = h, \mathscr{D} = d>$:
+   $(H, D)$:
    
    #+begin_export latex
    \begin{align} \label{eq:dirichlet-multinomial-likelihood}
@@ -383,7 +384,8 @@
 
    Such that taking the argument maximizing the likelihood of the
    adjusted energy functional $\operatorname*{argmax}_{\theta}
-   \tilde{F}[\theta, Q]$ we are left with the following
+   \tilde{F}[\theta, Q]$ we are left with the following with y[m] as
+   synthetically created complete observation <h[m], d[m]>:
 
    #+begin_export latex
    \begin{align} \label{eq:first-order-condition}
@@ -396,7 +398,7 @@
    #+end_export
 
    It follows given that by the linearity of the expectation and that
-   $y[m] = \{0,1\}$, we can re-express the above as:
+   $y[m]_i = \{0,1\}$, we can re-express the above as:
    
    #+begin_export latex
    \begin{align} \label{eq:solution1}
@@ -410,7 +412,7 @@
    \begin{align} \label{eq:expected_sufficient}
    \bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M E_Q[M[y_i, Pa_{y_i}]]\\
    \bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) \mathbbm{1}_{\{Y[m]_i = y[m]_i\}}\\
-   \bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M P(y_i | \mathscr{D}[m] = d[m], \theta)
+   \bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M P(y_i | d[m], \theta)
    \end{align}
    #+end_export   
 
@@ -442,10 +444,19 @@
    \begin{align} \label{eq:solution}
    \tilde{\theta}_{y_i | Pa{y_i}} =& \frac{\bar{M}[y_i, Pa_{y_i}] + \alpha_i - 1}{\sum_j \bar{M}[y_j, Pa_{y_j}] + \alpha_j - 1}
    \end{align}
-   #+end_export         
+   #+end_export
+
+   This will be the way you update the parameters in the M-step.
+
+   It is straightforward to see from the above that it is possible to
+   perform the same exercise in similar settings and as long as the
+   prior distribution $P(\theta)$ is well behaved such that we can
+   compute the first derivative of it and get to an analytic solution
+   for the M-step the correctness and convergence properties of EM
+   apply to the score of the maximum a posteriori point estimate such
+   that we will choose a local maximum point estimator.
 
    
-    
  \newpage
 
  bibliography:~/Desktop/Bayesian_Net_Thesis/literature/references.bib

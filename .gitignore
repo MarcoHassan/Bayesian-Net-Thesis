@@ -1,6 +1,5 @@
 merlin
 *.pdf
 *.bbl
-*.tex
 _minted-*
 .DS_Store

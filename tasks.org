@@ -3,11 +3,20 @@
   :CATEGORY: Bayesian_Net_Thesis
   :END:
 
+
 ** TODO for next week
 
-   - understand how you can specify the prior for the cancer
-     network. (have to specify MAR property for it).
+*** TODO think of a network example
 
+    think about a network structure where you can apply the
+    above. check at this link radu sent you with all of the
+
+*** TODO describe numerical method
+
+    mention necessary condition of concave function or alternatively -
+    negative hessian - such that your numerical method is guaranteed
+    to increase the likelihood.
+        
 
 ** DONE understand why global decomposition with complete data and why not with missing
    CLOSED: [2021-04-02 Fri 17:16]
@@ -33,12 +42,13 @@
 
    Pretty simple in the end. See tablet
 
-*** TODO reformulate and write down everything in a neat way to prepare for the discussion with Radu
-    SCHEDULED: <2021-04-05 Mon 10:00>
+*** DONE reformulate and write down everything in a neat way to prepare for the discussion with Radu
+    CLOSED: [2021-04-11 Sun 17:59] SCHEDULED: <2021-04-06 Tue 18:00>
 
 *** TODO understand what are the assumptions for the above? global decomposition? etc.? (have to specify MAR property for it).
 
-*** TODO start to write this piece as for the thesis. Like this you can show it to Radu and you will have it ready for the thesis.    
+*** DONE start to write this piece as for the thesis. Like this you can show it to Radu and you will have it ready for the thesis.    
+    CLOSED: [2021-04-11 Sun 17:59]
     
 *** DONE well behaved condition?
     CLOSED: [2021-04-03 Sat 16:31]
@@ -63,7 +73,7 @@
 ** WAITING other possible generalizations
    
 *** TODO add jeffery's method and pearl method into the mind map
-    SCHEDULED: <2021-04-05 Mon 10:00>
+    SCHEDULED: <2021-04-09 Fri 10:00>
     :PROPERTIES:
     :WILD_NOTIFIER_NOTIFY_BEFORE: 30 10 5
     :END:
@@ -80,10 +90,34 @@
 
      - https://www.math.kth.se/matstat/gru/Statistical%20inference/Lecture8.pdf
 
-
 *** TODO consider as well approximate inference
 
      - Provare anche approximate inference for the above. Should work in
        a similar way.
 
      - Also here at the theoretical level nothing has changed.
+
+*** TODO consider how non-informative prior would affect the whole thing
+
+*** TODO think about performing M-step in numeric way - how are the properties of EM affected
+
+    like this you would be able to work theoretically with any prior.
+
+    would have to guarantee the property of increased likelihood at
+    each iteration. how can you do that?
+
+    check [[https://www.mn.uio.no/math/tjenester/kunnskap/kompendier/num_opti_likelihoods.pdf][this]] quickly tomorrow.
+
+*** TODO consider to introduce the EM algorithm as in her
+
+    https://escholarship.org/content/qt2wm4j93p/qt2wm4j93p.pdf
+
+
+    at the very beginning. Very well written with expectation part in
+    general terms.
+
+    
+
+    
+    
+       

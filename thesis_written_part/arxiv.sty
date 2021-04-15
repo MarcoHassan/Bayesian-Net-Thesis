@@ -49,13 +49,21 @@
 \usepackage{caption}        % to place caption below the table.
 \captionsetup[table]{position=bottom} % if you want the caption on the bottom of the table -- , justification=justified,singlelinecheck=false, skip=10pt}
 \usepackage{dblfloatfix}    % to insert table at the bottom of the page.
-
 \usepackage{graphicx}       % to upload and insert images on LATEX.
 \graphicspath{ {./Images/} } % includes to path to the images.
 \usepackage{subcaption}     %  to create subplots and add caption
 
 \usepackage[most]{tcolorbox}% for frames on images
 %% end of packages
+
+
+%% MY COMMANDS
+\newcommand{\eqdef}{=\mathrel{\mathop:}} % definition symbol in math
+\newcommand\tab[1][1cm]{\hspace*{#1}} % tab in latex
+%% END MY COMMANDS
+
+
+
 \fancyhf{}
 \pagestyle{fancy}
 \renewcommand{\headrulewidth}{0pt

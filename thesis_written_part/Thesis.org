@@ -449,12 +449,140 @@
    This will be the way you update the parameters in the M-step.
 
    It is straightforward to see from the above that it is possible to
-   perform the same exercise in similar settings and as long as the
-   prior distribution $P(\theta)$ is well behaved such that we can
-   compute the first derivative of it and get to an analytic solution
-   for the M-step the correctness and convergence properties of EM
-   apply to the score of the maximum a posteriori point estimate such
-   that we will choose a local maximum point estimator.
+   perform the same exercise in similar settings and, as was proved,
+   as long as the prior distribution $P(\theta)$ is well behaved such
+   that the resulting posterior:
+
+   (i) is concave \\
+   (ii) is differentiable \\
+   (ii) is smooth such that it is possible to exchange differentiation and integration
+
+   then the MAP estimator will exists.
+
+   The correctness and convergence properties of EM apply to the score
+   of the maximum a posteriori point estimate such that we will choose
+   a local maximum point estimator.
+   
+* On Numerical EM
+
+  In this section we propose a numerical solution to the M-step of the
+  EM algorithm leveraging the theory presented in
+  cite:ruud1989comparison.
+
+  We will generalize the theory presented that far such that it is
+  possible to implement general software without having to limit the
+  end-user to very specific pre-defined cases such as the
+  Dirichlet-Multinomial CPT example defined above.
+
+  Note that this will come at costs. We will need in fact to compute
+  the Hessian of our expected log-likelihood which is one of the most
+  computationally intensive tasks. This especially in highly
+  dimensional problems. One of the major benefits in using the EM over
+  gradient based methods would be lost in this sense.
+
+  
+** Numerical EM for MLE estimator
+
+   In order to understand how to compute M-step according to an
+   iterative method, think at the following.
+
+   Consider that in the E-step you set $Q = P (H| D, \theta_0)$, such
+   that you can reformulate
+   [[ref:eq:likelihood_energy_functional_relation]] as follows
+
+   #+begin_export latex
+   \begin{align} \label{eq:likelihood_energy_iterative}
+   l (\theta: \mathscr{D}) =& \  \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H}) + H_Q (\mathscr {H}) \\
+   \nonumber\\
+   Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
+   \nonumber\\  
+   H(\theta_0, \theta: \mathscr{D}) \eqdef& \ Q(\theta, \theta_0 : \mathscr{D}) - l (\theta: \mathscr{D}) \\
+                                    =& H_Q (\mathscr {H}) = \sum_h - P(h | \mathscr{D}, \theta_0) * P(\theta | h, \mathscr{D}) \nonumber
+   \end{align}
+   #+end_export  
+
+   It follows
+  
+   #+begin_export latex
+   \begin{align} 
+   \frac{\partial}{\partial \theta} l (\theta: \mathscr{D}) =& \ l_1 (\theta: \mathscr{D}) = \frac{\partial}{\partial \theta} Q(\theta, \theta_0, \mathscr{D}) - \frac{\partial}{\partial \theta} H(\theta, \theta_0, \mathscr{D}) \nonumber \\
+   =& Q_1(\theta, \theta_0 : \mathscr{D}) - H_1(\theta, \theta_0 : \mathscr{D})  \label{eq:m-condition-iterative1} \\
+   \nonumber \\
+   \frac{\partial^2}{\partial \theta \partial \theta'} l (\theta: \mathscr{D}) =& \frac{\partial^2}{\partial \theta \partial \theta'}  Q(\theta, \theta_0, \mathscr{D}) -  \frac{\partial^2}{\partial \theta \partial \theta'}  H(\theta, \theta_0, \mathscr{D}) \nonumber \\
+     =& \ Q_{11}(\theta, \theta_0 : \mathscr{D}) - H_{11}(\theta, \theta_0 : \mathscr{D}) \label{eq:m-condition-iterative2}
+   \end{align}
+   #+end_export
+
+   Moreover given the following condition
+
+   #+begin_export latex
+   \begin{align} 
+    H_1(\theta_0, \theta_0 : \mathscr{D})  = 0 \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative} \\
+   \end{align}
+   #+end_export
+
+    we have for [[ref:eq:m-condition-iterative1]] that:
+
+   #+begin_export latex
+   \begin{align} 
+    l_1(\theta_0: \mathscr{D})  = Q_1(\theta_0, \theta_0: \mathscr{D}) \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative2} 
+   \end{align}
+   #+end_export
+
+   Such that ultimately it holds using the classical derivation of the
+   Newton-Raphson Method as in cite:storvik2007numerical:
+
+  
+   #+begin_export latex
+   \begin{align} 
+    \theta_{EM}  = \theta_{0} - Q_{11}^{-1} Q_1 + o(||\theta_{EM} - \theta_{0}||) \label{eq:em-iterative}
+   \end{align}
+   #+end_export  
+
+   where both $Q_{11}, Q_{1}$ are evaluated at $\theta_0$.
+
+   It follows immediately that for log-concave functions each iteration
+   of [[ref:eq:em-iterative]] increases the likelihood. It is therefore
+   possible to apply the above by inserting the numerical computed
+   Hessian and gradient until convergence to a maximum.
+
+   It is as well possible to set a predefined amount of iterations
+   before switching to the next E-step in the EM-algorithm. Due to the
+   increased computational cost of performing new inferences as well as
+   computing new Hessian matrices such second option is not
+   recommended albeit theoretically viable.
+
+   As a final remark, note that methods to improve the computational
+   speed of such numerical M-step have been proposed, such in
+   cite:Louis_1982. As uphill steps cannot be guaranteed under all
+   circumstances in such algorithm, we just refer to the literature the
+   interested reader.
+
+    
+** Numerical EM for MAP estimator
+
+   This section generalizes the arguments of the previous section.
+
+   Using [[ref:eq:adj_energy_functional]] it follows immediately using the
+   notation of the last section that:
+
+   #+begin_export latex
+   \begin{align} \label{eq:likelihood_energy_map_iterative}
+   l (\theta: \mathscr{D}) =& \  \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H}) + H_Q (\mathscr {H}) \\
+   \nonumber\\
+   Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
+   \nonumber\\  
+   H(\theta_0, \theta: \mathscr{D}) \eqdef& \ Q(\theta, \theta_0 : \mathscr{D}) - l (\theta: \mathscr{D}) \\
+                                    =& H_Q (\mathscr {H}) = \sum_h - P(h | \mathscr{D}, \theta_0) * P(\theta | h, \mathscr{D}) \nonumber
+   \end{align}
+   #+end_export  
+   
+
+   The idea is that as long as the prior is concave such that 
+  
+
+
+
 
    
  \newpage
@@ -469,3 +597,4 @@
     
 *** TODO make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
 
+*** TODO make more explicit the difference between synthetically completed missing observations and <?> 

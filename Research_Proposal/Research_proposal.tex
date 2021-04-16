@@ -1,0 +1,371 @@
+% Created 2021-03-20 Sat 16:44
+% Intended LaTeX compiler: pdflatex
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{listingsutf8}
+\usepackage{minted}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{parskip}
+\author{Marco Hassan}
+\date{\today}
+\title{Research Proposal Master Thesis - Parameters learning in Bayesian Networks}
+\hypersetup{
+ pdfauthor={Marco Hassan},
+ pdftitle={Research Proposal Master Thesis - Parameters learning in Bayesian Networks},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.1.91 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\setlength\parindent{0pt}
+\newpage
+
+\section{Quick Overview on the Master Thesis.}
+\label{sec:org6da4c6d}
+
+
+The Master Thesis deals with Bayesian Networks. This class of models
+belongs to the set of probabilistic models that are gaining interest
+in the recent years.  One of the major issues with the data-driven
+modeling approach that emerged in the last decade is the inability
+of some models to incorporate uncertainty about models and
+predictions \cite{ghahramani15_probab_machin_learn_artif_intel}.
+
+Bayesian networks and graphical models
+\cite{ben-gal08_bayes_networ,koller2009probabilistic,Larra_aga_2011}
+have gained in this sense a lot of attraction due to the possibility
+of addressing both of the problems mentioned above. In fact, these
+two issues are a key inhibitor to the deployment of data driven solution
+in many practical fields \cite{Kl_s_2018}.
+
+When modeling Bayesian Networks three major questions arise:
+
+\begin{enumerate}
+\item Representation/Structure - i.e. the decision on how to model the
+problem at stake.
+
+\item Inference - i.e. the task of computing the
+probabilities of events given some observations in the network.
+
+\item Learning - i.e. the task of selecting in a data driven way either
+the structure or the parameters of the network - or eventually
+both.
+\end{enumerate}
+
+All of the three tasks have been extensively analyzed in the
+literature. A general overview can be found in
+\cite{koller2009probabilistic}. Despite of this there is a continuous
+expansion of the knowledge in the matter as the three elements above
+encompass and integrate many scientific research fields spanning
+optimization, probability theory, graph theory, information theory
+and statistics.
+
+In this sense, my Master's Thesis will try to further contribute to
+the expanding literature concerning the Learning task. While it will take the
+problem of model representation and the structure of the network as
+given, it will try in collaboration with IBM Research to address the
+problem of parameter learning in Bayesian Networks.
+
+In particular the Thesis will focus on a new field of research that
+is being currently explored at IBM Research Europe: the topic of
+Parameter Learning in Bayesian Networks under uncertain evidence
+\cite{Wasserkrug_all}.
+
+As mentioned by \cite{Wasserkrug_all}, will soon
+be published in the AAAI journal:
+
+\begin{quote}
+In contrast to the case of missing evidence, which is used when there
+is missing knowledge about the values of some random variables,
+uncertain evidence is usually introduced whenever there is knowledge
+about the value of the random variable, but the observational
+process is unable to clearly report a single state for the observed
+variable.
+\end{quote}
+
+
+In simple words the type of uncertain evidence that the Thesis will
+address is the one where there is some information about the state of
+a variable in the network but we might not have enough guarantees to
+report a single realization and we rather associate a set of
+likelihood probabilities to the possible variables realizations. In
+fact, this is the likelihood evidence as described in \cite{Mrad_2015}.
+
+While \cite{Wasserkrug_all} proposed a first solution to deal with
+such likelihood evidence at the time of parameter learning in
+Bayesian Networks, many questions remained open in their study. Some
+of such open questions are results about numerical properties of the
+method and questions about the way through which such method can be
+applied to other learning settings.  This second point will be the
+focus of the Thesis. It will research ways to deal with likelihood
+evidence not just under a MLE learning approach but rather also in a
+full Bayesian Learning approach. It will therefore deal with an
+application of the extended EM to the case of MAP parameter
+estimation in the case of a full Bayesian approach and it will question
+how and whether the properties of convergence and correctness
+apply in this setting.
+
+On the top of it, the Thesis will question whether it is possible
+to extend such adapted EM to other settings such as the one of
+learning from incomplete data with qualitative influences as in
+\cite{Masegosa_2016}.
+
+In conclusion the Thesis will try to further investigate the
+possibility of learning parameters in Bayesian Networks under
+likelihood evidence and will try to question the extent to which it
+is possible to generalize the approach proposed by
+\cite{Wasserkrug_all} to other important settings such as learning via
+a full bayesian approach and learning under qualitative
+influences. All of that will be done both at a theoretical level as
+well as in an empirical way by testing and expanding on the
+open-sourced \href{https://github.com/radum2275/merlin}{Merlin library}.
+
+\section{Tentative Schedule}
+\label{sec:org63f1b0f}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Week/Month & Activity \\
+\hline
+December - March & Literature Review and Get \\
+ & up and Running with \\
+ & Bayesian Networks. \\
+\hline
+15/03 - 21/03 & (Literature Review and \\
+ & Code Base) \\
+ & \\
+ & Understand Merlin and Code \\
+ & Base / Continue Literature \\
+ & Review: approximate \\
+ & inference methods and EM \\
+ & with missing evidence and \\
+ & Bayesian Prior. \\
+\hline
+22/03 - 28/03 & (Literature Review and \\
+ & Code Base) \\
+ & \\
+ & Understand Merlin Code \\
+ & Base and Literature \\
+ & Review. Collect more \\
+ & evidence on studies \\
+ & dealing with uncertainty \\
+ & in Bayesian Networks. \\
+\hline
+29/03 - 04/04 & (Literature Review) \\
+ & \\
+ & Collect more evidence on \\
+ & studies dealing with \\
+ & uncertainty in Bayesian \\
+ & Networks and on \\
+ & applications of EM \\
+ & algorithm for MAP \\
+ & estimation of Posterior \\
+ & Parameters Distribution. \\
+ & \\
+\hline
+05/04 - 11/04 & (Literature Review) \\
+ & \\
+ & Collect more evidence on \\
+ & studies dealing with \\
+ & uncertainty in Bayesian \\
+ & Networks and on \\
+ & applications of EM \\
+ & algorithm for MAP \\
+ & estimation of Posterior \\
+ & Parameters Distribution. \\
+\hline
+12/04 - 18/04 & (Literature Review) \\
+ & \\
+ & Collect more evidence on \\
+ & studies dealing with \\
+ & uncertainty in Bayesian \\
+ & Networks and on \\
+ & applications of EM \\
+ & algorithm for MAP \\
+ & estimation of Posterior \\
+ & Parameters Distribution. \\
+\hline
+19/04 - 25/04 & (Write Down and \\
+ & Crystallize/make the \\
+ & point) \\
+ & \\
+ & Start writing Introduction \\
+ & and Literature Review \\
+ & Chapter. Start \\
+ & implementing Bayesian \\
+ & Prior Parsing in Merlin. \\
+\hline
+\end{tabular}
+\end{center}
+
+\newpage
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Week/Month & Activity \\
+\hline
+26/04 - 02/05 & (Implementation and \\
+ & Writing) \\
+ & \\
+ & Continue with Introduction \\
+ & and Literature Review \\
+ & Chapter. Finish Parsing \\
+ & Bayesian Prior in \\
+ & Merlin. Test performance \\
+ & without missing nor \\
+ & likelihood evidence. \\
+\hline
+03/05 - 09/05 & (Implementation) \\
+ & \\
+ & Start extending EM for \\
+ & computing the MAP \\
+ & estimation of the \\
+ & Posterior Distirbution in \\
+ & the case of uncertain data \\
+\hline
+10/05 - 16/05 & (Implementation) \\
+ & \\
+ & Continue extending EM for \\
+ & computing the MAP \\
+ & estimation of the \\
+ & Posterior Distirbution in \\
+ & the case of uncertain data \\
+\hline
+17/05 - 23/05 & (Implementation) \\
+ & \\
+ & Continue extending EM for \\
+ & computing the MAP \\
+ & estimation of the \\
+ & Posterior Distirbution in \\
+ & the case of uncertain \\
+ & data. Check at runtime and \\
+ & performance. Check at \\
+ & theory, do we have \\
+ & guarantees for \\
+ & convergenece and \\
+ & correctness. \\
+\hline
+24/05 - 30/05 & (Implementation) \\
+ & \\
+ & Continue to work on the \\
+ & implementation. Check also \\
+ & runtime performance and \\
+ & issue with \\
+ & convergence. Test with \\
+ & different priors and \\
+ & priors hyperparmeters and \\
+ & consider how this affect \\
+ & convergence and the \\
+ & results. \\
+\hline
+31/05 - 06/06 & (Implementation) \\
+ & \\
+ & Consider the algorithm and \\
+ & the necessary inference \\
+ & step. Try it out in larger \\
+ & Networks and make sure it \\
+ & integreates well with \\
+ & approximate inference \\
+ & methods. Understand the \\
+ & implications for your \\
+ & results. \\
+\hline
+\end{tabular}
+\end{center}
+
+
+\newpage
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Week/Month & Activity \\
+\hline
+07/06 - 13/06 & (Make the Point) \\
+ & \\
+ & Consider how it is \\
+ & going. Check how it is \\
+ & going. Where to set the \\
+ & focus. Where \\
+ & difficulty. Consider \\
+ & checking new literature \\
+ & for 1 week depending on \\
+ & discoveris during \\
+ & implementatioin \\
+\hline
+14/06 - 20/06 & (Implementation) \\
+ & \\
+ & Continue with the steps \\
+ & above. Depending on need. \\
+\hline
+21/06 - 27/06 & (Implementation) \\
+ & \\
+ & Continue with the steps \\
+ & above. Depending on need. \\
+\hline
+28/06 - 04/07 & (Implementation) \\
+ & \\
+ & Continue with the steps \\
+ & above. Depending on need. \\
+\hline
+05/07 - 11/07 & (Implementation) \\
+ & \\
+ & Continue with the steps \\
+ & above. Depending on need. \\
+\hline
+12/07 - 18/07 & (Implementation) \\
+ & \\
+ & \\
+ & Continue with the steps \\
+ & above. Depending on need. \\
+\hline
+19/07 - 25/07 & (Write Down Results) \\
+\hline
+26/07 - 01/08 & (Write Down Results) \\
+\hline
+02/08 - 08/08 & (Vacation) \\
+\hline
+09/08 - 15/08 & (Vacation) \\
+\hline
+16/08 - 22/08 & (Write Down Results) \\
+\hline
+23/08 - 29/08 & (Write Down Results) \\
+\hline
+30/08 - 05/09 & (Write Down Results) \\
+\hline
+06/09 - 12/09 & (Write Down Results) \\
+\hline
+13/09 - 19/09 & (Summarize and Check) \\
+\hline
+20/09 - 26/09 & (Summarize and Check) \\
+\hline
+27/09 - 03/10 & (Buffer) \\
+\hline
+\end{tabular}
+\end{center}
+
+\href{https://marcohassan.github.io/bits-of-experience/posts/bayesian-networks/}{Link to Literature Review}.
+
+\newpage
+
+\bibliographystyle{unsrt}
+\bibliography{literature/references}
+\end{document}

@@ -73,7 +73,7 @@
 ** WAITING other possible generalizations
    
 *** TODO add jeffery's method and pearl method into the mind map
-    SCHEDULED: <2021-04-09 Fri 10:00>
+    SCHEDULED: <2021-04-16 Fri 10:00>
     :PROPERTIES:
     :WILD_NOTIFIER_NOTIFY_BEFORE: 30 10 5
     :END:

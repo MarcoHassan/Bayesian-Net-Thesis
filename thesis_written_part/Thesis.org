@@ -52,7 +52,100 @@
 * TODO Learning under Complete Evidence
 
 * TODO Types of Uncertain Evidence
+
+  So far we discussed the case of parameter learning in Bayesian
+  Networks in the case of complete evidence, i.e. in the case we could
+  observe a realization for each random variable in the network.
+
+  As we discussed, in such a case important properties hold for the
+  network such as the global likelihood decomposition. This allows the
+  possibility to work with local conditional probabilities in order to
+  reach the optimal solution.
+
+  One more interesting case is the one treated by cite:Mrad_2015,
+  cite:Wasserkrug_all. The argument posed by the authors is that under
+  many settings complete evidence is not possible.
+
+  In many cases there might be a hiding mechanism active that might
+  hide some of the realizations. Think for instance at a
+  malfunctioning sensor that sporadically measures input. Or think for
+  instance at medical settings where different patients might be
+  measured different variables.
+
+  Albeit the case of missing evidence greatly alters the way through
+  which it is possible to learn the parameters of the network, there
+  are multiple possible solutions to get to the results - see for
+  instance cite:koller2009probabilistic.
+
+  A more interesting case is posed by /uncertain evidence/ as
+  introduced by cite:Mrad_2015. The authors distinguish three types of
+  non-complete evidence:
+
+  - likelihood evidence
+
+  - fixed probabilistic evidence
+
+  - non-fixed probabilistic evidence
+
+  We will use throughout this document the definition as in
+  cite:Mrad_2015 which we will briefly summarize next.
+
+  #+begin_export latex
+  \begin{definition}
+  Hard evidence: A finding on a variable commonly refers to an
+  instantiation of the variable. This can be represented by a vector
+  with one element equal to 1, corresponding to the state the variable
+  is in, and all other elements equal to zero. This type of evidence
+  is usually referred to as hard evidence.
+  \end{definition}
+
+  \\\\
+
+  \begin{definition}
+  Uncertain evidence: evidence that cannot be represented by a vector
+  as in the hard evidence case.
+  \end{definition}
+
+  \\\\
+
+  \begin{definition}
+  Likelihood evidence: in such type of evidence there is uncertainty
+  about the veracity of an observation, such as, for example, the
+  information given by an imperfect sensor. Such uncertainty is
+  expressed in terms of relative likelihood of observing one
+  realization vis à vis another one. 
+  \end{definition}
+
+  \\\\
+
+  \begin{definition}
+  Probabilistic evidence: we talk about probabilistic evidence when we
+  have a probabilistic finding on a random variable X in the network
+  specified by a local probability distribution R(X). R(X) defines a
+  constraint on the belief in X after information has been propagated;
+  it describes the state of beliefs in the variable X all things
+  considered.  
+  \end{definition}  
+
+  \\\\ 
+
+  \begin{definition}
+  Fixed (Non-fixed) Probabilistic evidence: A probabilistic finding
+  is fixed (or not) when the distribution R(X) can not be (or can
+  be) modified by the propagation of other findings. Probabilistic
+  evidence is a set of probabilistic findings.
+  \end{definition}    
   
+  #+end_export
+
+
+
+
+  
+
+  
+
+
 * TODO on the nastiness of the Likelihood function
 
   all good properties are gone when working with partially observed
@@ -338,7 +431,7 @@
    as was the case before but it is rather important to also consider
    the prior distribution $P(\theta)$.
    
-**  Bayesian Parameter Learning - An example
+** Bayesian Parameter Learning - An example
 
    An example for the extension of the EM algorithm to compute the
    maximum a posteriori parameter in the case of missing evidence is
@@ -384,8 +477,9 @@
 
    Such that taking the argument maximizing the likelihood of the
    adjusted energy functional $\operatorname*{argmax}_{\theta}
-   \tilde{F}[\theta, Q]$ we are left with the following with y[m] as
-   synthetically created complete observation <h[m], d[m]>:
+   \tilde{F}[\theta, Q]$ we are left with the following with y[m]
+   representing synthetically created complete observation <h[m],
+   d[m]>:
 
    #+begin_export latex
    \begin{align} \label{eq:first-order-condition}
@@ -463,6 +557,7 @@
    of the maximum a posteriori point estimate such that we will choose
    a local maximum point estimator.
    
+
 * On Numerical EM
 
   In this section we propose a numerical solution to the M-step of the
@@ -472,14 +567,15 @@
   We will generalize the theory presented that far such that it is
   possible to implement general software without having to limit the
   end-user to very specific pre-defined cases such as the
-  Dirichlet-Multinomial CPT example defined above.
+  Dirichlet-Multinomial CPT example defined above, where the algorithm
+  running in the background has necessarily to know the closed-form
+  analytical solution of the M-step.
 
   Note that this will come at costs. We will need in fact to compute
   the Hessian of our expected log-likelihood which is one of the most
   computationally intensive tasks. This especially in highly
   dimensional problems. One of the major benefits in using the EM over
   gradient based methods would be lost in this sense.
-
   
 ** Numerical EM for MLE estimator
 
@@ -492,7 +588,7 @@
 
    #+begin_export latex
    \begin{align} \label{eq:likelihood_energy_iterative}
-   l (\theta: \mathscr{D}) =& \  \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H}) + H_Q (\mathscr {H}) \\
+   l (\theta: \mathscr{D}) =& \ H_Q (\mathscr {H}) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H}) \\
    \nonumber\\
    Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
    \nonumber\\  
@@ -517,7 +613,7 @@
 
    #+begin_export latex
    \begin{align} 
-    H_1(\theta_0, \theta_0 : \mathscr{D})  = 0 \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative} \\
+    H_1(\theta_0, \theta_0 : \mathscr{D})  = 0 \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative}
    \end{align}
    #+end_export
 
@@ -556,34 +652,43 @@
    speed of such numerical M-step have been proposed, such in
    cite:Louis_1982. As uphill steps cannot be guaranteed under all
    circumstances in such algorithm, we just refer to the literature the
-   interested reader.
+   interested reader and do not consider this as a viable option for
+   our solution.
 
-    
 ** Numerical EM for MAP estimator
 
-   This section generalizes the arguments of the previous section.
+   This section generalizes the arguments of the previous section to
+   the case of MAP estimator in the case of Bayesian Parameter
+   Learning.
 
    Using [[ref:eq:adj_energy_functional]] it follows immediately using the
    notation of the last section that:
 
    #+begin_export latex
    \begin{align} \label{eq:likelihood_energy_map_iterative}
-   l (\theta: \mathscr{D}) =& \  \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H}) + H_Q (\mathscr {H}) \\
+   l (\theta: \mathscr{D}) + log(P(\theta)) =& \ H_Q (\mathscr {H}) + log(P(\theta)) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
    \nonumber\\
-   Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
+   Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \ log(P(\theta)) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
    \nonumber\\  
    H(\theta_0, \theta: \mathscr{D}) \eqdef& \ Q(\theta, \theta_0 : \mathscr{D}) - l (\theta: \mathscr{D}) \\
                                     =& H_Q (\mathscr {H}) = \sum_h - P(h | \mathscr{D}, \theta_0) * P(\theta | h, \mathscr{D}) \nonumber
    \end{align}
    #+end_export  
    
+   The idea is that as long as the likelihood and the prior are
+   concave such that the sum of two concave functions will yield a $Q$
+   function that is concave, we might apply the very same
+   Newton-Raphson method to get iteratively to the maximum of the
+   function.
 
-   The idea is that as long as the prior is concave such that 
-  
+   #+begin_export latex
+   \begin{align} 
+    \theta_{EM}  = \theta_{0} - Q_{11}^{-1} Q_1 + o(||\theta_{EM} - \theta_{0}||) \label{eq:em-iterative}
+   \end{align}
+   #+end_export
 
-
-
-
+   where $Q_{11}, Q_1$ are defined as in the previous section and
+   need now to account for the prior distribution influence.
    
  \newpage
 

@@ -1,0 +1,14 @@
+
+
+* OUTDATED
+
+  
+  You can now see the following property
+
+  #+begin_export latex
+  \begin{align} \label{eq:m-condition-iterative}
+  \frac{\partial}{\partial \theta} H(\theta, \theta_0 : \mathscr{D}) =& \frac{\partial}{\partial \theta} Q(\theta_0, \theta: \mathscr{D})
+  \end{align}
+  #+end_export
+
+

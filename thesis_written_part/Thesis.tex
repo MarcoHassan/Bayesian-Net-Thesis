@@ -1,4 +1,4 @@
-% Created 2021-04-16 Fri 15:01
+% Created 2021-04-17 Sat 11:11
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -73,13 +73,25 @@
 \newpage
 
 \section{{\bfseries\sffamily TODO} Bayesian Networks Overview and Definition \& Literature Review}
-\label{sec:orgfe86114}
+\label{sec:org30b10e0}
+
 
 \section{{\bfseries\sffamily TODO} Learning under Complete Evidence}
-\label{sec:org6cca05c}
+\label{sec:orge0460e7}
+As vastly documented in the literature there are essentially two
+types of approaches when performing the task of parameter
+learning. The first one is a parameter estimation via \emph{Maximum
+Likelihood Estimation (MLE)} as in \cite{Myung_2003} while the second
+amounts to parameter estimation via \emph{Bayesian Learning} as presented
+in \cite{Smith_2001}.
 
-\section{{\bfseries\sffamily TODO} Types of Uncertain Evidence}
-\label{sec:orgb3bdbd1}
+
+\subsection{{\bfseries\sffamily TODO} write the gloabl decomposition etc. properties}
+\label{sec:org66adaf2}
+
+
+\section{Types of Uncertain Evidence}
+\label{sec:orga355c4e}
 
 So far we discussed the case of parameter learning in Bayesian
 Networks in the case of complete evidence, i.e. in the case we could
@@ -149,39 +161,87 @@ realization vis à vis another one.
 
 \begin{definition}
 Probabilistic evidence: we talk about probabilistic evidence when we
-have a probabilistic finding on a random variable X in the network
-specified by a local probability distribution R(X). R(X) defines a
-constraint on the belief in X after information has been propagated;
-it describes the state of beliefs in the variable X all things
-considered.  
+have a set of probabilistic finding on multiple random variables X in the network
+specified by a local probability distribution R(X).
 \end{definition}  
 
-\\\\ 
+Notice that a probabilistic finding R(X) on a variable X of a
+Bayesian network replaces any prior belief or knowledge on X. As a
+consequence, the prior P (X) is not used in the propagation of R(X),
+and any previous finding or belief on X is lost.
+
+Notice moreover the following distinction between \emph{fixed} and
+\emph{non-fixed} probabilistic evidence:
 
 \begin{definition}
 Fixed (Non-fixed) Probabilistic evidence: A probabilistic finding
-is fixed (or not) when the distribution R(X) can not be (or can
-be) modified by the propagation of other findings. Probabilistic
-evidence is a set of probabilistic findings.
-\end{definition}    
+is fixed (non-fixed) when the distribution R(X) can not be (can
+be) modified by the propagation of other findings.
+\end{definition}  
+
+Such that it is all about how the \emph{arrival of evidence} as in the
+following schema from \cite{Mrad_2015} can update the cognitive state:
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=5.0in]{/Users/marcohassan/Desktop/Bayesian_Net_Thesis/images/inference_loop.png}
+\caption{Inference Loop as in Mrad et all.}
+\end{figure}
+
+
+Summarizing, in simple terms, we differentiate the following three
+cases for the above:
+
+\begin{enumerate}
+\item In fixed-evidence we specify a probabilistic evidence \emph{all things
+considered}. This means that even after new evidence is observed
+on any other random variable in the network, we do not update the
+cognitive state specified by the fixed probabilistic evidence.
+
+\item In non-fixed probabilistic evidence we consider the current
+structure of the tree such for the current state of the network
+our conditional probability distribution is specified by the
+passed probabilistic evidence. Further in-coming evidence that
+will alter the network probabilistic structure will affect the
+cognitive state of the current node.
+
+\item In likelihood evidence we do not consider any prior
+information. I.e. we simply specify a local likelihood ratio for
+a particular evidence and we still have to run the inference step
+for the current state to get the final cognitive state. I.e. as
+mentioned by \cite{Mrad_2015} in contrast to probabilistic evidence
+which remains unchanged by updating the observed variables,
+likelihood evidence has to be combined with previous beliefs in
+order to update the belief in the observed variable(s).
+\end{enumerate}
+
+We will discuss next how to handle the three types of uncertain
+evidence. We will start with a discussion of missing evidence as
+expanding on this it will be possible to accomplish the task
+parameter learning under uncertain evidence settings.
+
+
+\section{On Missing Evidence}
+\label{sec:orgc2af0ea}
+
+In the case of missing evidence we have two types of findings for
+the random variables in our network \(<\mathscr{G}, \mathscr{X}>\).
+
+Say that you have \(m = 1, ..., M\) instances of your network. Then on
+the one hand you will have observed random variables realizations
+\(d[m]\) for a subset of variables \(\mathscr{Y} \subset
+  \mathscr{X}\). On the other hand you will have missing or
+non-observed findings \(h[m]\) for a subset of variables
+\(\mathscr{X} - \mathscr{Y}\).
+
+As both of the parameter learning techniques, as presented in
+\ref{complete-learning}, 
 
 
 
 
-
-
-
-
-
-\section{{\bfseries\sffamily TODO} on the nastiness of the Likelihood function}
-\label{sec:orga137792}
-
-all good properties are gone when working with partially observed
-data. write down why here. 
-
-
-\section{The Mathematics of the EM}
-\label{sec:orga98619e}
+\subsection{The Mathematics of the EM}
+\label{sec:orga64e7c9}
 As discussed by \cite{koller2009probabilistic} it is possible to frame
 the EM as a coordinate ascent optimization of an energy function we
 will define next. Given such perspective we will be able to prove the
@@ -198,7 +258,7 @@ F[P(X), Q] = E_Q[log (\tilde{P}(X))] + H_Q (X)
 \end{equation}
 
 Where \(\tilde{P}\) is an unnormalized state probability \(P =
-  \frac{\tilde{P}}{Z}\) and \(H_Q\) is the entropy of the observed
+   \frac{\tilde{P}}{Z}\) and \(H_Q\) is the entropy of the observed
 particles. 
 
 Using such energy functional \ref{eq:energy_functional} it is possible
@@ -220,7 +280,7 @@ P (H | D, \theta) =   \frac{P (H, D| \theta)}{P (D| \theta)}
 \end{equation}
 
 With this choice it becomes clear that \(Z (\theta) = P (D|
-  \theta)\) and \(\tilde{P} = P (H, Do| \theta)\). It
+   \theta)\) and \(\tilde{P} = P (H, Do| \theta)\). It
 follows then immediately that given such probability function we
 can compute the likelihood of realizations \(\mathscr{D}, \mathscr{H}\):
 
@@ -259,8 +319,8 @@ log-likelihood is clear and we can think of the EM-algorithm as a
 coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
-\subsection{The Expectation Step}
-\label{sec:org9059794}
+\subsubsection{The Expectation Step}
+\label{sec:org7596320}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -286,8 +346,8 @@ complete data sets in your E-step, so that you can in fact
 interpret the E-step as the step involving the maximization of the
 energy functional along the Q coordinate.
 
-\subsection{The Maximization Step}
-\label{sec:org44f9316}
+\subsubsection{The Maximization Step}
+\label{sec:org9d42d64}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -313,8 +373,8 @@ optimized such that it increases it follows from proposition
 log-likelihood increases such that theorem \ref{thm:one} is proved.
 
 
-\section{Bayesian Parameter Learning}
-\label{sec:orge521545}
+\subsection{Bayesian Parameter Learning}
+\label{sec:org795d211}
 
 A natural question that arises is whether it is possible to
 generalize the extended algorithm proposed by \cite{Mrad_2015} to the
@@ -380,8 +440,8 @@ exercise of the next section.
 
 \end{article}
 
-\subsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:org4a8392e}
+\subsubsection{Bayesian Parameter Learning - EM Generalization}
+\label{sec:orge797657}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -433,8 +493,8 @@ the expected likelihood \(E_Q[l (\theta: \mathscr{D}, \mathscr{H})]\)
 as was the case before but it is rather important to also consider
 the prior distribution \(P(\theta)\).
 
-\subsection{Bayesian Parameter Learning - An example}
-\label{sec:org1a05db7}
+\subsubsection{Bayesian Parameter Learning - An example}
+\label{sec:orgfe47f09}
 
 An example for the extension of the EM algorithm to compute the
 maximum a posteriori parameter in the case of missing evidence is
@@ -476,7 +536,7 @@ new random variable \(Y\) expressing complete data observations
 
 Such that taking the argument maximizing the likelihood of the
 adjusted energy functional \(\operatorname*{argmax}_{\theta}
-   \tilde{F}[\theta, Q]\) we are left with the following with y[m]
+    \tilde{F}[\theta, Q]\) we are left with the following with y[m]
 representing synthetically created complete observation <h[m],
 d[m]>:
 
@@ -510,7 +570,7 @@ So that ultimately:
 \end{align}
 
 Given the additional restriction that \(\sum_i \theta_{y_i |
-   Pa{y_i}} = 1\), we can obtain the necessary condition for finding
+    Pa{y_i}} = 1\), we can obtain the necessary condition for finding
 the optimum by using the Lagrange method
 
 \begin{align} \label{eq:first-order1}
@@ -545,8 +605,8 @@ of the maximum a posteriori point estimate such that we will choose
 a local maximum point estimator.
 
 
-\section{On Numerical EM}
-\label{sec:orgd66a304}
+\subsection{On Numerical EM}
+\label{sec:org3cd8155}
 
 In this section we propose a numerical solution to the M-step of the
 EM algorithm leveraging the theory presented in
@@ -565,8 +625,8 @@ computationally intensive tasks. This especially in highly
 dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
-\subsection{Numerical EM for MLE estimator}
-\label{sec:org88d3b4c}
+\subsubsection{Numerical EM for MLE estimator}
+\label{sec:org792f0d4}
 
 In order to understand how to compute M-step according to an
 iterative method, think at the following.
@@ -634,8 +694,8 @@ circumstances in such algorithm, we just refer to the literature the
 interested reader and do not consider this as a viable option for
 our solution.
 
-\subsection{Numerical EM for MAP estimator}
-\label{sec:org7967482}
+\subsubsection{Numerical EM for MAP estimator}
+\label{sec:org73afa01}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -666,21 +726,30 @@ function.
 where \(Q_{11}, Q_1\) are defined as in the previous section and
 need now to account for the prior distribution influence.
 
+
+\section{On Likelihood Evidence}
+\label{sec:orgdb177e7}
+
+
+
+
+
+\section{TODOs}
+\label{sec:org62d8eac}
+
+\begin{enumerate}
+\item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
+\label{sec:orgc4941ab}
+
+\item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
+\label{sec:org3d38387}
+
+\item {\bfseries\sffamily TODO} make more explicit the difference between synthetically completed missing observations and <?>
+\label{sec:org3ef3329}
+
 \newpage
 
 \bibliography{../literature/references}
 \bibliographystyle{unsrt}
-
-
-\subsection{TODOs}
-\label{sec:org04348fb}
-
-\subsubsection{{\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such}
-\label{sec:org3599132}
-
-\subsubsection{{\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo}
-\label{sec:org4c50d34}
-
-\subsubsection{{\bfseries\sffamily TODO} make more explicit the difference between synthetically completed missing observations and <?>}
-\label{sec:orge8ac042}
+\end{enumerate}
 \end{document}

@@ -52,8 +52,38 @@
 \usepackage{graphicx}       % to upload and insert images on LATEX.
 \graphicspath{ {./Images/} } % includes to path to the images.
 \usepackage{subcaption}     %  to create subplots and add caption
-
+\usepackage{tikz}           % for graphs
 \usepackage[most]{tcolorbox}% for frames on images
+
+%% For algorithm
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{etoolbox}\AtBeginEnvironment{algorithmic}{\small}
+\usepackage{setspace}
+
+
+{\fontsize{10}{10}\selectfont
+\begin{algorithmic}
+\IF{$n$ is odd}
+\RETURN \TRUE
+\ELSE
+\RETURN \FALSE
+\ENDIF
+\end{algorithmic}
+}
+
+\begin{spacing}{0.8}
+\begin{algorithmic}
+\IF{$n$ is odd}
+\RETURN \TRUE
+\ELSE
+\RETURN \FALSE
+\ENDIF
+\end{algorithmic}
+\end{spacing}
+
+
 %% end of packages
 
 

@@ -1,4 +1,4 @@
-% Created 2021-04-17 Sat 11:11
+% Created 2021-04-18 Sun 12:58
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -72,12 +72,18 @@
 
 \newpage
 
+\listoffigures
+\listofalgorithms
+\listoftables
+
+\newpage
+
 \section{{\bfseries\sffamily TODO} Bayesian Networks Overview and Definition \& Literature Review}
-\label{sec:org30b10e0}
+\label{sec:orgd200448}
 
 
 \section{{\bfseries\sffamily TODO} Learning under Complete Evidence}
-\label{sec:orge0460e7}
+\label{sec:orgeefca0a}
 As vastly documented in the literature there are essentially two
 types of approaches when performing the task of parameter
 learning. The first one is a parameter estimation via \emph{Maximum
@@ -87,11 +93,11 @@ in \cite{Smith_2001}.
 
 
 \subsection{{\bfseries\sffamily TODO} write the gloabl decomposition etc. properties}
-\label{sec:org66adaf2}
+\label{sec:org859d99e}
 
 
 \section{Types of Uncertain Evidence}
-\label{sec:orga355c4e}
+\label{sec:orgb3b42c2}
 
 So far we discussed the case of parameter learning in Bayesian
 Networks in the case of complete evidence, i.e. in the case we could
@@ -222,7 +228,7 @@ parameter learning under uncertain evidence settings.
 
 
 \section{On Missing Evidence}
-\label{sec:orgc2af0ea}
+\label{sec:org11e0b81}
 
 In the case of missing evidence we have two types of findings for
 the random variables in our network \(<\mathscr{G}, \mathscr{X}>\).
@@ -235,13 +241,36 @@ non-observed findings \(h[m]\) for a subset of variables
 \(\mathscr{X} - \mathscr{Y}\).
 
 As both of the parameter learning techniques, as presented in
-\ref{complete-learning}, 
+\ref{complete-learning}, involve a likelihood term, the question is on
+the way such likelihood term can be represented in the case of
+missing evidence.
 
+\subsection{{\bfseries\sffamily TODO} write down the idea of nasty likelihood and why you need the EM algorithm as a solution}
+\label{sec:org2414bfb}
 
+One solution that was proposed is the one of completely ignoring
+the missing evidence and computing a likelihood function just based
+on the observed \(d[m]\). As argued in \cite{koller2009probabilistic},
+in the case when there is no relation between the missing data and
+the observed data, i.e. in the case of data \emph{missing completely at
+random}, the likelihood decomposes into local probabilities so that
+you can focus on terms involving your parameters of interest and
+you can obtain them by standard MLE arguments as you can ignore
+parameters governing missing evidence all together.
 
+Another case is the one of data \emph{missing at random}. Here the
+realization is that data \emph{missing completely at random} is a
+sufficient but not necessary condition for the decomposition of the
+likelihood function. I.e. in the case of conditional independence
+structure the same decomposability property applies.
+
+Then in such a case you have this likelihood just depending on
+\(\sum_m P(d[m], h[m])\) such that you can ultimately use such a
+likelihood by marginalizing the missing finding out. This is in
+fact the approach of the EM-algorithm, which we will discuss next.
 
 \subsection{The Mathematics of the EM}
-\label{sec:orga64e7c9}
+\label{sec:org7c5a79d}
 As discussed by \cite{koller2009probabilistic} it is possible to frame
 the EM as a coordinate ascent optimization of an energy function we
 will define next. Given such perspective we will be able to prove the
@@ -320,7 +349,7 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsubsection{The Expectation Step}
-\label{sec:org7596320}
+\label{sec:org459a929}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -347,7 +376,7 @@ interpret the E-step as the step involving the maximization of the
 energy functional along the Q coordinate.
 
 \subsubsection{The Maximization Step}
-\label{sec:org9d42d64}
+\label{sec:orge1d1b5a}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -374,7 +403,7 @@ log-likelihood increases such that theorem \ref{thm:one} is proved.
 
 
 \subsection{Bayesian Parameter Learning}
-\label{sec:org795d211}
+\label{sec:orgcaa9398}
 
 A natural question that arises is whether it is possible to
 generalize the extended algorithm proposed by \cite{Mrad_2015} to the
@@ -441,7 +470,7 @@ exercise of the next section.
 \end{article}
 
 \subsubsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:orge797657}
+\label{sec:org1ee6199}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -494,7 +523,7 @@ as was the case before but it is rather important to also consider
 the prior distribution \(P(\theta)\).
 
 \subsubsection{Bayesian Parameter Learning - An example}
-\label{sec:orgfe47f09}
+\label{sec:org5ae9827}
 
 An example for the extension of the EM algorithm to compute the
 maximum a posteriori parameter in the case of missing evidence is
@@ -606,7 +635,7 @@ a local maximum point estimator.
 
 
 \subsection{On Numerical EM}
-\label{sec:org3cd8155}
+\label{sec:orgd27c4e7}
 
 In this section we propose a numerical solution to the M-step of the
 EM algorithm leveraging the theory presented in
@@ -626,7 +655,7 @@ dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
 \subsubsection{Numerical EM for MLE estimator}
-\label{sec:org792f0d4}
+\label{sec:org3542923}
 
 In order to understand how to compute M-step according to an
 iterative method, think at the following.
@@ -695,7 +724,7 @@ interested reader and do not consider this as a viable option for
 our solution.
 
 \subsubsection{Numerical EM for MAP estimator}
-\label{sec:org73afa01}
+\label{sec:orga619d25}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -728,28 +757,234 @@ need now to account for the prior distribution influence.
 
 
 \section{On Likelihood Evidence}
-\label{sec:orgdb177e7}
+\label{sec:org206f694}
+
+Recall that as defined in \cite{Mrad_2015} in likelihood evidence an
+observation is uncertain due to unreliable source of information.
+
+Here evidence in a finding is expressed as a vector containing the
+relative likelihood of a Random Variable realization. Consider for
+instance a random variable \textbf{X} then its likelihood evidence is
+defined as:
+
+\begin{align} \label{eq:likelihood-evidence}
+ L(X) = (L(X = x_1): ... : L(X = x_k))
+\end{align}
+
+Or when normalized you can express the likelihood-evidence as 
+
+\begin{align} \label{eq:normalized-likelihood-evidence}
+ L(X) = (P(obs | x_1): ... : P(obs | x_k))
+\end{align}
+
+Note that here the relative likelihoods do not have to sum to
+one. Thus they cannot be not be interpreted as probabilities.
+
+Moreover, the key take-away that distinguish likelihood evidence
+from probabilistic evidence is as mentioned the fact that a
+likelihood evidence vector as in \ref{eq:likelihood-evidence} is
+specified without a prior. This means that the prior encoding the
+probabilistic structure of the network is not taken into
+account. I.e. the information resulting \(P(X|Pa(X))\) is not
+considered when expressing such an evidence such that when
+updating the belief on the realization of the random variable \textbf{X}
+the likelihood evidence provided by the unreliable source of
+information must be combined with the prior probability resulting
+from the probabilistic structure implied by the network.
+
+We will turn next to the task of doing inference and the task of
+parameter learning under likelihood evidence describing the
+approach as in \cite{Wasserkrug_all}.
+
+\subsection{Adjusted EM - Likelihood Evidence}
+\label{sec:orgff8bf53}
+
+One of the most widespread ways to deal with likelihood evidence
+was introduced by \cite{pearl2014probabilistic}. The idea is to
+remodel the network structure \(<\mathscr{G}, \mathscr{X}>\) in order
+to represent the likelihood evidence as a hard-finding on a newly
+created \emph{virtual-node}.
+
+Consider the Asia Network of Figure \ref{fig:AsiaNet} , as in \cite{Wasserkrug_all},
+\cite{Mrad_2015}.
+
+\begin{figure}[!h]\vspace{2mm}
+  \centering
+  \caption[Asia Network]{Asia Network - Virtual Evidence Comparison}
+  \label{fig:AsiaNet}
+  \vspace{2mm}
+  \begin{subfigure}[t]{0.4\linewidth} \label{subfig:gdp}
+	\begin{tikzpicture}[node distance={25mm}, main/.style = {draw, align=center}]
+	%% Nodes
+	\node[main] (1) {Asia Visit};
+	\node[main][right of=1] (2) {Smoker?};
+
+	\node[main][below of=1] (3) {Tubercolosis?};
+
+	\node[main][right of=3] (4) {Lung Cancer?};
+	\node[main][below right of=2] (5) {Bronchitis};
+
+	\node[main][below right of=3] (6) {Tubercolosis\\Or Cancer?};          
+
+	\node[main][below left of=6] (7) {Positive X-Ray?};
+
+	\node[main][below right of=6] (8) {Dyspnoea?};     
+
+
+	%% Edges
+	\draw[->] (1) -- (3);
+	\draw[->] (2) -- (4);
+	\draw[->] (2) -- (5);
+	\draw[->] (3) -- (6);     
+	\draw[->] (4) -- (6);     
+	\draw[->] (6) -- (7);               
+	\draw[->] (5) -- (8);
+	\draw[->] (6) -- (8);
+	\end{tikzpicture}
+        \vspace{5mm}
+    \caption{Asia Network - Missing Evidence.\\}
+  \end{subfigure} \hspace{15mm} 
+  \begin{subfigure}[t]{0.4\linewidth} \label{subfig:un}
+	\begin{tikzpicture}[node distance={25mm}, main/.style = {draw, align=center}]
+	%% Nodes
+	\node[main] (1) {Asia Visit};
+	\node[main][right of=1] (2) {Smoker?};
+
+	\node[main][below of=1] (3) {Tubercolosis?};
+
+	\node[main][right of=3] (4) {Lung Cancer?};
+	\node[main][below right of=2] (5) {Bronchitis};
+
+	\node[main][below right of=3] (6) {Tubercolosis\\Or Cancer?};          
+
+	\node[main][below left of=6] (7) {Positive X-Ray?};
+
+	\node[main][below right of=6] (8) {Dyspnoea?};     
+	\node[draw, distance={10mm}][below of=8] (9) {Dyspnoea \\ Obs};
+
+	%% Edges
+	\draw[->] (1) -- (3);
+	\draw[->] (2) -- (4);
+	\draw[->] (2) -- (5);
+	\draw[->] (3) -- (6);     
+	\draw[->] (4) -- (6);     
+	\draw[->] (6) -- (7);               
+	\draw[->] (5) -- (8);
+	\draw[->] (6) -- (8);
+	\draw[->] (8) -- (9);
+
+	\end{tikzpicture}
+        \vspace{5mm}
+    \caption{Asia Network - Expanded as by Pearl's Virtual Evidence.}
+  \end{subfigure}
+  \vspace{0mm}
+\end{figure}
 
 
 
+In the case when we have complete instances of such network we can
+compute the parameters of our network using the classic MLE method
+as described before.
 
+Consider now
 
-\section{TODOs}
-\label{sec:org62d8eac}
+\algrenewcommand\algorithmicindent{1.5em}%
 
-\begin{enumerate}
-\item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
-\label{sec:orgc4941ab}
+\begin{algorithm*}[h!]
+\caption{EM-Likelihood: an EM algorithm for learning with likelihood evidence}
+\label{alg:EM-Likelihood}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
 
-\item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
-\label{sec:org3d38387}
+\Procedure{EM}{$\mathcal{B}$, $S$}
+\State Initialize $\mathcal{B}$'s parameters $\theta \leftarrow \theta^0$
+\ForAll{$t=1, \ldots$ until convergence}
 
-\item {\bfseries\sffamily TODO} make more explicit the difference between synthetically completed missing observations and <?>
-\label{sec:org3ef3329}
+  \State $\left\{ M_{\theta^t}[x_{i},u_{i}]\right\} \leftarrow$\textsc{Compute-ESS}($\mathcal{B}=(G,\theta^{t})$, $S$)
+
+  \ForAll{$i=1, \ldots, n$}
+
+    \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+
+      \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{M_{\theta^{t}}[x_{i},u_{i}]}{M_{\theta^{t}}[u]}$
+    \EndFor
+  \EndFor
+\EndFor
+\EndProcedure
+\\
+\Function{Compute-ESS}{$\mathcal{B}=(G,\theta)$, $S$} 
+
+\ForAll {$i\in1,\ldots,n$}
+  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+   \State $M[x_{i},u_{i}]\leftarrow 0$
+  \EndFor
+\EndFor
+
+% \State (Go over all evidence nodes, creating an augmented network
+% for each one, and collect all of the evidence for the nodes in $G$)
+\ForAll{example $S_{j}\in S$}
+
+    \State Let $O_j$ be the observations induced by $S_j$
+    \State $(G',\theta') \leftarrow$ \textsc{Augment-BN}($\mathcal{B}=(G,\theta)$, $O_{j}$)
+    %  (We'll denote $<G',\theta'>$ by $BN_{i}$ as it is the BN induced by example $i$)
+    \ForAll{$o \in O_j$}
+      \State Set the value of $o_V$ to $true$
+    \EndFor
+    \State Run inference on $(G',\theta')$ with evidence $d_{j}$
+    \ForAll{i$ = 1,\ldots,n$}
+      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+    
+        \State $M[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
+    
+      \EndFor
+    \EndFor
+\EndFor
+\EndFunction
+\\
+\Function{Augment-BN}{$\mathcal{B}=(G,\theta)$, $O$} 
+  \State Initialize $G'\leftarrow G$, $\theta'\leftarrow\theta$
+  \ForAll{$o\in O$}
+  
+
+    \State $G'_{\mathbb{V}}\leftarrow G'_{\mathbb{V}}\cup o_{V}$, $G'_{\mathbb{E}}\leftarrow G'_{\mathbb{E}}\cup(V,o_{V})$      \Comment{Add a new observation node to the graph and connect it to the relevant node}
+    \ForAll{$c_{i}\in Conf$}
+      \State $\theta'\leftarrow\theta'\cup\theta_{O_{V}=true|v_{i}}=c_{i}$ \Comment{Set the relevant CPT entry to be $Pr(obs|V=v_{i})$}
+    \EndFor
+  \EndFor
+\State \textbf{return} $(G',\theta')$
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
 
 \newpage
 
-\bibliography{../literature/references}
+\subsubsection{{\bfseries\sffamily TODO} explain pearl's me}
+\label{sec:orge0d9591}
+
+
+\section{TODOs}
+\label{sec:org113c9b4}
+
+\begin{enumerate}
+\item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
+\label{sec:orgda3cdbf}
+
+\item {\bfseries\sffamily TODO} note that network structure G(V,X) how you described. Correct later
+\label{sec:org7b8ee6f}
+
+\item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
+\label{sec:org35a7f79}
+
+\item {\bfseries\sffamily TODO} make more explicit the difference between synthetically completed missing observations and <?>
+\label{sec:org9a0e066}
+
+\newpage
+
+\bibliography{../literature/references}  
 \bibliographystyle{unsrt}
 \end{enumerate}
 \end{document}

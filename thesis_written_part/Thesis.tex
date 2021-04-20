@@ -1,4 +1,4 @@
-% Created 2021-04-18 Sun 12:58
+% Created 2021-04-20 Tue 17:24
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -79,11 +79,11 @@
 \newpage
 
 \section{{\bfseries\sffamily TODO} Bayesian Networks Overview and Definition \& Literature Review}
-\label{sec:orgd200448}
+\label{sec:org01d11a7}
 
 
 \section{{\bfseries\sffamily TODO} Learning under Complete Evidence}
-\label{sec:orgeefca0a}
+\label{sec:org9ec1c9d}
 As vastly documented in the literature there are essentially two
 types of approaches when performing the task of parameter
 learning. The first one is a parameter estimation via \emph{Maximum
@@ -93,11 +93,11 @@ in \cite{Smith_2001}.
 
 
 \subsection{{\bfseries\sffamily TODO} write the gloabl decomposition etc. properties}
-\label{sec:org859d99e}
+\label{sec:org5d3207f}
 
 
 \section{Types of Uncertain Evidence}
-\label{sec:orgb3b42c2}
+\label{sec:org13d4970}
 
 So far we discussed the case of parameter learning in Bayesian
 Networks in the case of complete evidence, i.e. in the case we could
@@ -228,7 +228,7 @@ parameter learning under uncertain evidence settings.
 
 
 \section{On Missing Evidence}
-\label{sec:org11e0b81}
+\label{sec:org6be9ef4}
 
 In the case of missing evidence we have two types of findings for
 the random variables in our network \(<\mathscr{G}, \mathscr{X}>\).
@@ -246,7 +246,7 @@ the way such likelihood term can be represented in the case of
 missing evidence.
 
 \subsection{{\bfseries\sffamily TODO} write down the idea of nasty likelihood and why you need the EM algorithm as a solution}
-\label{sec:org2414bfb}
+\label{sec:orgca53542}
 
 One solution that was proposed is the one of completely ignoring
 the missing evidence and computing a likelihood function just based
@@ -270,7 +270,7 @@ likelihood by marginalizing the missing finding out. This is in
 fact the approach of the EM-algorithm, which we will discuss next.
 
 \subsection{The Mathematics of the EM}
-\label{sec:org7c5a79d}
+\label{sec:org5cdcc88}
 As discussed by \cite{koller2009probabilistic} it is possible to frame
 the EM as a coordinate ascent optimization of an energy function we
 will define next. Given such perspective we will be able to prove the
@@ -349,7 +349,7 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsubsection{The Expectation Step}
-\label{sec:org459a929}
+\label{sec:org1d3f361}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -376,7 +376,7 @@ interpret the E-step as the step involving the maximization of the
 energy functional along the Q coordinate.
 
 \subsubsection{The Maximization Step}
-\label{sec:orge1d1b5a}
+\label{sec:org04759eb}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -403,8 +403,7 @@ log-likelihood increases such that theorem \ref{thm:one} is proved.
 
 
 \subsection{Bayesian Parameter Learning}
-\label{sec:orgcaa9398}
-
+\label{sec:org716ff6e}
 A natural question that arises is whether it is possible to
 generalize the extended algorithm proposed by \cite{Mrad_2015} to the
 case of Bayesian Parameter Learning.
@@ -470,7 +469,7 @@ exercise of the next section.
 \end{article}
 
 \subsubsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:org1ee6199}
+\label{sec:org8d4c786}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -523,7 +522,7 @@ as was the case before but it is rather important to also consider
 the prior distribution \(P(\theta)\).
 
 \subsubsection{Bayesian Parameter Learning - An example}
-\label{sec:org5ae9827}
+\label{sec:orgdb4a3c8}
 
 An example for the extension of the EM algorithm to compute the
 maximum a posteriori parameter in the case of missing evidence is
@@ -633,9 +632,73 @@ The correctness and convergence properties of EM apply to the score
 of the maximum a posteriori point estimate such that we will choose
 a local maximum point estimator.
 
+Algorithmically it is possible to summarize the above as in \ref{alg:EM-Likelihood-Complete data}
+
+\algrenewcommand\algorithmicindent{1.5em}%
+
+\begin{algorithm*}[h!]
+\caption{EM-Likelihood: an EM algorithm for learning with likelihood evidence}
+\label{alg:EM-Likelihood-Complete data}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
+
+\Procedure{EM}{$\mathcal{B}$, $S$}
+\State Initialize $\mathcal{B}$'s parameters $\theta \leftarrow \theta^0$
+\ForAll{$t=1, \ldots$ until convergence}
+
+  \State $\left\{ \bar{M}_{\theta^t}[x_{i},u_{i}]\right\} \leftarrow$\textsc{Compute-ESS}($\mathcal{B}=(G,\theta^{t})$, $S$)
+
+  \ForAll{$i=1, \ldots, n$}
+
+    \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+
+      \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}]}{\bar{M}_{\theta^{t}}[u]}$
+    \EndFor
+  \EndFor
+\EndFor
+\EndProcedure
+\\
+\Function{Compute-ESS}{$\mathcal{B}=(G,\theta)$, $S$} 
+
+\ForAll {$i\in1,\ldots,n$}
+  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+   \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
+  \EndFor
+\EndFor
+
+% \State (Go over all evidence nodes, creating an augmented network
+% for each one, and collect all of the evidence for the nodes in $G$)
+\ForAll{example $S_{j}\in S$}
+
+    \State Let $O_j$ be the observations induced by $S_j$
+    %  (We'll denote $<G',\theta'>$ by $BN_{i}$ as it is the BN induced by example $i$)
+    \ForAll{$o \in O_j$}
+      \State Set the value of $o_V$ to $true$
+    \EndFor
+    \State Run inference on $(G',\theta')$ with evidence $d_{j}$
+    \ForAll{i$ = 1,\ldots,n$}
+      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+    
+        \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
+    
+      \EndFor
+    \EndFor
+\EndFor
+\EndFunction
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+
+
+\newpage
+
 
 \subsection{On Numerical EM}
-\label{sec:orgd27c4e7}
+\label{sec:orgba2ce89}
 
 In this section we propose a numerical solution to the M-step of the
 EM algorithm leveraging the theory presented in
@@ -655,7 +718,7 @@ dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
 \subsubsection{Numerical EM for MLE estimator}
-\label{sec:org3542923}
+\label{sec:org6517f5e}
 
 In order to understand how to compute M-step according to an
 iterative method, think at the following.
@@ -724,7 +787,7 @@ interested reader and do not consider this as a viable option for
 our solution.
 
 \subsubsection{Numerical EM for MAP estimator}
-\label{sec:orga619d25}
+\label{sec:orgf45cac2}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -757,7 +820,7 @@ need now to account for the prior distribution influence.
 
 
 \section{On Likelihood Evidence}
-\label{sec:org206f694}
+\label{sec:orgb0eb8f7}
 
 Recall that as defined in \cite{Mrad_2015} in likelihood evidence an
 observation is uncertain due to unreliable source of information.
@@ -797,7 +860,7 @@ parameter learning under likelihood evidence describing the
 approach as in \cite{Wasserkrug_all}.
 
 \subsection{Adjusted EM - Likelihood Evidence}
-\label{sec:orgff8bf53}
+\label{sec:orgcccf5b9}
 
 One of the most widespread ways to deal with likelihood evidence
 was introduced by \cite{pearl2014probabilistic}. The idea is to
@@ -805,15 +868,29 @@ remodel the network structure \(<\mathscr{G}, \mathscr{X}>\) in order
 to represent the likelihood evidence as a hard-finding on a newly
 created \emph{virtual-node}.
 
-Consider the Asia Network of Figure \ref{fig:AsiaNet} , as in \cite{Wasserkrug_all},
-\cite{Mrad_2015}.
+Consider the Asia Network of Figure \ref{fig:AsiaNet}, as in
+\cite{Wasserkrug_all}, \cite{Mrad_2015}. On the left hand side the core
+network is presented. Given hard findings or missing evidence we
+can estimate the parameters of the network via the standard
+EM-algorithm.
+
+Consider now the right hand side of Figure \ref{fig:AsiaNet}. Assume,
+as in \cite{Wasserkrug_all} that likelihood evidence is obtained for
+the Dysponea node via an optical NLP tool [ONLP] analyzing
+historical medical records. Then as proposed by
+\cite{pearl2014probabilistic} we augment the network as on the right
+hand side of Figure \ref{fig:AsiaNet} by creating a child node of the
+Dysponea node. Such a child node will encode the likelihood
+evidence as hard finding by specifying the relation between
+Dysponea and Dysponea Observed of interest, i.e. it will encode the
+likelihood evidence via the CPD of \(P(DysponeaObs | Dysponea)\).
 
 \begin{figure}[!h]\vspace{2mm}
   \centering
   \caption[Asia Network]{Asia Network - Virtual Evidence Comparison}
   \label{fig:AsiaNet}
   \vspace{2mm}
-  \begin{subfigure}[t]{0.4\linewidth} \label{subfig:gdp}
+  \begin{subfigure}[t]{0.4\linewidth} \label{subfig:missing}
 	\begin{tikzpicture}[node distance={25mm}, main/.style = {draw, align=center}]
 	%% Nodes
 	\node[main] (1) {Asia Visit};
@@ -844,7 +921,7 @@ Consider the Asia Network of Figure \ref{fig:AsiaNet} , as in \cite{Wasserkrug_a
         \vspace{5mm}
     \caption{Asia Network - Missing Evidence.\\}
   \end{subfigure} \hspace{15mm} 
-  \begin{subfigure}[t]{0.4\linewidth} \label{subfig:un}
+  \begin{subfigure}[t]{0.4\linewidth} \label{subfig:virtual}
 	\begin{tikzpicture}[node distance={25mm}, main/.style = {draw, align=center}]
 	%% Nodes
 	\node[main] (1) {Asia Visit};
@@ -880,13 +957,46 @@ Consider the Asia Network of Figure \ref{fig:AsiaNet} , as in \cite{Wasserkrug_a
   \vspace{0mm}
 \end{figure}
 
+Concretely assume as in \cite{Wasserkrug_all} that the ONLP correctly
+characterizes Dysponea 70\% of the times when this does in fact
+occurs. Note that the ONLP tool does not consider any prior
+information resulting from the probabilistic structure of our
+network. Then you might encode such likelihood evidence of the ONLP
+as in Table \ref{tb:virt-evidence}.
 
+\begin{table}
 
-In the case when we have complete instances of such network we can
-compute the parameters of our network using the classic MLE method
-as described before.
+\begin{center}
+\begin{tabular}{|l||*{2}{c|}}\hline
+\backslashbox{DysponeaObs}{Dysponea?}
+&\makebox[3em]{yes}&\makebox[3em]{no}\\\hline\hline
+True & 0.7 & 0.3\\\hline
+False & 0.3 & 0.7 \\\hline
+\end{tabular}
+\end{center}
 
-Consider now
+\caption[Virtual Evidence CPT]{DysponeaObs - Virtual Evidence Node CPT}
+\label{tb:virt-evidence}
+\end{table}
+
+Given such a CPT, encoding the likelihood evidence, it is possible
+to set the DyspnoeaObs to true as a hard finding. In such a way you
+will work with a standard network that is just composed of missing
+and hard evidence. You can then update the cognitive state of your
+network by standard inference techniques, and compute the
+parameters of interest by a standard EM-algorithm.
+
+Given such explanation it follows that it is possible to rewrite
+the EM-step by adjusting the E-step such that it will perform its
+inference step on the virtual evidence augmented network that
+respects and incorporates the likelihood evidence information. This
+was the intuition and contribution of \cite{Wasserkrug_all} and such
+an algorithm, with the corresponding modification of the E-step, is
+presented in \ref{alg:EM-Likelihood}.
+
+We continue the next section by modifying such algorithm such that
+it is possible to perform MAP estimation in Bayesian settings.
+
 
 \algrenewcommand\algorithmicindent{1.5em}%
 
@@ -902,16 +1012,7 @@ Consider now
 \Procedure{EM}{$\mathcal{B}$, $S$}
 \State Initialize $\mathcal{B}$'s parameters $\theta \leftarrow \theta^0$
 \ForAll{$t=1, \ldots$ until convergence}
-
-  \State $\left\{ M_{\theta^t}[x_{i},u_{i}]\right\} \leftarrow$\textsc{Compute-ESS}($\mathcal{B}=(G,\theta^{t})$, $S$)
-
-  \ForAll{$i=1, \ldots, n$}
-
-    \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
-
-      \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{M_{\theta^{t}}[x_{i},u_{i}]}{M_{\theta^{t}}[u]}$
-    \EndFor
-  \EndFor
+  \State $M-step \ as \ in \ Algorithm \ 1$
 \EndFor
 \EndProcedure
 \\
@@ -919,7 +1020,7 @@ Consider now
 
 \ForAll {$i\in1,\ldots,n$}
   \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
-   \State $M[x_{i},u_{i}]\leftarrow 0$
+   \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
   \EndFor
 \EndFor
 
@@ -937,7 +1038,7 @@ Consider now
     \ForAll{i$ = 1,\ldots,n$}
       \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
     
-        \State $M[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
+        \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
     
       \EndFor
     \EndFor
@@ -962,29 +1063,85 @@ Consider now
 
 \newpage
 
-\subsubsection{{\bfseries\sffamily TODO} explain pearl's me}
-\label{sec:orge0d9591}
+\subsection{Bayesian Learning MAP - Adjusted EM for Likelihood Evidence}
+\label{sec:orgcac5cd2}
 
+The idea of this section is to extend \ref{alg:EM-Likelihood} in
+order to obtain the MAP estimator in a Bayesian Learning setting
+with Likelihood Evidence.
 
-\section{TODOs}
-\label{sec:org113c9b4}
+We discussed in the previous section how likelihood evidence
+requires augmenting the core network by virtual evidence nodes as
+in \cite{pearl2014probabilistic} and consequently perform the
+inference step on such augmented networks.
 
-\begin{enumerate}
-\item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
-\label{sec:orgda3cdbf}
+Such procedure was outlined by the modification of the E-step in
+comparison to the standard EM algorithm with missing evidence.
 
-\item {\bfseries\sffamily TODO} note that network structure G(V,X) how you described. Correct later
-\label{sec:org7b8ee6f}
+Moreover we discussed in section \ref{bayes-parameter-learning} we
+can adjust the M-step of the EM-algorithm to perform the task of
+MAP estimation. Both correctness and convergence properties will
+apply such that we will converge to a local maximum for our
+posterior distribution.
 
-\item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
-\label{sec:org35a7f79}
+Combining the two steps it is immediate to see that it is possible
+to perform Bayesian Parameter Learning under likelihood evidence
+by replacing line 7 of \ref{alg:EM-Likelihood} with 
 
-\item {\bfseries\sffamily TODO} make more explicit the difference between synthetically completed missing observations and <?>
-\label{sec:org9a0e066}
+\begin{algorithm*}[h!]
+\caption{Replace M-step for Bayesian Parameter Learning}
+\label{alg:Bayes-EM-Likelihood}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
+
+\Function{M-Step}{$\mathcal{B}$, $S$}
+   \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}] + \alpha_i - 1}{\sum_j \bar{M}_{\theta^{t}}[x_{j},u_{j}] + \alpha_j - 1}$\\
+   
+   \textbf{return} $(\theta^{t+1})$
+
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+
+Given such a computation it is possible to get to a local maximum
+for the MAP estimator.
+
+\subsection{{\bfseries\sffamily TODO} Write Down Numerical Algorithm for M STEP}
+\label{sec:org37551c1}
+
+\section{{\bfseries\sffamily TODO} On Probabilistic Evidence}
+\label{sec:orgbf79f43}
+
+Here in theory also very straightforward extension. See the
+\cite{Mrad_2015} paper. For at least one case there is a clear pattern
+that you can use.
 
 \newpage
 
-\bibliography{../literature/references}  
+
+\section{TODOs}
+\label{sec:org84abd08}
+
+\begin{enumerate}
+\item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
+\label{sec:orgf4d501d}
+
+\item {\bfseries\sffamily TODO} note that network structure G(V,X) how you described. Correct later
+\label{sec:org16e4359}
+
+\item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
+\label{sec:org63b1fba}
+
+\item {\bfseries\sffamily TODO} make more explicit the difference between synthetically completed missing observations and <?>
+\label{sec:org6d5cd32}
+
+\newpage
+
+\bibliography{../literature/references}
 \bibliographystyle{unsrt}
 \end{enumerate}
 \end{document}

@@ -389,6 +389,10 @@
 
 
 ** Bayesian Parameter Learning
+   :PROPERTIES:
+   :CUSTOM_ID: bayes-parameter-learning
+   :END:
+   
 
    A natural question that arises is whether it is possible to
    generalize the extended algorithm proposed by cite:Mrad_2015 to the
@@ -643,6 +647,72 @@
     The correctness and convergence properties of EM apply to the score
     of the maximum a posteriori point estimate such that we will choose
     a local maximum point estimator.
+
+    Algorithmically it is possible to summarize the above as in [[ref:alg:EM-Likelihood-Complete data]]
+
+   #+begin_export latex
+\algrenewcommand\algorithmicindent{1.5em}%
+
+\begin{algorithm*}[h!]
+\caption{EM-Likelihood: an EM algorithm for learning with likelihood evidence}
+\label{alg:EM-Likelihood-Complete data}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
+
+\Procedure{EM}{$\mathcal{B}$, $S$}
+\State Initialize $\mathcal{B}$'s parameters $\theta \leftarrow \theta^0$
+\ForAll{$t=1, \ldots$ until convergence}
+
+  \State $\left\{ \bar{M}_{\theta^t}[x_{i},u_{i}]\right\} \leftarrow$\textsc{Compute-ESS}($\mathcal{B}=(G,\theta^{t})$, $S$)
+
+  \ForAll{$i=1, \ldots, n$}
+
+    \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+
+      \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}]}{\bar{M}_{\theta^{t}}[u]}$
+    \EndFor
+  \EndFor
+\EndFor
+\EndProcedure
+\\
+\Function{Compute-ESS}{$\mathcal{B}=(G,\theta)$, $S$} 
+
+\ForAll {$i\in1,\ldots,n$}
+  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+   \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
+  \EndFor
+\EndFor
+
+% \State (Go over all evidence nodes, creating an augmented network
+% for each one, and collect all of the evidence for the nodes in $G$)
+\ForAll{example $S_{j}\in S$}
+
+    \State Let $O_j$ be the observations induced by $S_j$
+    %  (We'll denote $<G',\theta'>$ by $BN_{i}$ as it is the BN induced by example $i$)
+    \ForAll{$o \in O_j$}
+      \State Set the value of $o_V$ to $true$
+    \EndFor
+    \State Run inference on $(G',\theta')$ with evidence $d_{j}$
+    \ForAll{i$ = 1,\ldots,n$}
+      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+    
+        \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
+    
+      \EndFor
+    \EndFor
+\EndFor
+\EndFunction
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+   #+end_export
+
+
+   \newpage
    
 
 ** On Numerical EM
@@ -829,8 +899,22 @@
    to represent the likelihood evidence as a hard-finding on a newly
    created /virtual-node/.
 
-   Consider the Asia Network of Figure [[ref:fig:AsiaNet]] , as in cite:Wasserkrug_all,
-   cite:Mrad_2015.
+   Consider the Asia Network of Figure [[ref:fig:AsiaNet]], as in
+   cite:Wasserkrug_all, cite:Mrad_2015. On the left hand side the core
+   network is presented. Given hard findings or missing evidence we
+   can estimate the parameters of the network via the standard
+   EM-algorithm.
+
+   Consider now the right hand side of Figure [[ref:fig:AsiaNet]]. Assume,
+   as in cite:Wasserkrug_all that likelihood evidence is obtained for
+   the Dysponea node via an optical NLP tool [ONLP] analyzing
+   historical medical records. Then as proposed by
+   cite:pearl2014probabilistic we augment the network as on the right
+   hand side of Figure [[ref:fig:AsiaNet]] by creating a child node of the
+   Dysponea node. Such a child node will encode the likelihood
+   evidence as hard finding by specifying the relation between
+   Dysponea and Dysponea Observed of interest, i.e. it will encode the
+   likelihood evidence via the CPD of $P(DysponeaObs | Dysponea)$.
 
    #+begin_export latex
 \begin{figure}[!h]\vspace{2mm}
@@ -838,7 +922,7 @@
   \caption[Asia Network]{Asia Network - Virtual Evidence Comparison}
   \label{fig:AsiaNet}
   \vspace{2mm}
-  \begin{subfigure}[t]{0.4\linewidth} \label{subfig:gdp}
+  \begin{subfigure}[t]{0.4\linewidth} \label{subfig:missing}
 	\begin{tikzpicture}[node distance={25mm}, main/.style = {draw, align=center}]
 	%% Nodes
 	\node[main] (1) {Asia Visit};
@@ -869,7 +953,7 @@
         \vspace{5mm}
     \caption{Asia Network - Missing Evidence.\\}
   \end{subfigure} \hspace{15mm} 
-  \begin{subfigure}[t]{0.4\linewidth} \label{subfig:un}
+  \begin{subfigure}[t]{0.4\linewidth} \label{subfig:virtual}
 	\begin{tikzpicture}[node distance={25mm}, main/.style = {draw, align=center}]
 	%% Nodes
 	\node[main] (1) {Asia Visit};
@@ -905,15 +989,50 @@
   \vspace{0mm}
 \end{figure}
    #+end_export
-   
-   
 
-   In the case when we have complete instances of such network we can
-   compute the parameters of our network using the classic MLE method
-   as described before.
+   Concretely assume as in cite:Wasserkrug_all that the ONLP correctly
+   characterizes Dysponea 70% of the times when this does in fact
+   occurs. Note that the ONLP tool does not consider any prior
+   information resulting from the probabilistic structure of our
+   network. Then you might encode such likelihood evidence of the ONLP
+   as in Table [[ref:tb:virt-evidence]].
 
-   Consider now
+   #+begin_export latex
+   \begin{table}
 
+   \begin{center}
+   \begin{tabular}{|l||*{2}{c|}}\hline
+   \backslashbox{DysponeaObs}{Dysponea?}
+   &\makebox[3em]{yes}&\makebox[3em]{no}\\\hline\hline
+   True & 0.7 & 0.3\\\hline
+   False & 0.3 & 0.7 \\\hline
+   \end{tabular}
+   \end{center}
+
+   \caption[Virtual Evidence CPT]{DysponeaObs - Virtual Evidence Node CPT}
+   \label{tb:virt-evidence}
+   \end{table}
+   #+end_export
+
+   Given such a CPT, encoding the likelihood evidence, it is possible
+   to set the DyspnoeaObs to true as a hard finding. In such a way you
+   will work with a standard network that is just composed of missing
+   and hard evidence. You can then update the cognitive state of your
+   network by standard inference techniques, and compute the
+   parameters of interest by a standard EM-algorithm.
+
+   Given such explanation it follows that it is possible to rewrite
+   the EM-step by adjusting the E-step such that it will perform its
+   inference step on the virtual evidence augmented network that
+   respects and incorporates the likelihood evidence information. This
+   was the intuition and contribution of cite:Wasserkrug_all and such
+   an algorithm, with the corresponding modification of the E-step, is
+   presented in [[ref:alg:EM-Likelihood]].
+
+   We continue the next section by modifying such algorithm such that
+   it is possible to perform MAP estimation in Bayesian settings.
+
+      
    #+begin_export latex
 \algrenewcommand\algorithmicindent{1.5em}%
 
@@ -929,16 +1048,7 @@
 \Procedure{EM}{$\mathcal{B}$, $S$}
 \State Initialize $\mathcal{B}$'s parameters $\theta \leftarrow \theta^0$
 \ForAll{$t=1, \ldots$ until convergence}
-
-  \State $\left\{ M_{\theta^t}[x_{i},u_{i}]\right\} \leftarrow$\textsc{Compute-ESS}($\mathcal{B}=(G,\theta^{t})$, $S$)
-
-  \ForAll{$i=1, \ldots, n$}
-
-    \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
-
-      \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{M_{\theta^{t}}[x_{i},u_{i}]}{M_{\theta^{t}}[u]}$
-    \EndFor
-  \EndFor
+  \State $M-step \ as \ in \ Algorithm \ 1$
 \EndFor
 \EndProcedure
 \\
@@ -946,7 +1056,7 @@
 
 \ForAll {$i\in1,\ldots,n$}
   \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
-   \State $M[x_{i},u_{i}]\leftarrow 0$
+   \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
   \EndFor
 \EndFor
 
@@ -964,7 +1074,7 @@
     \ForAll{i$ = 1,\ldots,n$}
       \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
     
-        \State $M[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
+        \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
     
       \EndFor
     \EndFor
@@ -988,9 +1098,65 @@
 \end{algorithm*}
    #+end_export
 
-   \newpage
+\newpage
    
-*** TODO explain pearl's me
+** Bayesian Learning MAP - Adjusted EM for Likelihood Evidence 
+
+   The idea of this section is to extend [[ref:alg:EM-Likelihood]] in
+   order to obtain the MAP estimator in a Bayesian Learning setting
+   with Likelihood Evidence.
+
+   We discussed in the previous section how likelihood evidence
+   requires augmenting the core network by virtual evidence nodes as
+   in cite:pearl2014probabilistic and consequently perform the
+   inference step on such augmented networks.
+
+   Such procedure was outlined by the modification of the E-step in
+   comparison to the standard EM algorithm with missing evidence.
+
+   Moreover we discussed in section [[ref:bayes-parameter-learning]] we
+   can adjust the M-step of the EM-algorithm to perform the task of
+   MAP estimation. Both correctness and convergence properties will
+   apply such that we will converge to a local maximum for our
+   posterior distribution.
+
+   Combining the two steps it is immediate to see that it is possible
+   to perform Bayesian Parameter Learning under likelihood evidence
+   by replacing line 7 of [[ref:alg:EM-Likelihood]] with 
+
+   #+begin_export latex
+\begin{algorithm*}[h!]
+\caption{Replace M-step for Bayesian Parameter Learning}
+\label{alg:Bayes-EM-Likelihood}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
+
+\Function{M-Step}{$\mathcal{B}$, $S$}
+   \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}] + \alpha_i - 1}{\sum_j \bar{M}_{\theta^{t}}[x_{j},u_{j}] + \alpha_j - 1}$\\
+   
+   \textbf{return} $(\theta^{t+1})$
+
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+   #+end_export
+
+   Given such a computation it is possible to get to a local maximum
+   for the MAP estimator.
+
+** TODO Write Down Numerical Algorithm for M STEP
+
+* TODO On Probabilistic Evidence
+
+  Here in theory also very straightforward extension. See the
+  cite:Mrad_2015 paper. For at least one case there is a clear pattern
+  that you can use.
+     
+   \newpage
 
     
 * TODOs
@@ -1005,7 +1171,7 @@
   
   \newpage
 
-  bibliography:../literature/references.bib  
+  bibliography:../literature/references.bib
   bibliographystyle:unsrt
 
   

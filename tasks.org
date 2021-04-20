@@ -64,7 +64,17 @@
 
 
 ** TODO add the algorithm for plain EM and from there sequentially increment algorithm throughout the thesis
-   
+
+** TODO notice that at the end there is this nice thing.
+
+   - likelihood evidence alters the e-step. cause it alters the way you
+     do the inference step in your network.
+
+   - map estimation and bayes prior changes the M-step
+
+   so taking the two together you will have both an updated E and M
+   step.
+
 ** WAITING other possible generalizations
    
 *** TODO add jeffery's method and pearl method into the mind map

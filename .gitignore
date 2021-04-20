@@ -3,3 +3,5 @@ merlin
 *.bbl
 _minted-*
 .DS_Store
+thesis_written_part/Thesis.l*
+literature/AAAI-camera.tex

@@ -6,12 +6,61 @@
 
 ** TODO for next week
 
+
+*** TODO write the numerical part of the M-step into the algorithm
+
+    check [[http://www.math.niu.edu/~dattab/math435/LectureNotes.pdf][this document]]. note that you can also use the secant method
+    instead of the newton method. then you do not have to compute the
+    numerical derivative. there you do not have to compute the
+    derivative. the convergence is slower - superlinear instead of
+    quadratic.
+    
+    have to investigate the task of computing the numerical derivative
+    of Q_1 in the thesis. how can you do that? can you simply use
+    central numerical derivative for that? and two times that for the
+    hessian?
+
+    -> all open questions you need to solve at some point.
+
+    *important note:* notice that when computing Q_1 in the numerical
+    derivative, this is nothing else than the score or derivative of
+
+    #+begin_export latex
+    \sum_h P(h | \mathscr{D}, \theta_0) * \frac{\partial}{\partial \theta} l (\theta: \mathscr{D}, \mathscr{H})\\
+    #+end_export
+
+    where such derivative is performed at \theta_0.
+
+    also note that the above is nothing more than the score and
+    information criteria of such log-likelihood. can use plug-in
+    estimators. - no need to go with the secant method nor to compute
+    the numerical derivative. this would be a killer.
+
+    Double check and add this to the document. Should be correct in
+    any case.
+
+
+    -- note that at the end also score and information criteria
+    requires derivative. so not that sure that there is a big benefit
+    doing so. so actually very poor method. would need to compute the
+    gradient and hessian for each all of the possible completion.
+        
+    
 *** TODO think of a network example
 
     think about a network structure where you can apply the
     above. check at this link radu sent you with all of the
 
 
+*** TODO try with a different distribution. i.e. different CPT distribution and prior
+
+    this is an ask of Radu. maybe prioritze shortly. go for instance
+    with the exponential family. this is already very straightforward
+    in the book and a generalization with a conjugate prior should be
+    of no difficulty.
+
+    
+    
 ** DONE understand why global decomposition with complete data and why not with missing
    CLOSED: [2021-04-02 Fri 17:16]
    :PROPERTIES:
@@ -60,7 +109,9 @@
    fine. You can easily extend the EM-algorithm to the Bayesian
    Setting.
    
+
 ** DONE use template of other Thesis for the new one.
+
 
 
 ** TODO add the algorithm for plain EM and from there sequentially increment algorithm throughout the thesis
@@ -75,10 +126,11 @@
    so taking the two together you will have both an updated E and M
    step.
 
+
 ** WAITING other possible generalizations
    
 *** TODO add jeffery's method and pearl method into the mind map
-    SCHEDULED: <2021-04-16 Fri 10:00>
+    SCHEDULED: <2021-05-03 Mon 10:00>
     :PROPERTIES:
     :WILD_NOTIFIER_NOTIFY_BEFORE: 30 10 5
     :END:

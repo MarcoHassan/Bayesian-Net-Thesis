@@ -695,7 +695,7 @@
     \ForAll{$o \in O_j$}
       \State Set the value of $o_V$ to $true$
     \EndFor
-    \State Run inference on $(G',\theta')$ with evidence $d_{j}$
+    \State Run inference on $(G,\theta)$ with evidence $d_{j}$
     \ForAll{i$ = 1,\ldots,n$}
       \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
     
@@ -1084,10 +1084,9 @@
 \Function{Augment-BN}{$\mathcal{B}=(G,\theta)$, $O$} 
   \State Initialize $G'\leftarrow G$, $\theta'\leftarrow\theta$
   \ForAll{$o\in O$}
-  
 
     \State $G'_{\mathbb{V}}\leftarrow G'_{\mathbb{V}}\cup o_{V}$, $G'_{\mathbb{E}}\leftarrow G'_{\mathbb{E}}\cup(V,o_{V})$      \Comment{Add a new observation node to the graph and connect it to the relevant node}
-    \ForAll{$c_{i}\in Conf$}
+    \ForAll{$c_{i}\in Conf$}   \Comment{$Conf$ actual likelihood values provided for a node}
       \State $\theta'\leftarrow\theta'\cup\theta_{O_{V}=true|v_{i}}=c_{i}$ \Comment{Set the relevant CPT entry to be $Pr(obs|V=v_{i})$}
     \EndFor
   \EndFor
@@ -1122,7 +1121,7 @@
 
    Combining the two steps it is immediate to see that it is possible
    to perform Bayesian Parameter Learning under likelihood evidence
-   by replacing line 7 of [[ref:alg:EM-Likelihood]] with 
+   by replacing line 4 of [[ref:alg:EM-Likelihood]] with 
 
    #+begin_export latex
 \begin{algorithm*}[h!]
@@ -1148,14 +1147,199 @@
    Given such a computation it is possible to get to a local maximum
    for the MAP estimator.
 
-** TODO Write Down Numerical Algorithm for M STEP
+
+** Numerical M-step
+
+   This section concludes the chapter on Bayesian Parameter Learning
+   by substituting the M-step of [[ref:alg:Bayes-EM-Likelihood]], by a
+   numerical estimation of the maximum.
+
+   Note, that as argued in the previous sections this has the benefit
+   of allowing a general algorithm that is not bounded to the
+   analytical derivation of the maximum in the M-step.
+
+   #+begin_export latex
+\begin{algorithm*}[h!]
+\caption{Replace M-step for Bayesian Parameter Learning}
+\label{alg:Numerical-M-Step}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$, Current Parameterization $\theta_0$, Threshold $\epsilon$
+
+\Function{M-Step}{$\mathcal{B}$, $S$}
+   \State Numerically Compute $Q_1$
+   \State Numerically Compute $Q_{11}$\\
+
+   \ForAll{$t=0, \ldots$ until convergence}\\
+      \State $\theta^{t+1}= \theta_{t} - Q_{11}^{-1} Q_1$\\
+      \State convergence if $||\theta^{t+1} - \theta_{t}|| < \epsilon$
+   \EndForAll
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+   #+end_export
+
+
+*** TODO formulate the things in the paper below
+
+    and incorporate them in the algo above.
+   
+**** TODO define how you compute such numerical derivative.
+
+     note that you must have the guarantee of positive definite so that
+     you move towards the maximum despite working with an approximate
+     numerical term (with error).
+
+     this goes together with next section notation. you can then use the
+     method there in that paper.
+
+     wow. so you thought well.
+
+   
+**** TODO note that the above Q terms are nothing else than the expected score and expected fisher information
+
+     good paper in [[https://arxiv.org/pdf/1608.01734.pdf][this sense]].
+
+     [[https://scholar.google.com/scholar?q=Method%20for%20Computation%20of%20the%20Fisher%20Information%20Matrix%20in%20the%20Expectation%2DMaximization%20Algorithm&btnG=Search&as_sdt=800000000001&as_sdtp=on][other link]].
+
+     exactly what I was looking forward to.
+
+     incorporate everything in the next step.
+   
 
 * TODO On Probabilistic Evidence
 
-  Here in theory also very straightforward extension. See the
-  cite:Mrad_2015 paper. For at least one case there is a clear pattern
-  that you can use.
-     
+  In the previous chapter we showed how it is possible to rephrase a
+  likelihood evidence as an observed event by means of augmenting the
+  network via /virtual evidence/.
+
+  We could then propagate the information by means of Bayes Rule
+  and update the probabilistic structure of the network.
+  
+  By contrast, with probabilistic evidence such an approach is not
+  viable. This because, as argued by cite:PENG_2010, propagating a
+  probabilistic finding on $X \in \textbf{X}$ requires a revision of
+  the probability distribution of the network P on X by a local
+  probability distribution defined by the probabilistic evidence
+  statement R(X). Or, in other words, as in cite:Mrad_2015, a
+  probabilistic finding R(X) requires a reconsideration of the joint
+  probability distribution P because it replaces the existing prior on
+  the variable X.
+
+  Given the fact that in the presence of probabilistic evidence it is
+  not possible to propagate evidence in the standard way for the
+  initial probability, the solution proposed by cite:jeffrey1990logic,
+  is to replace the initial probabilistic structure of the network $P$
+  by a new probabilistic structure $Q$ that reflects the beliefs in
+  the variables of the model after accepting the probabilistic
+  evidence.
+
+  In the specifics, as well outlined by cite:Mrad_2015, according to
+  what is usually referred as Jeffrey's /probability kinematics/, $Q$
+  must satisfy the following requirements:
+
+  1. the posterior probability distribution on the observed variable X
+     $Q(X)$ is unchanged: $Q(X) = R(X)$. This is in fact the
+     functional requirement of the probabilistic evidence.
+
+  2. the conditional probability distribution of other variables given
+     $X$ remains invariant under the observation: $Q(\textbf{X} \
+     {X} | X) = P (\textbf{X} \ {X} | X)$. This essentially means that
+     even if P and Q disagree on X, they agree on the consequences of
+     X on other variables cite:Mrad_2015.
+
+  With the above specification of a new probabilistic structure
+  satisfying the functional requirements of probabilistic evidence it
+  is possible to compute the probability of a given event by means of
+  Jeffrey's rule:
+
+  #+begin_export latex
+  \begin{equation} \label{eq:Jeffreys_Update}
+   Q(Z = z) = \sum_x P(Z = z | X = x) R(X = x)
+  \end{equation}
+  #+end_export   
+
+  Note that Jeffrey's formula above [[ref:eq:Jeffreys_Update]], albeit
+  being theoretically compelling, cannot be directly applied in
+  Bayesian Networks, as it requires the specification and functional
+  form of the full probabilistic structure of the network in any state
+  of the network in order to compute P(Z = z | X = x). This must be
+  computed according to some inference step.
+
+  The solution to this problem as suggested by cite:Chan_2005 and
+  cite:PENG_2010 is to frame probabilistic evidence into likelihood
+  evidence by computing the likelihood ratio as defined by:
+
+  #+begin_export latex
+  \begin{align} \label{eq:probabilistic-to-likelihood-evidence}
+   L(X) = (\frac{R(x_1)}{P(x_1)}: ... : \frac{R(x_k)}{P(x_k)})
+  \end{align}
+  #+end_export
+
+  It is then possible to prove that propagating such likelihood
+  evidence by means of Pearl's method as described in the previous
+  section, is equivalent to propagating and obtain the probabilistic
+  structure by means of Jeffrey's method [[ref:eq:Jeffreys_Update]].
+
+  It is in fact possible to prove, as in cite:PENG_2010, that with
+  such an approach the posterior probability of X after propagating
+  L(X) by Pearl’s method, is equal to R(X).
+
+  Given such theory it is straightforward to understand that
+  in the case of a single probabilistic evidence we can easily learn
+  the parameters of the Bayesian Network via the following adjustment
+  of the *AUGMENT-BN* function of [[ref:alg:EM-Likelihood]]
+
+   #+begin_export latex
+\algrenewcommand\algorithmicindent{1.5em}%
+
+\begin{algorithm*}[h!]
+\caption{EM-Likelihood: an EM algorithm for learning with likelihood evidence}
+\label{alg:EM-Likelihood}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$, Observations $O$
+
+\Function{Augment-BN}{$\mathcal{B}=(G,\theta)$, $O$} 
+  \State Initialize $G'\leftarrow G$, $\theta'\leftarrow\theta$, $Conf \leftarrow \emptyset$
+  \ForAll{$r_i\in ProbEv(x_j)$}  \Comment{$ProbEv$ is the passed probabilistic evidence. r are the states for the Node.}
+    $Conf \leftarrow frac{r_i}{\mathbf{P}_{x_j}}$ 
+  \EndFor
+  \ForAll{$o\in O$}
+    \State $G'_{\mathbb{V}}\leftarrow G'_{\mathbb{V}}\cup o_{V}$, $G'_{\mathbb{E}}\leftarrow G'_{\mathbb{E}}\cup(V,o_{V})$      \Comment{Add a new observation node to the graph and connect it to the relevant node}
+    \ForAll{$c_{i}\in Conf$}   \Comment{$Conf$ computed likelihood for a probabilistic node}
+      \State $\theta'\leftarrow\theta'\cup\theta_{O_{V}=true|v_{i}}=c_{i}$ \Comment{Set the relevant CPT entry to be $Pr(obs|V=v_{i})$}
+    \EndFor
+  \EndFor
+\State \textbf{return} $(G',\theta')$
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+   #+end_export
+
+   This concludes the section. It is important to mention, to this
+   point that in the case of multiple probabilistic evidence on
+   different nodes, the above approach does not apply.
+
+   This because, as shown by example, by cite:PENG_2010, the algorithm
+   above is not commutative and does not guarantee - for instance for
+   the case R1(X1) and R2(X2) - $Q(X1) \neq R1(X1)$ or $Q(X2) \neq
+   R(X2)$, depending on the order of propagation.
+
+   In order to solve such an issue, and guarantee the functional
+   requirement of probabilistic evidence, a method was proposed by
+   cite:PENG_2010. This involves the combination of an /Iterative
+   Proportional Fitting Procedure (IPFP) algorithm/ with the /big
+   clique algorithm/. Nonetheless, we leave it as a further avenue of
+   research to extend such methods in order Bayesian Parameter
+   Learning.
+   
    \newpage
 
     

@@ -1,4 +1,4 @@
-% Created 2021-04-20 Tue 17:24
+% Created 2021-05-03 Mon 14:18
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -25,7 +25,7 @@
  pdftitle={},
  pdfkeywords={},
  pdfsubject={},
- pdfcreator={Emacs 27.1.91 (Org mode 9.4.4)}, 
+ pdfcreator={Emacs 27.2.50 (Org mode 9.4.4)}, 
  pdflang={English}}
 \begin{document}
 
@@ -79,11 +79,11 @@
 \newpage
 
 \section{{\bfseries\sffamily TODO} Bayesian Networks Overview and Definition \& Literature Review}
-\label{sec:org01d11a7}
+\label{sec:org0ab371f}
 
 
 \section{{\bfseries\sffamily TODO} Learning under Complete Evidence}
-\label{sec:org9ec1c9d}
+\label{complete-learning}
 As vastly documented in the literature there are essentially two
 types of approaches when performing the task of parameter
 learning. The first one is a parameter estimation via \emph{Maximum
@@ -93,11 +93,11 @@ in \cite{Smith_2001}.
 
 
 \subsection{{\bfseries\sffamily TODO} write the gloabl decomposition etc. properties}
-\label{sec:org5d3207f}
+\label{sec:orgcafdfa9}
 
 
 \section{Types of Uncertain Evidence}
-\label{sec:org13d4970}
+\label{sec:orga1cb782}
 
 So far we discussed the case of parameter learning in Bayesian
 Networks in the case of complete evidence, i.e. in the case we could
@@ -228,7 +228,7 @@ parameter learning under uncertain evidence settings.
 
 
 \section{On Missing Evidence}
-\label{sec:org6be9ef4}
+\label{sec:org35067d1}
 
 In the case of missing evidence we have two types of findings for
 the random variables in our network \(<\mathscr{G}, \mathscr{X}>\).
@@ -246,7 +246,7 @@ the way such likelihood term can be represented in the case of
 missing evidence.
 
 \subsection{{\bfseries\sffamily TODO} write down the idea of nasty likelihood and why you need the EM algorithm as a solution}
-\label{sec:orgca53542}
+\label{sec:org3e857c1}
 
 One solution that was proposed is the one of completely ignoring
 the missing evidence and computing a likelihood function just based
@@ -270,7 +270,7 @@ likelihood by marginalizing the missing finding out. This is in
 fact the approach of the EM-algorithm, which we will discuss next.
 
 \subsection{The Mathematics of the EM}
-\label{sec:org5cdcc88}
+\label{math_em}
 As discussed by \cite{koller2009probabilistic} it is possible to frame
 the EM as a coordinate ascent optimization of an energy function we
 will define next. Given such perspective we will be able to prove the
@@ -349,7 +349,7 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsubsection{The Expectation Step}
-\label{sec:org1d3f361}
+\label{sec:org7147fa8}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -376,7 +376,7 @@ interpret the E-step as the step involving the maximization of the
 energy functional along the Q coordinate.
 
 \subsubsection{The Maximization Step}
-\label{sec:org04759eb}
+\label{sec:org1412fbb}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -403,7 +403,7 @@ log-likelihood increases such that theorem \ref{thm:one} is proved.
 
 
 \subsection{Bayesian Parameter Learning}
-\label{sec:org716ff6e}
+\label{bayes-parameter-learning}
 A natural question that arises is whether it is possible to
 generalize the extended algorithm proposed by \cite{Mrad_2015} to the
 case of Bayesian Parameter Learning.
@@ -469,7 +469,7 @@ exercise of the next section.
 \end{article}
 
 \subsubsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:org8d4c786}
+\label{sec:org7adfef9}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -522,7 +522,7 @@ as was the case before but it is rather important to also consider
 the prior distribution \(P(\theta)\).
 
 \subsubsection{Bayesian Parameter Learning - An example}
-\label{sec:orgdb4a3c8}
+\label{sec:orgfa9e09c}
 
 An example for the extension of the EM algorithm to compute the
 maximum a posteriori parameter in the case of missing evidence is
@@ -678,7 +678,7 @@ Algorithmically it is possible to summarize the above as in \ref{alg:EM-Likeliho
     \ForAll{$o \in O_j$}
       \State Set the value of $o_V$ to $true$
     \EndFor
-    \State Run inference on $(G',\theta')$ with evidence $d_{j}$
+    \State Run inference on $(G,\theta)$ with evidence $d_{j}$
     \ForAll{i$ = 1,\ldots,n$}
       \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
     
@@ -698,7 +698,7 @@ Algorithmically it is possible to summarize the above as in \ref{alg:EM-Likeliho
 
 
 \subsection{On Numerical EM}
-\label{sec:orgba2ce89}
+\label{sec:org2d01ce3}
 
 In this section we propose a numerical solution to the M-step of the
 EM algorithm leveraging the theory presented in
@@ -718,7 +718,7 @@ dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
 \subsubsection{Numerical EM for MLE estimator}
-\label{sec:org6517f5e}
+\label{sec:org617f879}
 
 In order to understand how to compute M-step according to an
 iterative method, think at the following.
@@ -787,7 +787,7 @@ interested reader and do not consider this as a viable option for
 our solution.
 
 \subsubsection{Numerical EM for MAP estimator}
-\label{sec:orgf45cac2}
+\label{sec:org3ce0dfd}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -820,7 +820,7 @@ need now to account for the prior distribution influence.
 
 
 \section{On Likelihood Evidence}
-\label{sec:orgb0eb8f7}
+\label{sec:org9076834}
 
 Recall that as defined in \cite{Mrad_2015} in likelihood evidence an
 observation is uncertain due to unreliable source of information.
@@ -860,7 +860,7 @@ parameter learning under likelihood evidence describing the
 approach as in \cite{Wasserkrug_all}.
 
 \subsection{Adjusted EM - Likelihood Evidence}
-\label{sec:orgcccf5b9}
+\label{sec:org4fca43b}
 
 One of the most widespread ways to deal with likelihood evidence
 was introduced by \cite{pearl2014probabilistic}. The idea is to
@@ -1048,10 +1048,9 @@ it is possible to perform MAP estimation in Bayesian settings.
 \Function{Augment-BN}{$\mathcal{B}=(G,\theta)$, $O$} 
   \State Initialize $G'\leftarrow G$, $\theta'\leftarrow\theta$
   \ForAll{$o\in O$}
-  
 
     \State $G'_{\mathbb{V}}\leftarrow G'_{\mathbb{V}}\cup o_{V}$, $G'_{\mathbb{E}}\leftarrow G'_{\mathbb{E}}\cup(V,o_{V})$      \Comment{Add a new observation node to the graph and connect it to the relevant node}
-    \ForAll{$c_{i}\in Conf$}
+    \ForAll{$c_{i}\in Conf$}   \Comment{$Conf$ actual likelihood values provided for a node}
       \State $\theta'\leftarrow\theta'\cup\theta_{O_{V}=true|v_{i}}=c_{i}$ \Comment{Set the relevant CPT entry to be $Pr(obs|V=v_{i})$}
     \EndFor
   \EndFor
@@ -1064,7 +1063,7 @@ it is possible to perform MAP estimation in Bayesian settings.
 \newpage
 
 \subsection{Bayesian Learning MAP - Adjusted EM for Likelihood Evidence}
-\label{sec:orgcac5cd2}
+\label{sec:org861b842}
 
 The idea of this section is to extend \ref{alg:EM-Likelihood} in
 order to obtain the MAP estimator in a Bayesian Learning setting
@@ -1086,7 +1085,7 @@ posterior distribution.
 
 Combining the two steps it is immediate to see that it is possible
 to perform Bayesian Parameter Learning under likelihood evidence
-by replacing line 7 of \ref{alg:EM-Likelihood} with 
+by replacing line 4 of \ref{alg:EM-Likelihood} with 
 
 \begin{algorithm*}[h!]
 \caption{Replace M-step for Bayesian Parameter Learning}
@@ -1110,34 +1109,218 @@ by replacing line 7 of \ref{alg:EM-Likelihood} with
 Given such a computation it is possible to get to a local maximum
 for the MAP estimator.
 
-\subsection{{\bfseries\sffamily TODO} Write Down Numerical Algorithm for M STEP}
-\label{sec:org37551c1}
+
+\subsection{Numerical M-step}
+\label{sec:org6baae90}
+
+This section concludes the chapter on Bayesian Parameter Learning
+by substituting the M-step of \ref{alg:Bayes-EM-Likelihood}, by a
+numerical estimation of the maximum.
+
+Note, that as argued in the previous sections this has the benefit
+of allowing a general algorithm that is not bounded to the
+analytical derivation of the maximum in the M-step.
+
+\begin{algorithm*}[h!]
+\caption{Replace M-step for Bayesian Parameter Learning}
+\label{alg:Numerical-M-Step}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$, Current Parameterization $\theta_0$, Threshold $\epsilon$
+
+\Function{M-Step}{$\mathcal{B}$, $S$}
+   \State Numerically Compute $Q_1$
+   \State Numerically Compute $Q_{11}$\\
+
+   \ForAll{$t=0, \ldots$ until convergence}\\
+      \State $\theta^{t+1}= \theta_{t} - Q_{11}^{-1} Q_1$\\
+      \State convergence if $||\theta^{t+1} - \theta_{t}|| < \epsilon$
+   \EndForAll
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+
+
+\subsubsection{{\bfseries\sffamily TODO} formulate the things in the paper below}
+\label{sec:org175accd}
+
+and incorporate them in the algo above.
+
+\begin{enumerate}
+\item {\bfseries\sffamily TODO} define how you compute such numerical derivative.
+\label{sec:orgafdb0bf}
+
+note that you must have the guarantee of positive definite so that
+you move towards the maximum despite working with an approximate
+numerical term (with error).
+
+this goes together with next section notation. you can then use the
+method there in that paper.
+
+wow. so you thought well.
+
+
+\item {\bfseries\sffamily TODO} note that the above Q terms are nothing else than the expected score and expected fisher information
+\label{sec:org95b6d09}
+
+good paper in \href{https://arxiv.org/pdf/1608.01734.pdf}{this sense}.
+
+\href{https://scholar.google.com/scholar?q=Method\%20for\%20Computation\%20of\%20the\%20Fisher\%20Information\%20Matrix\%20in\%20the\%20Expectation\%2DMaximization\%20Algorithm\&btnG=Search\&as\_sdt=800000000001\&as\_sdtp=on}{other link}.
+
+exactly what I was looking forward to.
+
+incorporate everything in the next step.
+\end{enumerate}
+
 
 \section{{\bfseries\sffamily TODO} On Probabilistic Evidence}
-\label{sec:orgbf79f43}
+\label{sec:org69e2946}
 
-Here in theory also very straightforward extension. See the
-\cite{Mrad_2015} paper. For at least one case there is a clear pattern
-that you can use.
+In the previous chapter we showed how it is possible to rephrase a
+likelihood evidence as an observed event by means of augmenting the
+network via \emph{virtual evidence}.
+
+We could then propagate the information by means of Bayes Rule
+and update the probabilistic structure of the network.
+
+By contrast, with probabilistic evidence such an approach is not
+viable. This because, as argued by \cite{PENG_2010}, propagating a
+probabilistic finding on \(X \in \textbf{X}\) requires a revision of
+the probability distribution of the network P on X by a local
+probability distribution defined by the probabilistic evidence
+statement R(X). Or, in other words, as in \cite{Mrad_2015}, a
+probabilistic finding R(X) requires a reconsideration of the joint
+probability distribution P because it replaces the existing prior on
+the variable X.
+
+Given the fact that in the presence of probabilistic evidence it is
+not possible to propagate evidence in the standard way for the
+initial probability, the solution proposed by \cite{jeffrey1990logic},
+is to replace the initial probabilistic structure of the network \(P\)
+by a new probabilistic structure \(Q\) that reflects the beliefs in
+the variables of the model after accepting the probabilistic
+evidence.
+
+In the specifics, as well outlined by \cite{Mrad_2015}, according to
+what is usually referred as Jeffrey's \emph{probability kinematics}, \(Q\)
+must satisfy the following requirements:
+
+\begin{enumerate}
+\item the posterior probability distribution on the observed variable X
+\(Q(X)\) is unchanged: \(Q(X) = R(X)\). This is in fact the
+functional requirement of the probabilistic evidence.
+
+\item the conditional probability distribution of other variables given
+\(X\) remains invariant under the observation: \(Q(\textbf{X} \
+     {X} | X) = P (\textbf{X} \ {X} | X)\). This essentially means that
+even if P and Q disagree on X, they agree on the consequences of
+X on other variables \cite{Mrad_2015}.
+\end{enumerate}
+
+With the above specification of a new probabilistic structure
+satisfying the functional requirements of probabilistic evidence it
+is possible to compute the probability of a given event by means of
+Jeffrey's rule:
+
+\begin{equation} \label{eq:Jeffreys_Update}
+ Q(Z = z) = \sum_x P(Z = z | X = x) R(X = x)
+\end{equation}
+
+Note that Jeffrey's formula above \ref{eq:Jeffreys_Update}, albeit
+being theoretically compelling, cannot be directly applied in
+Bayesian Networks, as it requires the specification and functional
+form of the full probabilistic structure of the network in any state
+of the network in order to compute P(Z = z | X = x). This must be
+computed according to some inference step.
+
+The solution to this problem as suggested by \cite{Chan_2005} and
+\cite{PENG_2010} is to frame probabilistic evidence into likelihood
+evidence by computing the likelihood ratio as defined by:
+
+\begin{align} \label{eq:probabilistic-to-likelihood-evidence}
+ L(X) = (\frac{R(x_1)}{P(x_1)}: ... : \frac{R(x_k)}{P(x_k)})
+\end{align}
+
+It is then possible to prove that propagating such likelihood
+evidence by means of Pearl's method as described in the previous
+section, is equivalent to propagating and obtain the probabilistic
+structure by means of Jeffrey's method \ref{eq:Jeffreys_Update}.
+
+It is in fact possible to prove, as in \cite{PENG_2010}, that with
+such an approach the posterior probability of X after propagating
+L(X) by Pearl’s method, is equal to R(X).
+
+Given such theory it is straightforward to understand that
+in the case of a single probabilistic evidence we can easily learn
+the parameters of the Bayesian Network via the following adjustment
+of the \textbf{AUGMENT-BN} function of \ref{alg:EM-Likelihood}
+
+\algrenewcommand\algorithmicindent{1.5em}%
+
+\begin{algorithm*}[h!]
+\caption{EM-Likelihood: an EM algorithm for learning with likelihood evidence}
+\label{alg:EM-Likelihood}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$, Observations $O$
+
+\Function{Augment-BN}{$\mathcal{B}=(G,\theta)$, $O$} 
+  \State Initialize $G'\leftarrow G$, $\theta'\leftarrow\theta$, $Conf \leftarrow \emptyset$
+  \ForAll{$r_i\in ProbEv(x_j)$}  \Comment{$ProbEv$ is the passed probabilistic evidence. r are the states for the Node.}
+    $Conf \leftarrow frac{r_i}{\mathbf{P}_{x_j}}$ 
+  \EndFor
+  \ForAll{$o\in O$}
+    \State $G'_{\mathbb{V}}\leftarrow G'_{\mathbb{V}}\cup o_{V}$, $G'_{\mathbb{E}}\leftarrow G'_{\mathbb{E}}\cup(V,o_{V})$      \Comment{Add a new observation node to the graph and connect it to the relevant node}
+    \ForAll{$c_{i}\in Conf$}   \Comment{$Conf$ computed likelihood for a probabilistic node}
+      \State $\theta'\leftarrow\theta'\cup\theta_{O_{V}=true|v_{i}}=c_{i}$ \Comment{Set the relevant CPT entry to be $Pr(obs|V=v_{i})$}
+    \EndFor
+  \EndFor
+\State \textbf{return} $(G',\theta')$
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+
+This concludes the section. It is important to mention, to this
+point that in the case of multiple probabilistic evidence on
+different nodes, the above approach does not apply.
+
+This because, as shown by example, by \cite{PENG_2010}, the algorithm
+above is not commutative and does not guarantee - for instance for
+the case R1(X1) and R2(X2) - \(Q(X1) \neq R1(X1)\) or \(Q(X2) \neq
+   R(X2)\), depending on the order of propagation.
+
+In order to solve such an issue, and guarantee the functional
+requirement of probabilistic evidence, a method was proposed by
+\cite{PENG_2010}. This involves the combination of an \emph{Iterative
+Proportional Fitting Procedure (IPFP) algorithm} with the \emph{big
+clique algorithm}. Nonetheless, we leave it as a further avenue of
+research to extend such methods in order Bayesian Parameter
+Learning.
 
 \newpage
 
 
 \section{TODOs}
-\label{sec:org84abd08}
+\label{sec:orgb79c35e}
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
-\label{sec:orgf4d501d}
+\label{sec:org15ae291}
 
 \item {\bfseries\sffamily TODO} note that network structure G(V,X) how you described. Correct later
-\label{sec:org16e4359}
+\label{sec:orgf103f9e}
 
 \item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
-\label{sec:org63b1fba}
+\label{sec:org419bfcc}
 
 \item {\bfseries\sffamily TODO} make more explicit the difference between synthetically completed missing observations and <?>
-\label{sec:org6d5cd32}
+\label{sec:org2c42e20}
 
 \newpage
 

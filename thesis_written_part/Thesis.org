@@ -240,6 +240,7 @@
    likelihood by marginalizing the missing finding out. This is in
    fact the approach of the EM-algorithm, which we will discuss next.
 
+
 ** The Mathematics of the EM
    :PROPERTIES:
    :CUSTOM_ID: math_em
@@ -388,6 +389,320 @@
     log-likelihood increases such that theorem [[ref:thm:one]] is proved.
 
 
+** An Exponential Family Example
+
+    This section provides an application of theory presented above for
+    the general case of exponential families. The idea is to
+    crystallize the theory developed so far in the general setting of
+    exponential families CPDs.
+
+    Given such a procedure it will be possible for the user to apply
+    the presented theory to a general class of distribution allowing
+    rich modeling for probabilistic graphical models.
+
+    In order to see this recall at first the set $\mathscr{Q}$ of
+    parametric distributions belonging to the exponential family
+    P_{\theta}(X), defined as:
+
+    #+begin_export latex
+    \begin{align} \label{eq:exponential-family}
+    P_{\theta}(X) = \frac{1}{Z(\theta)} exp[\sum_i c(\theta_i)\tau(X_i)] * A(X)
+    \end{align}
+    #+end_export
+
+    where, $Z(\theta)$ is a normalizing term and $\tau(X) = (\tau(X_1),
+    ..., \tau(X_K))$ is the sufficient statistics.
+
+    You can then see that multiple distributions belong to such class
+    of distributions.
+
+    Consider for instance the most basic case when modeling Bayesian
+    Networks, the one of multinomial table-CPDs. You can then see that
+    such distributions belong to the exponential family.
+
+    Recall that for the multinomial table-CPDs with binary $X_i$ the
+    local probability function is given by:
+
+    #+begin_export latex
+    \begin{align} \label{eq:multinomial-cpd}
+    P(X_i|\theta) = \prod_{x_i \in Val(X_i), pa_i \in Val(Pa_i)} \theta_{x_i | Pa_i}^{x_i}
+    \end{align}
+    #+end_export
+
+    You can now frame the above in the exponential family form by
+    defining the sufficient statistics as $\tau(X_i | Pa_i) =
+    \mathbbm{1}_{\{X = x, Pa_i = pa_i : x \in Val(X), pa_i \in
+    Val(Pa_i)\}}$ and $c(\theta_{x_i | Pa_i}) = ln(\theta_{x_i |
+    pa_i})$.
+
+    Given that it is immediate to see that
+    
+    #+begin_export latex
+    \begin{align} \label{eq:multinomial-cpd}
+    P(X_i|\theta) = exp[\sum_{x_i \in Val(X_i), pa_i \in Val(Pa_i)} c(\theta_{x_i | Pa_i}) * \tau(X_i | Pa_i)] 
+    \end{align}
+    #+end_export
+
+    Another of such examples are linear Gaussian Bayesian networks. In
+    such networks the local probability model is defined follows, for
+    a node defined by the random variable X_i it holds:
+
+    #+begin_export latex
+    \begin{align} \label{eq:local-prob-model}
+    X_i = \beta_{i0} + \beta_{i1} * pa_{i1} + ... + \beta_{ip} * pa_{ip} + \epsilon
+    \end{align}
+    #+end_export    
+
+    where $\epsilon \sim N(0,\sigma^2)$.
+
+    Given such definition you have that:
+
+    #+begin_export latex
+    \begin{align} \label{eq:gaussian-cpd}
+    P(X_i|\theta_i) = \frac{1}{\sqrt{2\pi\sigma_i^2}} exp[-\frac{1}{2\sigma_i^2} (x_i - (\beta_{i0} + \beta_{i1} * pa_{i1} + ... + \beta_{ip} * pa_{ip}))^2] 
+    \end{align}
+    #+end_export        
+
+    You can then see by expanding the square that the sufficient
+    statistics for such local exponential distribution is: $\tau(X|Pa) =
+    (1,x,pa_1, ..., pa_p, x^2, xpa_1, . . . , xpa_p, pa_1^2, pa_1pa_2,
+    . . . , pa_p^2)$.
+
+    Leaving such examples and going back to the general definition of
+    exponential family distributions it is immediate to see that if
+    the local CPDs are exponential family distributions, the global
+    probability function over the entire network will be an
+    exponential family distribution.
+
+    Given such a local CPD it follows from the theory of the previous
+    section that in the case of /complete data/, we can solve for the
+    global MLE by locally maximizing individual CPDs. You can then get
+    the MLE of the CPDs by either deriving the MLE by standard
+    analytical theory or by means of M-projection theory and moment
+    matching as argued by cite:koller2009probabilistic.
+
+    Consider now the case of /missing evidence/. Here again it is
+    possible to extend the theory exposed in the previous section in a
+    straightforward way. The idea is again to synthetically complete
+    the dataset and work then according to the theory developed for
+    the /complete data/ case.
+
+    Consider complete instances $m = 1, ..., M$. Then for a general
+    exponential family you have a local CPD likelihood of the form:
+
+    #+begin_export latex
+    \begin{align} \label{eq:exponential-family-likelihood}
+    P(X_i|\theta_i) = \prod_m \frac{1}{Z(\theta_i)} exp[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau(X_i[m])}] * A(X_i[m]) 
+    \end{align}
+    #+end_export        
+
+    In the case of missing evidence, for each instance we might have
+    both observed evidence $d_i[m]$ as well as missing evidence $h_i[m]$.
+
+    Next we generate synthetically complete data and weight these
+    according to their probabilistic occurrence given the network
+    current parameterization.
+
+    #+begin_export latex
+    \begin{align} \label{eq:complete-exponential-family-likelihood}
+    P(X_i|\theta_i) =& \ - Mlog(Z(\theta_i) + \sum_m^M \sum_{h_i[m] \in Val(\mathscr{H}_i[m])} Q(h_i[m]) * \mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])\\
+                & + \sum_m^M \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) * log(A(d[m], h[m]))  \nonumber \\
+    P(X_i|\theta_i) =& \ - Mlog(Z(\theta_i) + \sum_m^M E_Q[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))]
+    \end{align}
+    #+end_export                
+
+    Note at last that the given the above inference step you would
+    have for the global likelihood with K factors
+
+    #+begin_export latex
+    \begin{align} \label{eq:global-likelihood}
+    P(X|\theta) =& \ \prod_i^K P(X_i|\theta_i) \nonumber \\
+    P(X|\theta) =& \ \prod_i^K - Mlog(Z(\theta_i) + \sum_m^M E_Q[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))] \\
+    P(X|\theta) =& \ \prod_i^K - Mlog(Z(\theta_i) + \mathbf{c(\theta_i)}^\intercal \sum_m^M E_Q[\mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))] \nonumber  
+    \end{align}
+    #+end_export                
+
+    Hence, it is possible to see that due to the linearity of the
+    expectation we have global decomposability such that we can
+    estimate the global MLE by estimating local MLE parameter after
+    the inference step.
+
+    Performing this exercise for the two examples above we get the
+    following.
+
+    Starting with the multinomial table CPDs and defining a random
+    variable Y representing the synthetically completed data $<H, D>$,
+    we have that
+
+    #+begin_export latex
+    \begin{align} \label{eq:solution}
+    \tilde{\theta}_{y_i | Pa_i} =& \operatorname*{argmax}_{\theta_{y_i | Pa_i}}  \prod_m \prod_{y_i \in Val(Y_i)} P(Y_i[m]|\theta_i) \nonumber  \\
+    \tilde{\theta}_{y_i | Pa_i} =& \operatorname*{argmax}_{\theta_{y_i | Pa_i}} \sum_m \sum_{y_i \in Val(Y_i), pa_i \in Val(Pa_i)} ln(\theta_{y_i | pa_i}) * \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i = pa_i[m]\}}
+    \end{align}
+    #+end_export
+    
+    With the additional constraints that $\sum_{y_i \in Val(Y_i), pa_i
+    \in Val(Pa_i)} \theta_{y_i | pa_i} = 1$.
+
+    Solving this constrained optimization problem by standard
+    Lagrange method you get: 
+
+    #+begin_export latex
+    \begin{align} \label{eq:solution}
+    \tilde{\theta}_{y_i | Pa_i} =& \frac{\bar{\tau}[y_i, Pa_i]}{\sum_j \bar{\tau}[y_j, Pa_j]}
+    \end{align}
+    #+end_export
+
+    With $\bar{\tau}[y_i, Pa_i] = \sum_m^M \sum_{h[m] \in
+    Val(\mathscr{H}[m])} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i =
+    pa_i[m]\}} = E_Q(\tau(y, pa))$.
+    
+    Algorithmically it is then possible to write such an EM-application for
+    the above case as in [[ref:alg:EM-Likelihood-Complete data]]
+
+   #+begin_export latex
+\algrenewcommand\algorithmicindent{1.5em}%
+
+\begin{algorithm*}[h!]
+\caption{EM-Likelihood: an EM algorithm for learning with likelihood evidence}
+\label{alg:EM-Likelihood-Complete data}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
+
+\Procedure{EM}{$\mathcal{B}$, $S$}
+\State Initialize $\mathcal{B}$'s parameters $\theta \leftarrow \theta^0$
+\ForAll{$t=1, \ldots$ until convergence}
+
+  \State $\left\{ \bar{M}_{\theta^t}[x_{i},u_{i}]\right\} \leftarrow$\textsc{Compute-ESS}($\mathcal{B}=(G,\theta^{t})$, $S$)
+
+  \ForAll{$i=1, \ldots, n$}
+
+    \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+
+      \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}]}{\bar{M}_{\theta^{t}}[u]}$
+    \EndFor
+  \EndFor
+\EndFor
+\EndProcedure
+\\
+\Function{Compute-ESS}{$\mathcal{B}=(G,\theta)$, $S$} 
+
+\ForAll {$i\in1,\ldots,n$}
+  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+   \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
+  \EndFor
+\EndFor
+
+% \State (Go over all evidence nodes, creating an augmented network
+% for each one, and collect all of the evidence for the nodes in $G$)
+\ForAll{example $S_{j}\in S$}
+
+    \State Let $O_j$ be the observations induced by $S_j$
+    %  (We'll denote $<G',\theta'>$ by $BN_{i}$ as it is the BN induced by example $i$)
+    \ForAll{$o \in O_j$}
+      \State Set the value of $o_V$ to $true$
+    \EndFor
+    \State Run inference on $(G,\theta)$ with evidence $d_{j}$
+    \ForAll{i$ = 1,\ldots,n$}
+      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+    
+        \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
+    
+      \EndFor
+    \EndFor
+\EndFor
+\EndFunction
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+   #+end_export
+
+
+   Turning to the second example, the one of linear Gaussian CPDs we
+   have for the local CPD
+
+   #+begin_export latex
+   \begin{align} \label{eq:like-gaussian-cpd}
+   P(X|\theta) = \prod_m \frac{1}{\sqrt{2\pi\sigma^2}} exp[-\frac{1}{2\sigma^2} (x[m] - (\beta_0 + \beta_1 * pa_1[m] + ... + \beta_K * pa_K[m]))^2] 
+   \end{align}
+   #+end_export
+
+   such that once more we have an exponential family, which likelihood
+   we aim to optimize.
+
+   In order to perform such a task we refer to the M-projection
+   theory. As proved by cite:koller2009probabilistic, the M-projection
+   of an arbitrary distribution on the exponential family results is
+   given by parameterization  where the expected sufficient
+   statistics of the distribution match.
+
+   Moreover, given the fact that it is possible to prove that the MLE
+   of an exponential family is nothing else than the M-projection of
+   the empirical distribution on such exponential family, it follows
+   immediately that we can find the MLE parameterization by finding
+   the M-projection through moment-matching.
+
+   In the specific to solve such MLE problem we need to find the
+   parameterization such that the empirical average of the sufficient
+   statistics correspond to the one of the expected sufficient
+   statistics.
+
+   Such that it is generally possible to compute the MLE of
+   exponential families by firstly computing a map
+
+   $$ess(\theta) = E_{P_\theta}(\tau(X))$$
+
+   Then, if possible, inverting such map
+
+   $$\theta = ess^{-1}$$
+
+   and finally inserting the empirical moments of the expected
+   sufficient statistics.
+
+   Doing the above exercise for a simple linear Gaussian CPD with a
+   single parent we would get the following picture
+
+   #+begin_export latex
+   \begin{align*}
+   ess (\theta) &= ess\begin{pmatrix}
+                   \beta_0\\
+		   \beta_1
+		   \end{pmatrix} \\
+		   &= \begin{pmatrix}
+		   E_{P_\theta}(X) = \beta_0 + \beta_1 E_{P_\theta}(Pa_1) \\
+		   E_{P_\theta}(X * Pa_1) = \beta_0 E_{P_\theta}(Pa_1) + \beta_1 E_{P_\theta}(Pa_1^2)
+		   \end{pmatrix}
+  \end{align*}
+   #+end_export
+
+
+   Such that inverting such a map and inserting the empirical moments
+   we get
+   
+   #+begin_export latex
+   \begin{align}
+   \theta &= \begin{pmatrix}
+                   \beta_0\\
+		   \beta_1
+             \end{pmatrix} 
+          = \begin{pmatrix}
+		   E_D(X) - \frac{E_D(X*Pa_1)- E_D(X)E_D(Pa_1)}{E_D(Pa_1) - E_D(Pa_1)^2} * E_D(Pa_1)\\
+		   \frac{E_D(X*Pa_1)- E_D(X)E_D(Pa_1)}{E_D(Pa_1) - E_D(Pa_1)^2}
+             \end{pmatrix}
+  \end{align}
+   #+end_export
+
+   where the empirical moments are given by $E_D(X) = \frac{1}{M}
+   \sum_m x_m$ and similar.
+
+   As a final note, please note that it is straightforward to get as
+   well the parameters of the multinomial table CPT by means of
+   M-projection.    
+
 ** Bayesian Parameter Learning
    :PROPERTIES:
    :CUSTOM_ID: bayes-parameter-learning
@@ -460,9 +775,6 @@
    maximizing the score map of [[ref:eq:bayes_map]]. This will be the main
    exercise of the next section.
 
-     #+Begin_export latex
- \end{article}
-   #+end_export  
 
 *** Bayesian Parameter Learning - EM Generalization
 
@@ -522,7 +834,8 @@
     as was the case before but it is rather important to also consider
     the prior distribution $P(\theta)$.
    
-*** Bayesian Parameter Learning - An example
+
+*** Bayesian Parameter Learning - A CPT example
 
     An example for the extension of the EM algorithm to compute the
     maximum a posteriori parameter in the case of missing evidence is
@@ -648,73 +961,19 @@
     of the maximum a posteriori point estimate such that we will choose
     a local maximum point estimator.
 
-    Algorithmically it is possible to summarize the above as in [[ref:alg:EM-Likelihood-Complete data]]
+*** Bayesian Parameter Learning - An Exponential Family Generalization
 
-   #+begin_export latex
-\algrenewcommand\algorithmicindent{1.5em}%
+    This section generalizes the exercise of the above section for
+    general exponential family distributions. We will see next that
+    when choosing conjugate priors we will get as posteriors well
+    known distributions such that we will get the analytical solution
+    for the maximum of such distribution from standard statistical
+    theory available in any basics statistical book.
 
-\begin{algorithm*}[h!]
-\caption{EM-Likelihood: an EM algorithm for learning with likelihood evidence}
-\label{alg:EM-Likelihood-Complete data}
-%\begin{\algsize}
-\vspace{-10pt}
-\begin{multicols}{2}
-\begin{algorithmic}[1] 
-\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
-
-\Procedure{EM}{$\mathcal{B}$, $S$}
-\State Initialize $\mathcal{B}$'s parameters $\theta \leftarrow \theta^0$
-\ForAll{$t=1, \ldots$ until convergence}
-
-  \State $\left\{ \bar{M}_{\theta^t}[x_{i},u_{i}]\right\} \leftarrow$\textsc{Compute-ESS}($\mathcal{B}=(G,\theta^{t})$, $S$)
-
-  \ForAll{$i=1, \ldots, n$}
-
-    \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
-
-      \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}]}{\bar{M}_{\theta^{t}}[u]}$
-    \EndFor
-  \EndFor
-\EndFor
-\EndProcedure
-\\
-\Function{Compute-ESS}{$\mathcal{B}=(G,\theta)$, $S$} 
-
-\ForAll {$i\in1,\ldots,n$}
-  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
-   \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
-  \EndFor
-\EndFor
-
-% \State (Go over all evidence nodes, creating an augmented network
-% for each one, and collect all of the evidence for the nodes in $G$)
-\ForAll{example $S_{j}\in S$}
-
-    \State Let $O_j$ be the observations induced by $S_j$
-    %  (We'll denote $<G',\theta'>$ by $BN_{i}$ as it is the BN induced by example $i$)
-    \ForAll{$o \in O_j$}
-      \State Set the value of $o_V$ to $true$
-    \EndFor
-    \State Run inference on $(G,\theta)$ with evidence $d_{j}$
-    \ForAll{i$ = 1,\ldots,n$}
-      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+    Given such theory we will allow the general usage of exponential
+    families with conjugate priors such that a vast multitude of
+    modeling possibilities will be given to the end user. 
     
-        \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
-    
-      \EndFor
-    \EndFor
-\EndFor
-\EndFunction
-\end{algorithmic}
-\end{multicols}
-%\end{\algsize}
-\end{algorithm*}
-   #+end_export
-
-
-   \newpage
-   
-
 ** On Numerical EM
 
    In this section we propose a numerical solution to the M-step of the
@@ -1147,7 +1406,6 @@
    Given such a computation it is possible to get to a local maximum
    for the MAP estimator.
 
-
 ** Numerical M-step
 
    This section concludes the chapter on Bayesian Parameter Learning
@@ -1210,7 +1468,7 @@
      incorporate everything in the next step.
    
 
-* TODO On Probabilistic Evidence
+* On Probabilistic Evidence
 
   In the previous chapter we showed how it is possible to rephrase a
   likelihood evidence as an observed event by means of augmenting the
@@ -1308,7 +1566,7 @@
 \Function{Augment-BN}{$\mathcal{B}=(G,\theta)$, $O$} 
   \State Initialize $G'\leftarrow G$, $\theta'\leftarrow\theta$, $Conf \leftarrow \emptyset$
   \ForAll{$r_i\in ProbEv(x_j)$}  \Comment{$ProbEv$ is the passed probabilistic evidence. r are the states for the Node.}
-    $Conf \leftarrow frac{r_i}{\mathbf{P}_{x_j}}$ 
+    $Conf \leftarrow \frac{r_i}{\mathbf{P}_{x_j}}$ 
   \EndFor
   \ForAll{$o\in O$}
     \State $G'_{\mathbb{V}}\leftarrow G'_{\mathbb{V}}\cup o_{V}$, $G'_{\mathbb{E}}\leftarrow G'_{\mathbb{E}}\cup(V,o_{V})$      \Comment{Add a new observation node to the graph and connect it to the relevant node}
@@ -1351,7 +1609,9 @@
     
 **** TODO make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
 
-**** TODO make more explicit the difference between synthetically completed missing observations and <?> 
+**** TODO make more explicit the difference between synthetically completed missing observations and <?>
+     
+**** TODO note that the EM you loose global decomposition such that at the end with the local maxima of CPDs achieved by EM you ultimately just get a local maximum.
   
   \newpage
 
@@ -1359,3 +1619,19 @@
   bibliographystyle:unsrt
 
   
+
+
+**** TODO for last section - check at the following chapter.
+
+     Concept: Representation Independence - in chapter 17 of the
+     koller book. this is central as if that breaks apart the entire
+     modeling and parameterization and models outlined here in the
+     thesis fall apart.
+
+     you should therefore be careful with it.
+  
+**** TODO check chapter 17 for making the point below
+
+     say at the end that the entire theory does not hold for locally
+     shared and globally shared network parameters. there you would
+     have to adjust the entire thing

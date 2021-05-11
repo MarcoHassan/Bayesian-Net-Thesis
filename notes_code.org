@@ -552,6 +552,7 @@ BAYES                 // first line always specify the type of graphical model: 
 
     where x_2 = 0, x_3 = 1.
     
+
 *** .vevid
 
     same idea here. same structure just you have likelihoods instead
@@ -608,3 +609,70 @@ BAYES                 // first line always specify the type of graphical model: 
 ** Recall that in Pearls method the extended virtual node is always set to true.
 
 ** IMPORTANT: note that the likelihood ratios are passed normalized in the IBM paper... so that they in fact represent probabilities P(obs | x_i)
+
+** Linear Gaussian Bayesian Networks
+
+   linear
+   Gaussian CPDs the local likelihood is given by:
+
+
+   Performing this task you would have for the log-likelihood of
+   linear Gaussian Bayesian:
+    
+   #+begin_export latex
+   \begin{align} \label{eq:like-gaussian-cpd}
+   P(X|\theta) = \sum_m -log(\sqrt{2\pi\sigma^2}) \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) * - \mathbf{\theta}^\intercal \mathbf{\tau(d[m], h[m])}
+   \end{align}
+   #+end_export            
+
+   Such that
+
+     
+*** TODO TO SOLVE THAT PART WORK AS FOLLOWS
+
+**** TODO Look at the chapter 19
+
+     there you can see how the same step of expectation is valid for
+     the case of exponential families. there is also clear what the
+     sufficient statistics are - recall your course of mathematical
+     statistics.
+
+     apparently you use the very same sufficient statistics for the
+     exercise of performing your Map projection - see first point
+     here above.
+
+     so you get this fish and you can most likely write here the
+     theory for the general exponential family. then just a matter of
+     generalizing the above.
+
+     there the idea is that you can compute expected sufficient
+     statistics, instead of simple sufficient statistics in the very
+     same way, i.e. through the posterior P(H | O, \theta_{current}).
+
+     then you can use these when computing the M-step.
+
+     so it is the same story. have just to understand better the
+     story of the expected sufficient statistics and how it is
+     defined in 17. especially for the empirical distribution and
+     not. then understand the inverting process. and from there it
+     should be clear.
+
+     the confusing point to this stage is that you will have two
+     expected steps which I do not think will be the same.
+
+     I would suggest the following:
+
+     1. compute the MLE for a standard case.
+
+     2. understand what is the sufficient statistics in there.
+
+     3. understand how you can compute the ess from there.
+
+     4. relate everything and make sense of it also in conjunction
+        with the piece of information from the chapter 17 in here.
+
+
+
+   \newpage
+
+   

@@ -1,4 +1,4 @@
-% Created 2021-05-10 Mon 20:02
+% Created 2021-05-14 Fri 16:43
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -79,7 +79,7 @@
 \newpage
 
 \section{{\bfseries\sffamily TODO} Bayesian Networks Overview and Definition \& Literature Review}
-\label{sec:org288d2b2}
+\label{sec:orgccd32da}
 
 
 \section{{\bfseries\sffamily TODO} Learning under Complete Evidence}
@@ -93,11 +93,11 @@ in \cite{Smith_2001}.
 
 
 \subsection{{\bfseries\sffamily TODO} write the gloabl decomposition etc. properties}
-\label{sec:orga601665}
+\label{sec:org7321e90}
 
 
 \section{Types of Uncertain Evidence}
-\label{sec:org6311014}
+\label{sec:orge076ee1}
 
 So far we discussed the case of parameter learning in Bayesian
 Networks in the case of complete evidence, i.e. in the case we could
@@ -228,7 +228,7 @@ parameter learning under uncertain evidence settings.
 
 
 \section{On Missing Evidence}
-\label{sec:org636ff9d}
+\label{sec:org6870e7b}
 
 In the case of missing evidence we have two types of findings for
 the random variables in our network \(<\mathscr{G}, \mathscr{X}>\).
@@ -246,7 +246,7 @@ the way such likelihood term can be represented in the case of
 missing evidence.
 
 \subsection{{\bfseries\sffamily TODO} write down the idea of nasty likelihood and why you need the EM algorithm as a solution}
-\label{sec:orgb0c0ec5}
+\label{sec:org48dfe09}
 
 One solution that was proposed is the one of completely ignoring
 the missing evidence and computing a likelihood function just based
@@ -350,7 +350,7 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsubsection{The Expectation Step}
-\label{sec:org37ddaad}
+\label{sec:org5dd2471}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -377,7 +377,7 @@ interpret the E-step as the step involving the maximization of the
 energy functional along the Q coordinate.
 
 \subsubsection{The Maximization Step}
-\label{sec:orgf001ac6}
+\label{sec:orgfb534cf}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -404,7 +404,7 @@ log-likelihood increases such that theorem \ref{thm:one} is proved.
 
 
 \subsection{An Exponential Family Example}
-\label{sec:org5d4d41c}
+\label{sec:orge8be57b}
 
 This section provides an application of theory presented above for
 the general case of exponential families. The idea is to
@@ -512,8 +512,8 @@ P(X_i|\theta_i) =& \ - Mlog(Z(\theta_i) + \sum_m^M \sum_{h_i[m] \in Val(\mathscr
 P(X_i|\theta_i) =& \ - Mlog(Z(\theta_i) + \sum_m^M E_Q[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))]
 \end{align}
 
-Note at last that the given the above inference step you would
-have for the global likelihood with K factors
+Note at last that given the above inference step you would have
+for the global likelihood with K factors
 
 \begin{align} \label{eq:global-likelihood}
 P(X|\theta) =& \ \prod_i^K P(X_i|\theta_i) \nonumber \\
@@ -545,12 +545,12 @@ Solving this constrained optimization problem by standard
 Lagrange method you get: 
 
 \begin{align} \label{eq:solution}
-\tilde{\theta}_{y_i | Pa_i} =& \frac{\bar{\tau}[y_i, Pa_i]}{\sum_j \bar{\tau}[y_j, Pa_j]}
+\tilde{\theta}_{y_i | Pa_i} =& \frac{\bar{M}[y_i, Pa_i]}{\sum_j \bar{M}[y_j, Pa_j]}
 \end{align}
 
-With \(\bar{\tau}[y_i, Pa_i] = \sum_m^M \sum_{h[m] \in
+With \(\bar{M}[y_i, Pa_i] = \sum_m^M \sum_{h[m] \in
     Val(\mathscr{H}[m])} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i =
-    pa_i[m]\}} = E_Q(\tau(y, pa))\).
+    pa_i[m]\}} = E_Q(M(y, pa)), \ M(y, pa) = \sum_m \tau(y,pa)\).
 
 Algorithmically it is then possible to write such an EM-application for
 the above case as in \ref{alg:EM-Likelihood-Complete data}
@@ -619,7 +619,8 @@ Turning to the second example, the one of linear Gaussian CPDs we
 have for the local CPD
 
 \begin{align} \label{eq:like-gaussian-cpd}
-P(X|\theta) = \prod_m \frac{1}{\sqrt{2\pi\sigma^2}} exp[-\frac{1}{2\sigma^2} (x[m] - (\beta_0 + \beta_1 * pa_1[m] + ... + \beta_K * pa_K[m]))^2] 
+P(X|\theta) = &\prod_m \prod_{y_i \in Val(Y_i), pa_i \in Val(Pa_i)} \prod_{h[m] \in Val(\mathscr{H}[m])} \frac{1}{\sqrt{2\pi\sigma^2}} exp[-\frac{1}{2\sigma^2} (Q(h[m]) * y[m]  \\
+            & - (\beta_0 + \beta_1 * pa_1[m] + ... + \beta_K * pa_K[m]))^2]  \nonumber
 \end{align}
 
 such that once more we have an exponential family, which likelihood
@@ -627,25 +628,27 @@ we aim to optimize.
 
 In order to perform such a task we refer to the M-projection
 theory. As proved by \cite{koller2009probabilistic}, the M-projection
-of an arbitrary distribution on the exponential family results is
-given by parameterization  where the expected sufficient
-statistics of the distribution match.
+of an arbitrary distribution on the exponential family is given by
+parameterization where the expected sufficient statistics of the
+two distributions match.
 
 Moreover, given the fact that it is possible to prove that the MLE
 of an exponential family is nothing else than the M-projection of
-the empirical distribution on such exponential family, it follows
-immediately that we can find the MLE parameterization by finding
-the M-projection through moment-matching.
+the empirical distribution on the exponential distribution of
+interest, it follows immediately that we can find the MLE
+parameterization by finding the M-projection through
+moment-matching.
 
 In the specific to solve such MLE problem we need to find the
 parameterization such that the empirical average of the sufficient
-statistics correspond to the one of the expected sufficient
-statistics.
+statistics corresponds to the one of the expected sufficient
+statistics given the exponential family parameterization.
 
-Such that it is generally possible to compute the MLE of
-exponential families by firstly computing a map
+Given the above results from information theory it is generally
+possible to compute the MLE of exponential families in the presence
+of missing data by firstly computing a map
 
-$$ess(\theta) = E_{P_\theta}(\tau(X))$$
+$$ess(\theta) = E_{P_\theta}(E_Q(\tau(Y)))$$
 
 Then, if possible, inverting such map
 
@@ -653,6 +656,13 @@ $$\theta = ess^{-1}$$
 
 and finally inserting the empirical moments of the expected
 sufficient statistics.
+
+Note that due to the virtual evidence synthetically completed
+dataset you work with the expected - expected sufficient
+statistics. Where the double expectation has to account on the one
+hand the expectation of the virtual evidence and, on the other
+hand, the moment matching expectation given the exponential family
+parameterization from the M-projection theory. 
 
 Doing the above exercise for a simple linear Gaussian CPD with a
 single parent we would get the following picture
@@ -663,8 +673,8 @@ single parent we would get the following picture
 		 \beta_1
 		 \end{pmatrix} \\
 		 &= \begin{pmatrix}
-		 E_{P_\theta}(X) = \beta_0 + \beta_1 E_{P_\theta}(Pa_1) \\
-		 E_{P_\theta}(X * Pa_1) = \beta_0 E_{P_\theta}(Pa_1) + \beta_1 E_{P_\theta}(Pa_1^2)
+		 E_{P_\theta}(E_Q(Y)) = \beta_0 + \beta_1 E_{P_\theta}(Pa_1) \\
+		 E_{P_\theta}(E_Q(Y * Pa_1)) = \beta_0 E_{P_\theta}(Pa_1) + \beta_1 E_{P_\theta}(Pa_1^2)
 		 \end{pmatrix}
 \end{align*}
 
@@ -673,23 +683,32 @@ Such that inverting such a map and inserting the empirical moments
 we get
 
  \begin{align}
- \theta &= \begin{pmatrix}
-                 \beta_0\\
-		 \beta_1
+ \hat{\theta} &= \begin{pmatrix}
+                 \hat{\beta_0}\\
+		 \hat{\beta_1}
            \end{pmatrix} 
         = \begin{pmatrix}
-		 E_D(X) - \frac{E_D(X*Pa_1)- E_D(X)E_D(Pa_1)}{E_D(Pa_1) - E_D(Pa_1)^2} * E_D(Pa_1)\\
-		 \frac{E_D(X*Pa_1)- E_D(X)E_D(Pa_1)}{E_D(Pa_1) - E_D(Pa_1)^2}
+		 E_D(E_Q(Y)) - \frac{E_D(E_Q(Y*Pa_1))- E_D(E_Q(Y))E_D(Pa_1)}{E_D(Pa_1^2) - E_D(Pa_1)^2} * E_D(Pa_1)\\
+		 \frac{E_D(E_Q(Y*Pa_1))- E_D(E_Q(Y))E_D(Pa_1)}{E_D(Pa_1^2) - E_D(Pa_1)^2}
            \end{pmatrix}
 \end{align}
 
-where the empirical moments are given by \(E_D(X) = \frac{1}{M}
-   \sum_m x_m\) and similar.
+where the empirical moments are given by \(E_D(E_Q(X)) = \frac{1}{M}
+   \sum_m \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) y[m]\) and
+similar.    
 
-As a final note, please note that it is straightforward to get as
-well the parameters of the multinomial table CPT by means of
-M-projection.
+It is now clear that such an approach can be used in the general
+case of exponential families. You can for instance easily get to
+the MLE result of the multinomial case achieved via Lagrange method
+through the moment matching idea presented above.
 
+In general the methodical frame is the following; you substitute
+the inference step in line 27 of Algorithm
+\ref{alg:EM-Likelihood-Complete data} with an inference step
+calculating the expected sufficient statistics of interest given
+the exponential family distribution of choice. You can insert in
+the M-step of line 6-9, the M-projection parameterization obtained
+as discussed above. Finally you iterate until convergence.
 
 \subsection{Bayesian Parameter Learning}
 \label{bayes-parameter-learning}
@@ -698,8 +717,8 @@ generalize the extended algorithm proposed by \cite{Mrad_2015} to the
 case of Bayesian Parameter Learning.
 
 Recall that in Bayesian statistics rather than treating the
-parameters of interest as fixed but unknown you treat them as random
-variables themselves.
+parameters of interest as fixed but unknown variables you treat
+them as random variables themselves.
 
 You would then specify a prior, i.e. a probability distribution, for
 the data governing process of the parameters. This can be either a
@@ -731,19 +750,20 @@ Another way you can set your parameters is by choosing the most
 likely point estimate. This is the maximum a posteriori point
 estimate and is defined in mathematical terms as follows:
 
-\begin{align} 
+\begin{align} \label{eq:bayes_map}
 \tilde{\theta} =& \operatorname*{argmax}_{\theta} \frac{P (\mathscr{D} | \theta) * P(\theta)}{P (\mathscr{D})} \nonumber\\
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} P (\mathscr{D} | \theta) * P(\theta)\\ \label{eq:bayes_map}
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} log (P (\mathscr{D} | \theta)) + log (P(\theta)) \nonumber \\
-\nonumber \\ 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} P (\mathscr{D} | \theta) * P(\theta)\\ 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} log (P (\mathscr{D} | \theta)) + log (P(\theta)) \nonumber
+\end{align}
+\begin{align} \label{eq:bayes_map2}
 score_{MAP} (\theta : \mathscr{D}) =& \ log (P (\mathscr{D} | \theta)) + log (P(\theta)) \nonumber\\
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} score_{MAP}(\theta : \mathscr{D})
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} score_{MAP}(\theta : \mathscr{D}) 
 \end{align}
 
-Where the last equation in (12) follows immediately from the properties of
-the logarithm function. And the second equation in (12) from the fact that
-the normalizing constant does not depend on the parameter of
-interest.
+Where the last equation in \ref{eq:bayes_map} follows immediately
+from the properties of the logarithm function. And the second
+equation in \ref{eq:bayes_map} from the fact that the normalizing
+constant does not depend on the parameter of interest.
 
 Given the above it is possible to understand that the conclusions
 from the previous chapter about the EM algorithm apply. The first
@@ -752,11 +772,11 @@ section. The only difference will be in the prior distribution term.
 
 We will show next that it is possible to adjust the M-step of the EM
 algorithm in order to have a properly working EM algorithm
-maximizing the score map of \ref{eq:bayes_map}. This will be the main
+maximizing the score map of \ref{eq:bayes_map2}. This will be the main
 exercise of the next section.
 
 \subsubsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:org435ee10}
+\label{sec:orgf551d66}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -809,8 +829,7 @@ as was the case before but it is rather important to also consider
 the prior distribution \(P(\theta)\).
 
 \subsubsection{Bayesian Parameter Learning - A CPT example}
-\label{sec:org7687eb4}
-
+\label{cpt:cpt_bayes_learning}
 An example for the extension of the EM algorithm to compute the
 maximum a posteriori parameter in the case of missing evidence is
 treated in this section.
@@ -843,7 +862,7 @@ And consider the adjusted energy functional
 \ref{eq:adj_energy_functional} from which we can derive the new
 likelihood expression in the case of missing evidence by defining a
 new random variable \(Y\) expressing complete data observations
-\((H, D)\):
+\(<H, D>\):
 
 \begin{align} \label{eq:dirichlet-multinomial-likelihood}
 \tilde{F}[\theta, Q] =& \ E_Q[P_\theta(Y)] + H_Q (Y)
@@ -919,25 +938,77 @@ The correctness and convergence properties of EM apply to the score
 of the maximum a posteriori point estimate such that we will choose
 a local maximum point estimator.
 
-
-
 \subsubsection{Bayesian Parameter Learning - An Exponential Family Generalization}
-\label{sec:org06bfd25}
+\label{sec:org222a5df}
 
-It is possible to generalize the theory in the previous section to
-the general case of exponential families.
+This section generalizes the exercise of the above section for
+general exponential family distributions. As discussed in
+\cite{barndorff1978hyperbolic}, \cite{geiger1998asymptotic},
+\cite{lauritzen1996graphical} and as well known from standard
+statistical theory such distributions are particularly well suited
+for statistical analysis due to their properties. 
 
-It is in fact possible to see that for any choice of exponential
-family you can work with conjugate priors 
+Albeit the only restriction for the choice of the prior
+distribution are the one mentioned at the end of the previous
+section a particularly sensible selection for the prior
+distribution is the one of using conjugate priors as defined by
+\cite{schlaifer1961applied}. This because, when using conjugate
+priors the data is incorporated into the posterior distribution
+only through the sufficient statistics such that there will exist
+relatively simple formulas for updating the prior into the
+posterior \cite{fink1997compendium}.
 
+Moreover, through such a property it will be easy to compute the
+MLE according to the sufficient statistics in the \emph{complete data}
+case, or according to the expected sufficient statistics in the
+case of \emph{missing data} evidence. Moreover, the fact that conjugate
+priors of exponential family distributions will be well known
+exponential family distributions will further help in the
+parameter estimation given that the maximum for such posterior
+distributions are well documented in many statistical textbooks.
 
+You can note in fact that Dirichlet prior chosen in the previous
+section is nothing else then the conjugate prior to the
+multinomial distribution. Note however that the resulting
+posterior is not an exponential distribution such that you cannot
+apply the M-projection theory to get the result above.
 
+Turning to the linear Gaussian parametric model presented in this
+thesis it is possible to see that the conditional distribution of
+local nodes in the network arises by a multivariate normal
+distribution of the parents, see for instance
+\cite{koller2009probabilistic}.
+
+It follows therefore that one way for performing Bayesian
+parameter learning in linear Gaussian Bayesian networks is by
+specifying a normal-inverse Wishart prior distribution on the
+multivariate mean and co-variance matrix of the local nodes
+parents.
+
+After obtaining the new posterior hyperparameters depending on the
+prior hyperparameters and the sufficient (expected) sufficient
+statistics in the case of complete (missing) data, it is possible
+to obtain the maximum by getting the mode of the resulting
+multivariate t-distribution according to such hyperparameters.
 
 \subsection{On Numerical EM}
-\label{sec:org8ad5fa2}
+\label{sec:org776d370}
 
-In this section we propose a numerical solution to the M-step of the
-EM algorithm leveraging the theory presented in
+As argued in the previous section when working with conjugate prior
+we might easily get to closed form solutions for the maximum of the
+posterior.
+
+However, as was previously discussed it might be limiting to
+restrict the prior specification to conjugate priors of exponential
+distributions.
+
+To tackle this issue and address the possibility of using a richer
+class of likelihood-priors instantiations we propose in this
+section some arguments for iteratively computing the maximum of an
+arbitrary well behaved distribution as discussed in section \ref{cpt:cpt_bayes_learning}.
+
+In order to do that we propose a numerical solution to the M-step
+of the EM algorithm leveraging the theory presented in
 \cite{ruud1989comparison}.
 
 We will generalize the theory presented that far such that it is
@@ -953,8 +1024,11 @@ computationally intensive tasks. This especially in highly
 dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
+
+
+
 \subsubsection{Numerical EM for MLE estimator}
-\label{sec:org580459a}
+\label{sec:orgde3fbb4}
 
 In order to understand how to compute M-step according to an
 iterative method, think at the following.
@@ -1023,7 +1097,7 @@ interested reader and do not consider this as a viable option for
 our solution.
 
 \subsubsection{Numerical EM for MAP estimator}
-\label{sec:org21839d1}
+\label{sec:orgb26e491}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -1056,7 +1130,7 @@ need now to account for the prior distribution influence.
 
 
 \section{On Likelihood Evidence}
-\label{sec:org9b6b35c}
+\label{sec:org7d87408}
 
 Recall that as defined in \cite{Mrad_2015} in likelihood evidence an
 observation is uncertain due to unreliable source of information.
@@ -1096,7 +1170,7 @@ parameter learning under likelihood evidence describing the
 approach as in \cite{Wasserkrug_all}.
 
 \subsection{Adjusted EM - Likelihood Evidence}
-\label{sec:org4ba156d}
+\label{sec:orgd64fa29}
 
 One of the most widespread ways to deal with likelihood evidence
 was introduced by \cite{pearl2014probabilistic}. The idea is to
@@ -1299,7 +1373,7 @@ it is possible to perform MAP estimation in Bayesian settings.
 \newpage
 
 \subsection{Bayesian Learning MAP - Adjusted EM for Likelihood Evidence}
-\label{sec:orgc9c2597}
+\label{sec:org3a85881}
 
 The idea of this section is to extend \ref{alg:EM-Likelihood} in
 order to obtain the MAP estimator in a Bayesian Learning setting
@@ -1346,7 +1420,7 @@ Given such a computation it is possible to get to a local maximum
 for the MAP estimator.
 
 \subsection{Numerical M-step}
-\label{sec:org33ae5ff}
+\label{sec:orgdbfcde4}
 
 This section concludes the chapter on Bayesian Parameter Learning
 by substituting the M-step of \ref{alg:Bayes-EM-Likelihood}, by a
@@ -1380,13 +1454,13 @@ analytical derivation of the maximum in the M-step.
 
 
 \subsubsection{{\bfseries\sffamily TODO} formulate the things in the paper below}
-\label{sec:orgec7b32d}
+\label{sec:org8ef1bd5}
 
 and incorporate them in the algo above.
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} define how you compute such numerical derivative.
-\label{sec:orga73c0be}
+\label{sec:orgdf7b865}
 
 note that you must have the guarantee of positive definite so that
 you move towards the maximum despite working with an approximate
@@ -1399,7 +1473,7 @@ wow. so you thought well.
 
 
 \item {\bfseries\sffamily TODO} note that the above Q terms are nothing else than the expected score and expected fisher information
-\label{sec:orgf59eef5}
+\label{sec:org06b5e62}
 
 good paper in \href{https://arxiv.org/pdf/1608.01734.pdf}{this sense}.
 
@@ -1412,7 +1486,7 @@ incorporate everything in the next step.
 
 
 \section{On Probabilistic Evidence}
-\label{sec:orgbdd7d69}
+\label{sec:org8509245}
 
 In the previous chapter we showed how it is possible to rephrase a
 likelihood evidence as an observed event by means of augmenting the
@@ -1542,34 +1616,19 @@ Learning.
 
 
 \section{TODOs}
-\label{sec:org256cb5c}
+\label{sec:orgaabdf47}
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
-\label{sec:orgcdf22a4}
-
+\label{sec:orgcbe7614}
 \item {\bfseries\sffamily TODO} note that network structure G(V,X) how you described. Correct later
-\label{sec:orgfa08069}
-
+\label{sec:org017e7e1}
 \item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
-\label{sec:org58af0b2}
-
-\item {\bfseries\sffamily TODO} make more explicit the difference between synthetically completed missing observations and <?>
-\label{sec:orgbf03418}
-
+\label{sec:orgf9effed}
 \item {\bfseries\sffamily TODO} note that the EM you loose global decomposition such that at the end with the local maxima of CPDs achieved by EM you ultimately just get a local maximum.
-\label{sec:orgb8f49ad}
-
-\newpage
-
-\bibliography{../literature/references}
-\bibliographystyle{unsrt}
-
-
-
-
+\label{sec:org3d8b21c}
 \item {\bfseries\sffamily TODO} for last section - check at the following chapter.
-\label{sec:org3a92251}
+\label{sec:org813e2c2}
 
 Concept: Representation Independence - in chapter 17 of the
 koller book. this is central as if that breaks apart the entire
@@ -1579,10 +1638,19 @@ thesis fall apart.
 you should therefore be careful with it.
 
 \item {\bfseries\sffamily TODO} check chapter 17 for making the point below
-\label{sec:org4a81251}
+\label{sec:orgf79c7fc}
 
 say at the end that the entire theory does not hold for locally
 shared and globally shared network parameters. there you would
 have to adjust the entire thing
+
+\item {\bfseries\sffamily TODO} have to insert as well as the sigma as parameter for the ess map in the exercise above
+\label{sec:org295ee11}
+
+
+\newpage
+
+\bibliography{../literature/references}
+\bibliographystyle{unsrt}
 \end{enumerate}
 \end{document}

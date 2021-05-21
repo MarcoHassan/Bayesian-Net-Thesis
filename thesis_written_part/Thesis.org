@@ -44,29 +44,25 @@
 \newpage
 
 \tableofcontents
-
-\newpage
-
 \listoffigures
 \listofalgorithms
 \listoftables
 
 \newpage
 
-* Bayesian Networks - History and Recent Developments
+* Bayesian Networks - Overview and Thesis Outline
 
 
    Probabilistic models based on directed acyclic graphs (DAGs) have
    been consistently studied and researched since the first appearance
    in the field of genetics in cite:wright1921correlation.
 
-   An important moment in the history of such models, and especially of
-   Bayesian Models in the field of cognitive science and artificial
-   intelligence, was as argued by cite:pearl2011bayesian, during the
-   late 1970s as such models emerged as the method of choice when
-   dealing with uncertainty in reasoning and expert systems and started
-   to replace the usage of symbolic artificial intelligence and
-   rule-based schema.
+   An important moment in the history of such models and the Bayesian
+   Networks subclass was as argued by cite:pearl2011bayesian, during
+   the late 1970s as such models emerged as the method of choice when
+   dealing with uncertainty in reasoning and expert systems
+   effectively starting to replace the usage of symbolic artificial
+   intelligence and rule-based schema.
 
    As argued in cite:pearl2011bayesian, an especially significant
    property of such models that marked a turn-point in the modeling of
@@ -76,75 +72,309 @@
    networks) to direct world representation, where edges may represent
    real-world causal connections.
 
-   This, together with the fact that it is possible to associate
-   probabilistic statements to events modeled by such graphs via
-   bidirectional inference possibilities makes the point for such
-   probabilistic graphical models and their vast usage and research in
-   various subfields of artificial intelligence.
+   This, together with the possibility to associate probabilistic
+   statements to events modeled by such graphs via bidirectional
+   inference possibilities, makes the point for such probabilistic
+   graphical models and their vast usage and research in various
+   subfields of artificial intelligence.
 
    Given such properties and the fact that the mathematical machinery
    necessary to deal with such graphs spans multiple distinct
-   subfields such as mathematical statistics, information theory,
-   graph theory and optimization - thereby attracting the interest of
-   multiple researchers -, it comes as no surprise the fact that there
-   is a vibrant research community dealing with such topic. Alone in
-   the last 10 (20) years the numbers of published papers on the topic
+   subfields[fn:2] therefore attracting the interest of multiple
+   researchers; it comes as no surprise the fact that there is a
+   vibrant research community dealing with such topic. Alone in the
+   last 10 (20) years the numbers of published papers on the topic
    increased by x4 (x24) factor[fn:1], with a total of ~100'000
    published papers on the topic of Bayesian Networks alone for the
    year 2020.
 
-   In this sense, a thorough review of the ongoing research of the
+   In this sense, a thorough review of the ongoing research in the
    field would be impossible. While important progress has been done
    in researching the computational aspects of inference, learning and
    representation of the networks, most of the research so far is
    focusing on an idealized world with complete or missing random
    variables evidence. Hence, despite the wealth of research,
-   fundamental issues when dealing with uncertainty evidence for
-   modeling Bayesian Networks have not been addressed that far.
+   fundamental issues when dealing with uncertain evidence for
+   modeling Bayesian Networks have only marginally been addressed that
+   far.
 
    This will pose the focus to this Thesis. By a rigorous literature
    review as well as some theoretical contributions we will try to
-   address such a gap in the Bayesian Network modeling research,
-   starting with a formal definition of Bayesian Networks in the next
-   sub-sections before turning to a rigorous definition of the
-   different types of uncertain evidence from which we will expand
-   then.
+   partially address such a gap in the Bayesian Network modeling
+   research. In this sense, we will start with a formal definition of
+   Bayesian Networks in the next sub-section before turning to a
+   rigorous definition of the different types of uncertain evidence
+   from which we will expand on.
 
 ** Bayesian Networks - Formal Definition
+   :LOGBOOK:
+   CLOCK: [2021-05-21 Fri 16:22]--[2021-05-21 Fri 16:47] =>  0:25
+   CLOCK: [2021-05-21 Fri 15:48]--[2021-05-21 Fri 16:13] =>  0:25
+   CLOCK: [2021-05-21 Fri 14:18]--[2021-05-21 Fri 14:43] =>  0:25
+   :END:
 
+   Before starting to dig into the material we provide a general
+   definition of a Bayesian Network as in cite:pearl2011bayesian.
+
+   #+begin_export latex
+  \begin{definition}
+  Bayesian Network: A Bayesian Network is a directed acyclic graph (DAG) $G(\mathscr{V}, \mathscr{X})$
+  whose nodes $\mathscr{X}$ represent random variables in the Bayesian sense - i.e. they can be observable
+  quantities, latent variables, unknown parameters or hypotheses. \\
+  On the top of it, edges $\mathscr{V}$ represent the conditional dependencies among the nodes; i.e. nodes that
+  are not connected represent random variables that are conditionally independent.
+  \end{definition}
+   #+end_export
+
+   Especially important is the characterization of the conditional
+   independence relation among the random variables.
+
+   In order to see this, recall that when modeling a Bayesian Network
+   the object of interest is the complete probabilistic model of the
+   random variables domain - i.e. the probability of every possible
+   event as defined by the values of all of the variables.
 
    Consider the case where you would want to represent the joint
-   distribution of a set of random variables $\mathscr{X} = {X_1, ...,
-   X_n}$.
+   distribution of a set of random variables $\mathscr{X} = \{X_1, ...,
+   X_n\}$.
 
-   Then, given a parametric distribution on each random variable in the
-   set you might try to extract the functional 
+   Then, given a parametric distribution on each random variable in
+   the set it is possible to extract the functional form of the
+   probability distribution for the joint distribution. However, there
+   is an issue when trying to directly model the joint distribution
+   without explicitly leveraging and modeling the conditional
+   independence structures among the random variables. This due to the
+   exponential number of possible events in the domain that would
+   require an exponential number of parameters. Standard examples may
+   be found in cite:koller2009probabilistic.
+
+   Yet when considering the conditional structure among the variables
+   in the set $\mathscr{X}$, it is possible to leverage the /global
+   semantics/ of the network to represent the joint-distribution in
+   compact form cite:pearl2011bayesian:
+
+   #+begin_export latex
+   \begin{align*} 
+   P (x_1, ..., x_n) = \prod_i P(x_i | pa_i)
+   \end{align*}
+   #+end_export      
+
+   where $pa_i$ represents the parents nodes of node $x_i$.
+
+   It is then possible to see that as well framed by
+   cite:pearl2011bayesian: "Provided that the number of parents of
+   each node is bounded, it is then immediate to see that the number
+   of parameters required grows only linearly in with the size of the
+   network, whereas the joint-distribution itself grows
+   exponentially."
+
+   This leads us to a second possible definition of Bayesian network
+   as framed by cite:koller2009probabilistic, making more concrete the
+   idea of a Bayesian Network as a compact data structure representing
+   the complete probabilistic model of the random variables domain:
+
+   #+begin_export latex
+  \begin{definition}
+  Joint-Density Factorization: Let $\mathscr{G}$ be a Bayesian Network graph over the variables X_1, ..., X_n.
   
+  We say that a distribution P over the same factorization space factorizes
+  according to $\mathscr{G}$ if P can be expressed as a product 
 
-  
-** TODO have to rigorously define here what a Bayesian Network is
+  $$P (x_1, ..., x_n) = \prod_i P(x_i | pa_i^{\mathscr{G}})$$
 
-** TODO state the difference between types of networks. global parameter sharing and a priori independent
+  This equation is called the chain rule for Bayesian networks, and the $P(x_i | pa_i^{\mathscr{G}})$ terms are
+  called conditional probability distributions (CPDs).
+  \end{definition}
 
 
+  \begin{definition}  
+  Bayesian Network: A Bayesian Network is a pair $\mathscr{B} = (\mathscr{G}, P)$ where P factorizes over $\mathscr{G}$,
+  and where P is specified as a set of CPDs associated with  $\mathscr{G}$’s nodes. The distribution P is often annotated P_{\mathscr{B}}.
+  \end{definition}
+   #+end_export
 
-* Thesis Outline
+   Given such a definition it is immediate to distinguish the three
+   main puzzles that is necessary to solve when working with Bayesian
+   Networks, respectively:
 
-  Say that there are three major areas of research:
+   #+begin_quote
+   (i) the structure riddle, where you specify either by domain knowledge
+   or via data-driven learning the shape of the Bayesian Network graph
+   $\mathscr{G}$. Both are challenging tasks especially in the case
+   the user aims to fulfill both completeness and soundness of I-maps
+   as defined in cite:koller2009probabilistic
 
-  - representation
-  - inference
-  - learning
+   (ii) the parameterization learning riddle, where given some
+   evidence we will try to specify the parameters of the CPDs of the
+   network in the most sensible way such that we well describe the
+   probabilistic model of the random variables domain.
 
-  say that you will focus on the learning part. 
+   (iii) the inference riddle, where given the network structure and
+   parameterization you would apply Bayes Theorem for performing
+   bidirectional inference to get to the probabilistic occurrence of
+   some random variables evidence. Again a very demanding task, given
+   that it was proven that to solve such problem exactly is NP-hard,
+   such that it is often necessary to rely on approximate inference
+   methods as in cite:pearl1987evidential or variational methods as in
+   cite:jordan1999introduction.
+   #+end_quote
 
+
+   In this manuscript, we will focus on (ii) taking (i) as given and
+   leveraging standard results from the literature as in
+   cite:koller2009probabilistic for (iii).
+
+   We turn next to a formal definition of evidence and especially of
+   /uncertain evidence/ necessary for the correct outline of the
+   research presented in this manuscript.
+    
+** Types of Uncertain Evidence
+
+   So far we discussed the case of parameter learning in Bayesian
+   Networks in the case of complete evidence, i.e. in the case we could
+   observe a realization for each random variable in the network.
+
+   As we discussed, in such a case important properties hold for the
+   network such as the global likelihood decomposition. This allows the
+   possibility to work with local conditional probabilities in order to
+   reach the optimal solution.
+
+   One more interesting case is the one treated by cite:Mrad_2015,
+   cite:Wasserkrug_all. The argument posed by the authors is that under
+   many settings complete evidence is not possible.
+
+   In many cases there might be a hiding mechanism active that might
+   hide some of the realizations. Think for instance at a
+   malfunctioning sensor that sporadically measures input. Or think for
+   instance at medical settings where different patients might be
+   measured different variables.
+
+   Albeit the case of missing evidence greatly alters the way through
+   which it is possible to learn the parameters of the network, there
+   are multiple possible solutions to estimate parameters and come to
+   local maxima. We will address one of such methods in the next
+   chapter.
+
+   A more interesting case is posed by /uncertain evidence/ as
+   introduced by cite:Mrad_2015. The authors distinguish three types of
+   non-complete evidence:
+
+   - likelihood evidence
+
+   - fixed probabilistic evidence
+
+   - non-fixed probabilistic evidence
+
+   We will use throughout this document the definition as in
+   cite:Mrad_2015 which we will briefly summarize next.
+
+   #+begin_export latex
+   \begin{definition}
+   Hard evidence: A finding on a variable commonly refers to an
+   instantiation of the variable. This can be represented by a vector
+   with one element equal to 1, corresponding to the state the variable
+   is in, and all other elements equal to zero. This type of evidence
+   is usually referred to as hard evidence.
+   \end{definition}
+
+   \\\\
+
+   \begin{definition}
+   Uncertain evidence: evidence that cannot be represented by a vector
+   as in the hard evidence case.
+   \end{definition}
+
+   \\\\
+
+   \begin{definition}
+   Likelihood evidence: in such type of evidence there is uncertainty
+   about the veracity of an observation, such as, for example, the
+   information given by an imperfect sensor. Such uncertainty is
+   expressed in terms of relative likelihood of observing one
+   realization vis à vis another one. 
+   \end{definition}
+
+   \\\\
+
+   \begin{definition}
+   Probabilistic evidence: we talk about probabilistic evidence when we
+   have a set of probabilistic finding on multiple random variables X in the network
+   specified by a local probability distribution R(X).
+   \end{definition}  
+   #+end_export
+
+   Notice that a probabilistic finding R(X) on a variable X of a
+   Bayesian network replaces any prior belief or knowledge on X. As a
+   consequence, the prior P (X) is not used in the propagation of R(X),
+   and any previous finding or belief on X is lost.
+
+   Notice moreover the following distinction between /fixed/ and
+   /non-fixed/ probabilistic evidence:
+
+   #+begin_export latex
+   \begin{definition}
+   Fixed (Non-fixed) Probabilistic evidence: A probabilistic finding
+   is fixed (non-fixed) when the distribution R(X) can not be (can
+   be) modified by the propagation of other findings.
+   \end{definition}  
+   #+end_export
+
+   Such that it is all about how the /arrival of evidence/, as depicted
+   in the following schema from cite:Mrad_2015can, can update the
+   cognitive state:
+
+   #+CAPTION: Inference Loop as in Mrad et all.
+   #+attr_latex: :width 5.0in  
+   [[file:~/Desktop/Bayesian_Net_Thesis/images/inference_loop.png]]
+
+
+   Summarizing, in simple terms, we differentiate the following three
+   cases for the above:
+
+   1. In fixed-evidence we specify a probabilistic evidence /all things
+      considered/. This means that even after new evidence is observed
+      on any other random variable in the network, we do not update the
+      cognitive state specified by the fixed probabilistic evidence.
+     
+   2. In non-fixed probabilistic evidence we consider the current
+      structure of the tree such that for the current state of the
+      network, the conditional probability distribution is specified by
+      the specified probabilistic evidence. Further in-coming evidence
+      that will alter the network probabilistic structure will affect
+      the cognitive state of the current node.
+
+   3. In likelihood evidence we do not consider any prior
+      information. I.e. we simply specify a local likelihood ratio for
+      a particular evidence and we still have to run the inference step
+      for the current state to get the final cognitive state. I.e. as
+      mentioned by cite:Mrad_2015 in contrast to probabilistic evidence
+      which remains unchanged by updating the observed variables,
+      likelihood evidence has to be combined with previous beliefs in
+      order to update the belief in the observed variable(s).
+
+   We will discuss next how to handle the three types of uncertain
+   evidence. We will start with a discussion of missing evidence as
+   expanding on this it will be possible to accomplish the task
+   parameter learning under uncertain evidence settings.
+
+
+** Thesis Outline
+
+   BLABLA BLA.... say what is coming next
    
+
 
 * Learning under Complete Evidence
   :PROPERTIES:
   :CUSTOM_ID: complete-learning
   :END:
 
+
+*** TODO state the difference between types of networks. global parameter sharing and a priori independent
+
+    and that we will just work with a priori independent networks.
+
+  
   As vastly documented in the literature there are essentially two
   types of approaches when performing the task of parameter
   learning. The first one is a parameter estimation via /Maximum
@@ -178,134 +408,7 @@
    Given this general overview, we will abandon next the case of
    /complete data/ observations for  
   
-* Types of Uncertain Evidence
 
-  So far we discussed the case of parameter learning in Bayesian
-  Networks in the case of complete evidence, i.e. in the case we could
-  observe a realization for each random variable in the network.
-
-  As we discussed, in such a case important properties hold for the
-  network such as the global likelihood decomposition. This allows the
-  possibility to work with local conditional probabilities in order to
-  reach the optimal solution.
-
-  One more interesting case is the one treated by cite:Mrad_2015,
-  cite:Wasserkrug_all. The argument posed by the authors is that under
-  many settings complete evidence is not possible.
-
-  In many cases there might be a hiding mechanism active that might
-  hide some of the realizations. Think for instance at a
-  malfunctioning sensor that sporadically measures input. Or think for
-  instance at medical settings where different patients might be
-  measured different variables.
-
-  Albeit the case of missing evidence greatly alters the way through
-  which it is possible to learn the parameters of the network, there
-  are multiple possible solutions to estimate parameters and come to
-  local maxima. We will address one of such methods in the next
-  chapter.
-
-  A more interesting case is posed by /uncertain evidence/ as
-  introduced by cite:Mrad_2015. The authors distinguish three types of
-  non-complete evidence:
-
-  - likelihood evidence
-
-  - fixed probabilistic evidence
-
-  - non-fixed probabilistic evidence
-
-  We will use throughout this document the definition as in
-  cite:Mrad_2015 which we will briefly summarize next.
-
-  #+begin_export latex
-  \begin{definition}
-  Hard evidence: A finding on a variable commonly refers to an
-  instantiation of the variable. This can be represented by a vector
-  with one element equal to 1, corresponding to the state the variable
-  is in, and all other elements equal to zero. This type of evidence
-  is usually referred to as hard evidence.
-  \end{definition}
-
-  \\\\
-
-  \begin{definition}
-  Uncertain evidence: evidence that cannot be represented by a vector
-  as in the hard evidence case.
-  \end{definition}
-
-  \\\\
-
-  \begin{definition}
-  Likelihood evidence: in such type of evidence there is uncertainty
-  about the veracity of an observation, such as, for example, the
-  information given by an imperfect sensor. Such uncertainty is
-  expressed in terms of relative likelihood of observing one
-  realization vis à vis another one. 
-  \end{definition}
-
-  \\\\
-
-  \begin{definition}
-  Probabilistic evidence: we talk about probabilistic evidence when we
-  have a set of probabilistic finding on multiple random variables X in the network
-  specified by a local probability distribution R(X).
-  \end{definition}  
-  #+end_export
-
-  Notice that a probabilistic finding R(X) on a variable X of a
-  Bayesian network replaces any prior belief or knowledge on X. As a
-  consequence, the prior P (X) is not used in the propagation of R(X),
-  and any previous finding or belief on X is lost.
-
-  Notice moreover the following distinction between /fixed/ and
-  /non-fixed/ probabilistic evidence:
-
-  #+begin_export latex
-  \begin{definition}
-  Fixed (Non-fixed) Probabilistic evidence: A probabilistic finding
-  is fixed (non-fixed) when the distribution R(X) can not be (can
-  be) modified by the propagation of other findings.
-  \end{definition}  
-  #+end_export
-
-  Such that it is all about how the /arrival of evidence/, as depicted
-  in the following schema from cite:Mrad_2015can, can update the
-  cognitive state:
-
-  #+CAPTION: Inference Loop as in Mrad et all.
-  #+attr_latex: :width 5.0in  
-  [[file:~/Desktop/Bayesian_Net_Thesis/images/inference_loop.png]]
-
-
-  Summarizing, in simple terms, we differentiate the following three
-  cases for the above:
-
-  1. In fixed-evidence we specify a probabilistic evidence /all things
-     considered/. This means that even after new evidence is observed
-     on any other random variable in the network, we do not update the
-     cognitive state specified by the fixed probabilistic evidence.
-     
-  2. In non-fixed probabilistic evidence we consider the current
-     structure of the tree such that for the current state of the
-     network, the conditional probability distribution is specified by
-     the specified probabilistic evidence. Further in-coming evidence
-     that will alter the network probabilistic structure will affect
-     the cognitive state of the current node.
-
-  3. In likelihood evidence we do not consider any prior
-     information. I.e. we simply specify a local likelihood ratio for
-     a particular evidence and we still have to run the inference step
-     for the current state to get the final cognitive state. I.e. as
-     mentioned by cite:Mrad_2015 in contrast to probabilistic evidence
-     which remains unchanged by updating the observed variables,
-     likelihood evidence has to be combined with previous beliefs in
-     order to update the belief in the observed variable(s).
-
-  We will discuss next how to handle the three types of uncertain
-  evidence. We will start with a discussion of missing evidence as
-  expanding on this it will be possible to accomplish the task
-  parameter learning under uncertain evidence settings.
 
 
 * On Missing Evidence
@@ -1172,9 +1275,6 @@
    dimensional problems. One of the major benefits in using the EM over
    gradient based methods would be lost in this sense.
 
-
-   
-  
 *** Numerical EM for MLE estimator
 
     In order to understand how to compute M-step according to an
@@ -1816,4 +1916,9 @@
 
 * Footnotes
 
+[fn:2] Think for instance to the necessary components of mathematical
+   statistics, information theory, graph theory and optimization
+
 [fn:1] Data from [[https://app.dimensions.ai/discover/publication][app.dimensions.ai]] 
+
+

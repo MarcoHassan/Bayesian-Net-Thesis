@@ -113,13 +113,6 @@
 ** Bayesian Networks - Formal Definition
 
 
-
-   Aside from the important characteristic of   
-
-  
-
-   - HISTORY... WHY BAYESIAN NETWORKS WERE INTRODUCED FIRST.
-
    Consider the case where you would want to represent the joint
    distribution of a set of random variables $\mathscr{X} = {X_1, ...,
    X_n}$.

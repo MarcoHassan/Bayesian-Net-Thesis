@@ -1,4 +1,4 @@
-% Created 2021-05-21 Fri 16:47
+% Created 2021-05-21 Fri 19:48
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -75,8 +75,8 @@
 
 \newpage
 
-\section{Bayesian Networks - Overview and Thesis Outline}
-\label{sec:org73e7567}
+\section{Bayesian Networks - Overview and Manuscript Outline}
+\label{sec:orgd4350c4}
 
 
 Probabilistic models based on directed acyclic graphs (DAGs) have
@@ -85,7 +85,7 @@ in the field of genetics in \cite{wright1921correlation}.
 
 An important moment in the history of such models and the Bayesian
 Networks subclass was as argued by \cite{pearl2011bayesian}, during
-the late 1970s as such models emerged as the method of choice when
+the late 1970s when such models emerged as the method of choice when
 dealing with uncertainty in reasoning and expert systems
 effectively starting to replace the usage of symbolic artificial
 intelligence and rule-based schema.
@@ -100,20 +100,18 @@ real-world causal connections.
 
 This, together with the possibility to associate probabilistic
 statements to events modeled by such graphs via bidirectional
-inference possibilities, makes the point for such probabilistic
-graphical models and their vast usage and research in various
-subfields of artificial intelligence.
+inference possibilities, makes the point for the usage and research
+of such models in various subfields of artificial intelligence.
 
 Given such properties and the fact that the mathematical machinery
 necessary to deal with such graphs spans multiple distinct
 subfields\footnote{Think for instance to the necessary components of mathematical
-statistics, information theory, graph theory and optimization} therefore attracting the interest of multiple
-researchers; it comes as no surprise the fact that there is a
-vibrant research community dealing with such topic. Alone in the
-last 10 (20) years the numbers of published papers on the topic
-increased by x4 (x24) factor\footnote{Data from \href{https://app.dimensions.ai/discover/publication}{app.dimensions.ai}}, with a total of \textasciitilde{}100'000
-published papers on the topic of Bayesian Networks alone for the
-year 2020.
+statistics, information theory, graph theory and optimization} attracted the interest of multiple researchers; it
+comes as no surprise the fact that there is a vibrant research
+community dealing with such topic. Alone in the last 10 (20) years
+the numbers of published papers on the topic increased by x4 (x24)
+factor\footnote{Data from \href{https://app.dimensions.ai/discover/publication}{app.dimensions.ai}}, with a total of \textasciitilde{}100'000 published papers on the
+topic of Bayesian Networks alone for the year 2020.
 
 In this sense, a thorough review of the ongoing research in the
 field would be impossible. While important progress has been done
@@ -122,7 +120,7 @@ representation of the networks, most of the research so far is
 focusing on an idealized world with complete or missing random
 variables evidence. Hence, despite the wealth of research,
 fundamental issues when dealing with uncertain evidence for
-modeling Bayesian Networks have only marginally been addressed that
+modeling Bayesian Networks have been only marginally addressed that
 far.
 
 This will pose the focus to this Thesis. By a rigorous literature
@@ -134,7 +132,7 @@ rigorous definition of the different types of uncertain evidence
 from which we will expand on.
 
 \subsection{Bayesian Networks - Formal Definition}
-\label{sec:orga3c10e9}
+\label{sec:org1fc6a0e}
 Before starting to dig into the material we provide a general
 definition of a Bayesian Network as in \cite{pearl2011bayesian}.
 
@@ -182,7 +180,7 @@ where \(pa_i\) represents the parents nodes of node \(x_i\).
 It is then possible to see that as well framed by
 \cite{pearl2011bayesian}: "Provided that the number of parents of
 each node is bounded, it is then immediate to see that the number
-of parameters required grows only linearly in with the size of the
+of parameters required grows only linearly with the size of the
 network, whereas the joint-distribution itself grows
 exponentially."
 
@@ -229,7 +227,7 @@ probabilistic model of the random variables domain.
 parameterization you would apply Bayes Theorem for performing
 bidirectional inference to get to the probabilistic occurrence of
 some random variables evidence. Again a very demanding task, given
-that it was proven that to solve such problem exactly is NP-hard,
+that it was proven that the exact solution of such problem is NP-hard,
 such that it is often necessary to rely on approximate inference
 methods as in \cite{pearl1987evidential} or variational methods as in
 \cite{jordan1999introduction}.
@@ -237,28 +235,21 @@ methods as in \cite{pearl1987evidential} or variational methods as in
 
 
 In this manuscript, we will focus on (ii) taking (i) as given and
-leveraging standard results from the literature (see
-\cite{koller2009probabilistic}) for (iii).
+leveraging standard results from the literature as in
+\cite{koller2009probabilistic} for (iii).
 
-Before turning to a formal definition of evidence and especially of
-\emph{uncertain evidence}, we note here that\ldots{} say the todo below.
+We turn next to a formal definition of evidence and especially of
+\emph{uncertain evidence} necessary for the correct outline of the
+research presented in this manuscript.
 
-\subsubsection{{\bfseries\sffamily TODO} state the difference between types of networks. global parameter sharing and a priori independent}
-\label{sec:org8461a10}
+\subsection{Types of Evidence}
+\label{sec:org40181da}
 
-and that we will just work with a priori independent networks.
-
-\subsection{Types of Uncertain Evidence}
-\label{sec:orgf527e0d}
-
-So far we discussed the case of parameter learning in Bayesian
-Networks in the case of complete evidence, i.e. in the case we could
-observe a realization for each random variable in the network.
-
-As we discussed, in such a case important properties hold for the
-network such as the global likelihood decomposition. This allows the
-possibility to work with local conditional probabilities in order to
-reach the optimal solution.
+The most basic case of evidence is the one of complete
+evidence. This occurs when we are provided with complete
+observations of the network, i.e.  when it is possible to observe a
+certain realization for each random variable in the domain of the
+network.
 
 One more interesting case is the one treated by \cite{Mrad_2015},
 \cite{Wasserkrug_all}. The argument posed by the authors is that under
@@ -280,13 +271,11 @@ A more interesting case is posed by \emph{uncertain evidence} as
 introduced by \cite{Mrad_2015}. The authors distinguish three types of
 non-complete evidence:
 
-\begin{itemize}
-\item likelihood evidence
+(i) likelihood evidence
 
-\item fixed probabilistic evidence
+(ii) fixed probabilistic evidence
 
-\item non-fixed probabilistic evidence
-\end{itemize}
+(iii) non-fixed probabilistic evidence
 
 We will use throughout this document the definition as in
 \cite{Mrad_2015} which we will briefly summarize next.
@@ -375,30 +364,58 @@ likelihood evidence has to be combined with previous beliefs in
 order to update the belief in the observed variable(s).
 \end{enumerate}
 
+Given the general understanding on Bayesian Networks and the
+different types of uncertain evidence we will provide in the next
+section a literature review for the case of parameter learning in
+Bayesian Networks in the case of complete, missing and uncertain
+evidence. We will finally propose the research outline for this
+manuscript. 
+
+\subsection{Literature Review and Research Outline}
+\label{sec:orgc48a727}
+
+\begin{itemize}
+\item STATE HERE THE TWO WAYS FOR SOLVING THE PARAMETER LEARNING - MLE
+AND BAYESIAN APPROACH.
+
+\item STATE RESEARCH AND BASIC RESULTS IN THE CASE OF COMPLETE AND
+MISSING EVIDENCE
+
+\item STATE RESEARCH AND BASIC RESULTS IN THE CASE OF LIKELIHOOD
+EVIDENCE
+
+\item STATE RESEARCH AND BASIC RESULTS IN THE CASE OF UNCERTAIN
+EVIDENCE
+
+\item STATE RESEARCH OUTLINE
+\end{itemize}
+
+
+
+
 We will discuss next how to handle the three types of uncertain
 evidence. We will start with a discussion of missing evidence as
 expanding on this it will be possible to accomplish the task
 parameter learning under uncertain evidence settings.
 
 
-\subsection{Thesis Outline}
-\label{sec:orgdd1b250}
-
-Say that there are three major areas of research:
-
-\begin{itemize}
-\item representation
-\item inference
-\item learning
-\end{itemize}
-
-say that you will focus on the learning part. 
-
+BLABLA BLA\ldots{}. say what is coming next
 
 
 
 \section{Learning under Complete Evidence}
 \label{complete-learning}
+As we will discuss, in such a case important properties hold for
+the network such as the global likelihood decomposition. This
+allows the possibility to work with local conditional probabilities
+in order to reach the optimal solution.
+
+\subsubsection{{\bfseries\sffamily TODO} state the difference between types of networks. global parameter sharing and a priori independent}
+\label{sec:org5122cdb}
+
+and that we will just work with a priori independent networks.
+
+
 As vastly documented in the literature there are essentially two
 types of approaches when performing the task of parameter
 learning. The first one is a parameter estimation via \emph{Maximum
@@ -420,7 +437,7 @@ likelihood of the network by maximizing individual conditional
 probability functions.
 
 \subsection{write the gloabl decomposition etc. properties}
-\label{sec:orge2aad92}
+\label{sec:org8c884ca}
 
 \begin{itemize}
 \item DEFINE COMPLETE DATA
@@ -439,7 +456,7 @@ Given this general overview, we will abandon next the case of
 
 
 \section{On Missing Evidence}
-\label{sec:org3679629}
+\label{sec:org8ba8255}
 
 In the case of missing evidence we have two types of findings for
 the random variables in our network \(G(\mathscr{V}, \mathscr{X})\).
@@ -457,7 +474,7 @@ the way such likelihood term can be represented in the case of
 missing evidence.
 
 \subsection{{\bfseries\sffamily TODO} write down the idea of nasty likelihood and why you need the EM algorithm as a solution}
-\label{sec:orgc78e9d5}
+\label{sec:org32f63df}
 
 One solution that was proposed is the one of completely ignoring
 the missing evidence and computing a likelihood function just based
@@ -560,7 +577,7 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsubsection{The Expectation Step}
-\label{sec:orgeafeb00}
+\label{sec:org69acb47}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -587,7 +604,7 @@ interpret the E-step as the step involving the maximization of the
 energy functional along the Q coordinate.
 
 \subsubsection{The Maximization Step}
-\label{sec:org254c99e}
+\label{sec:org69aebaa}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -614,7 +631,7 @@ log-likelihood increases such that theorem \ref{thm:one} is proved.
 
 
 \subsection{An Exponential Family Example}
-\label{sec:orgf2d9669}
+\label{sec:org396a14d}
 
 This section provides an application of theory presented above for
 the general case of exponential families. The idea is to
@@ -986,7 +1003,7 @@ maximizing the score map of \ref{eq:bayes_map2}. This will be the main
 exercise of the next section.
 
 \subsubsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:orga35e63c}
+\label{sec:org7e0e2f5}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -1149,7 +1166,7 @@ of the maximum a posteriori point estimate such that we will choose
 a local maximum point estimator.
 
 \subsubsection{Bayesian Parameter Learning - An Exponential Family Generalization}
-\label{sec:orga489270}
+\label{sec:org40ed822}
 
 This section generalizes the exercise of the above section for
 general exponential family distributions. As discussed in
@@ -1202,7 +1219,7 @@ to obtain the maximum by getting the mode of the resulting
 multivariate t-distribution according to such hyperparameters.
 
 \subsection{On Numerical EM}
-\label{sec:orgf6150c0}
+\label{sec:orgda865d8}
 
 As argued in the previous section when working with conjugate prior
 we might easily get to closed form solutions for the maximum of the
@@ -1234,7 +1251,7 @@ dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
 \subsubsection{Numerical EM for MLE estimator}
-\label{sec:org055645f}
+\label{sec:orgfdaa875}
 
 In order to understand how to compute M-step according to an
 iterative method, think at the following.
@@ -1304,7 +1321,7 @@ for our solution. In that case the EM theory would collapse and
 there is no guarantee to reach a local maximum.
 
 \subsubsection{Numerical EM for MAP estimator}
-\label{sec:org0171cf3}
+\label{sec:org0c8adf0}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -1337,7 +1354,7 @@ need now to account for the prior distribution influence.
 
 
 \section{On Likelihood Evidence}
-\label{sec:org3035d4a}
+\label{sec:org308404b}
 
 Recall that as defined in \cite{Mrad_2015} in likelihood evidence an
 observation is uncertain due to unreliable source of information.
@@ -1377,7 +1394,7 @@ parameter learning under likelihood evidence describing the
 approach as in \cite{Wasserkrug_all}.
 
 \subsection{Adjusted EM - Likelihood Evidence}
-\label{sec:orgae8a913}
+\label{sec:org7d2b805}
 
 One of the most widespread ways to deal with likelihood evidence
 was introduced by \cite{pearl2014probabilistic}. The idea is to
@@ -1580,7 +1597,7 @@ it is possible to perform MAP estimation in Bayesian settings.
 \newpage
 
 \subsection{Bayesian Learning MAP - Adjusted EM for Likelihood Evidence}
-\label{sec:orga7bc8db}
+\label{sec:orgaa78b96}
 
 The idea of this section is to extend \ref{alg:EM-Likelihood} in
 order to obtain the MAP estimator in a Bayesian Learning setting
@@ -1627,7 +1644,7 @@ Given such a computation it is possible to get to a local maximum
 for the MAP estimator.
 
 \subsection{Numerical M-step}
-\label{sec:org70de9f2}
+\label{sec:org8697c6f}
 
 This section concludes the chapter on Bayesian Parameter Learning
 by substituting the M-step of \ref{alg:Bayes-EM-Likelihood}, by a
@@ -1661,13 +1678,13 @@ analytical derivation of the maximum in the M-step.
 
 
 \subsubsection{{\bfseries\sffamily TODO} formulate the things in the paper below}
-\label{sec:org02b31aa}
+\label{sec:org43e60e5}
 
 and incorporate them in the algo above.
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} define how you compute such numerical derivative.
-\label{sec:orgc0cdc89}
+\label{sec:org14886d1}
 
 note that you must have the guarantee of positive definite so that
 you move towards the maximum despite working with an approximate
@@ -1680,7 +1697,7 @@ wow. so you thought well.
 
 
 \item {\bfseries\sffamily TODO} note that the above Q terms are nothing else than the expected score and expected fisher information
-\label{sec:org02fe619}
+\label{sec:org3c77dc0}
 
 good paper in \href{https://arxiv.org/pdf/1608.01734.pdf}{this sense}.
 
@@ -1693,7 +1710,7 @@ incorporate everything in the next step.
 
 
 \section{On Probabilistic Evidence}
-\label{sec:orgf1c1671}
+\label{sec:orgd7af477}
 
 In the previous chapter we showed how it is possible to rephrase a
 likelihood evidence as an observed event by means of augmenting the
@@ -1823,19 +1840,19 @@ Learning.
 
 
 \section{TODOs}
-\label{sec:org697117c}
+\label{sec:org0bc745e}
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
-\label{sec:orgfc21509}
+\label{sec:org351eb74}
 \item {\bfseries\sffamily TODO} note that network structure G(V,X) how you described. Correct later
-\label{sec:org31d3de2}
+\label{sec:orgaaf4c5c}
 \item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
-\label{sec:orgce2e430}
+\label{sec:orgbccb8cb}
 \item {\bfseries\sffamily TODO} note that the EM you loose global decomposition such that at the end with the local maxima of CPDs achieved by EM you ultimately just get a local maximum.
-\label{sec:org56951b0}
+\label{sec:orgd574e0b}
 \item {\bfseries\sffamily TODO} for last section - check at the following chapter.
-\label{sec:org5b3cc96}
+\label{sec:orga10e9e0}
 
 Concept: Representation Independence - in chapter 17 of the
 koller book. this is central as if that breaks apart the entire
@@ -1845,14 +1862,14 @@ thesis fall apart.
 you should therefore be careful with it.
 
 \item {\bfseries\sffamily TODO} check chapter 17 for making the point below
-\label{sec:org075462c}
+\label{sec:org4f69912}
 
 say at the end that the entire theory does not hold for locally
 shared and globally shared network parameters. there you would
 have to adjust the entire thing
 
 \item {\bfseries\sffamily TODO} have to insert as well as the sigma as parameter for the ess map in the exercise above
-\label{sec:orgcdfb468}
+\label{sec:orge220479}
 
 
 \newpage

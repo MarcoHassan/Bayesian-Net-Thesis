@@ -1,11 +1,10 @@
-* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [4/7]
+* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [5/8]
   :PROPERTIES:
   :CATEGORY: Bayesian_Net_Thesis
   :END:
 
 
 ** TODO for next week
-
 
 *** TODO write the numerical part of the M-step into the algorithm
 
@@ -46,13 +45,20 @@
     gradient and hessian for each all of the possible completion.
         
     
-*** TODO think of a network example
+*** TODO ask radu the 3 networks examples they worked with in their paper
 
     think about a network structure where you can apply the
     above. check at this link radu sent you with all of the
 
+    ask radu for them.
 
-*** TODO try with a different distribution. i.e. different CPT distribution and prior
+
+*** TODO start to implement the thing in the code
+
+    maybe start with probabilistic evidence as this is the easiest.
+    
+*** DONE try with a different distribution. i.e. different CPT distribution and prior
+    CLOSED: [2021-05-20 Thu 21:29]
 
     this is an ask of Radu. maybe prioritze shortly. go for instance
     with the exponential family. this is already very straightforward
@@ -60,7 +66,21 @@
     of no difficulty.
 
     
+
+
+**** TODO Look at chapter 8.5.2 often referred in that section
+
+     check at your notes on your blog. did it there. essentially there
+     is the theory to get M-projection.
+
+     then this plus chapter 17 - there is a link between M-projection
+     and MLE such that you can understand how to solve MLE by means of
+     M-projection theory.
+
+     
+
     
+
 ** DONE understand why global decomposition with complete data and why not with missing
    CLOSED: [2021-04-02 Fri 17:16]
    :PROPERTIES:
@@ -116,7 +136,8 @@
 
 ** TODO add the algorithm for plain EM and from there sequentially increment algorithm throughout the thesis
 
-** TODO notice that at the end there is this nice thing.
+** DONE notice that at the end there is this nice thing.
+   CLOSED: [2021-05-20 Thu 21:29]
 
    - likelihood evidence alters the e-step. cause it alters the way you
      do the inference step in your network.
@@ -127,22 +148,11 @@
    step.
 
 
+** TODO consider to put theorems in the theory and work from there in iterative loops
+   
+   
 ** WAITING other possible generalizations
    
-*** TODO add jeffery's method and pearl method into the mind map
-    SCHEDULED: <2021-05-03 Mon 10:00>
-    :PROPERTIES:
-    :WILD_NOTIFIER_NOTIFY_BEFORE: 30 10 5
-    :END:
-
-     - Investigate the relations: i.e. when you are under likelihood
-       evidence you propagate - the inference step is equal.
-
-     - when you are under probabilistic evidence you set limits to the
-       extent you propagate. i.e. it depends how new information will
-       flow in  the inference step as there the 5essential idea is that
-       you express already a probability - all else considered.
-
 *** TODO consider at some point the following enlargement of the EM algorithm (at least mention it in the thesis).
 
      - https://www.math.kth.se/matstat/gru/Statistical%20inference/Lecture8.pdf

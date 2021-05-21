@@ -53,10 +53,101 @@
 
 \newpage
 
-* TODO Bayesian Networks Overview and Definition & Literature Review
+* Bayesian Networks - History and Recent Developments
+
+
+   Probabilistic models based on directed acyclic graphs (DAGs) have
+   been consistently studied and researched since the first appearance
+   in the field of genetics in cite:wright1921correlation.
+
+   An important moment in the history of such models, and especially of
+   Bayesian Models in the field of cognitive science and artificial
+   intelligence, was as argued by cite:pearl2011bayesian, during the
+   late 1970s as such models emerged as the method of choice when
+   dealing with uncertainty in reasoning and expert systems and started
+   to replace the usage of symbolic artificial intelligence and
+   rule-based schema.
+
+   As argued in cite:pearl2011bayesian, an especially significant
+   property of such models that marked a turn-point in the modeling of
+   real world systems was the fact that such models shifted the focus
+   of the modeling exercise from reasoning processes focusing on the
+   flow of information (think at classical AI systems including neural
+   networks) to direct world representation, where edges may represent
+   real-world causal connections.
+
+   This, together with the fact that it is possible to associate
+   probabilistic statements to events modeled by such graphs via
+   bidirectional inference possibilities makes the point for such
+   probabilistic graphical models and their vast usage and research in
+   various subfields of artificial intelligence.
+
+   Given such properties and the fact that the mathematical machinery
+   necessary to deal with such graphs spans multiple distinct
+   subfields such as mathematical statistics, information theory,
+   graph theory and optimization - thereby attracting the interest of
+   multiple researchers -, it comes as no surprise the fact that there
+   is a vibrant research community dealing with such topic. Alone in
+   the last 10 (20) years the numbers of published papers on the topic
+   increased by x4 (x24) factor[fn:1], with a total of ~100'000
+   published papers on the topic of Bayesian Networks alone for the
+   year 2020.
+
+   In this sense, a thorough review of the ongoing research of the
+   field would be impossible. While important progress has been done
+   in researching the computational aspects of inference, learning and
+   representation of the networks, most of the research so far is
+   focusing on an idealized world with complete or missing random
+   variables evidence. Hence, despite the wealth of research,
+   fundamental issues when dealing with uncertainty evidence for
+   modeling Bayesian Networks have not been addressed that far.
+
+   This will pose the focus to this Thesis. By a rigorous literature
+   review as well as some theoretical contributions we will try to
+   address such a gap in the Bayesian Network modeling research,
+   starting with a formal definition of Bayesian Networks in the next
+   sub-sections before turning to a rigorous definition of the
+   different types of uncertain evidence from which we will expand
+   then.
+
+** Bayesian Networks - Formal Definition
+
+
+
+   Aside from the important characteristic of   
+
   
 
-* TODO Learning under Complete Evidence
+   - HISTORY... WHY BAYESIAN NETWORKS WERE INTRODUCED FIRST.
+
+   Consider the case where you would want to represent the joint
+   distribution of a set of random variables $\mathscr{X} = {X_1, ...,
+   X_n}$.
+
+   Then, given a parametric distribution on each random variable in the
+   set you might try to extract the functional 
+  
+
+  
+** TODO have to rigorously define here what a Bayesian Network is
+
+** TODO state the difference between types of networks. global parameter sharing and a priori independent
+
+
+
+* Thesis Outline
+
+  Say that there are three major areas of research:
+
+  - representation
+  - inference
+  - learning
+
+  say that you will focus on the learning part. 
+
+   
+
+* Learning under Complete Evidence
   :PROPERTIES:
   :CUSTOM_ID: complete-learning
   :END:
@@ -68,9 +159,31 @@
   amounts to parameter estimation via /Bayesian Learning/ as presented
   in cite:Smith_2001.
 
-  
-** TODO write the gloabl decomposition etc. properties  
+  While in the case of a single random variable the definition of the
+  two parameter estimation techniques is straightforward, in the case
+  of Bayesian Networks the situation is more involving due to the more
+  complex functional form of the joint distribution of the entire
+  network structure.
 
+  Despite of this, as we will show next, in the case of fully observed
+  network instances the likelihood of the Bayesian Network decomposes
+  over the set of local likelihood functions of the individual nodes
+  *X*. Given this fact, it will be possible to maximize the global
+  likelihood of the network by maximizing individual conditional
+  probability functions.
+  
+** write the gloabl decomposition etc. properties
+
+   - DEFINE COMPLETE DATA
+
+   - STATE THE THEOREM THAT UNDER COMPLETE DATA THE LIKELIHOOD DECOMPOSES.
+
+   - CHECK AT YOUR MIND-MAP FOR MENTAL FRAMEWORK TO PROVE THIS
+
+   
+
+   Given this general overview, we will abandon next the case of
+   /complete data/ observations for  
   
 * Types of Uncertain Evidence
 
@@ -95,8 +208,9 @@
 
   Albeit the case of missing evidence greatly alters the way through
   which it is possible to learn the parameters of the network, there
-  are multiple possible solutions to get to the results - see for
-  instance cite:koller2009probabilistic.
+  are multiple possible solutions to estimate parameters and come to
+  local maxima. We will address one of such methods in the next
+  chapter.
 
   A more interesting case is posed by /uncertain evidence/ as
   introduced by cite:Mrad_2015. The authors distinguish three types of
@@ -162,8 +276,9 @@
   \end{definition}  
   #+end_export
 
-  Such that it is all about how the /arrival of evidence/ as in the
-  following schema from cite:Mrad_2015 can update the cognitive state:
+  Such that it is all about how the /arrival of evidence/, as depicted
+  in the following schema from cite:Mrad_2015can, can update the
+  cognitive state:
 
   #+CAPTION: Inference Loop as in Mrad et all.
   #+attr_latex: :width 5.0in  
@@ -179,11 +294,11 @@
      cognitive state specified by the fixed probabilistic evidence.
      
   2. In non-fixed probabilistic evidence we consider the current
-     structure of the tree such for the current state of the network
-     our conditional probability distribution is specified by the
-     passed probabilistic evidence. Further in-coming evidence that
-     will alter the network probabilistic structure will affect the
-     cognitive state of the current node.
+     structure of the tree such that for the current state of the
+     network, the conditional probability distribution is specified by
+     the specified probabilistic evidence. Further in-coming evidence
+     that will alter the network probabilistic structure will affect
+     the cognitive state of the current node.
 
   3. In likelihood evidence we do not consider any prior
      information. I.e. we simply specify a local likelihood ratio for
@@ -203,7 +318,7 @@
 * On Missing Evidence
 
   In the case of missing evidence we have two types of findings for
-  the random variables in our network $<\mathscr{G}, \mathscr{X}>$.
+  the random variables in our network $G(\mathscr{V}, \mathscr{X})$.
 
   Say that you have $m = 1, ..., M$ instances of your network. Then on
   the one hand you will have observed random variables realizations
@@ -239,7 +354,6 @@
    $\sum_m P(d[m], h[m])$ such that you can ultimately use such a
    likelihood by marginalizing the missing finding out. This is in
    fact the approach of the EM-algorithm, which we will discuss next.
-
 
 ** The Mathematics of the EM
    :PROPERTIES:
@@ -1004,9 +1118,9 @@
     Moreover, through such a property it will be easy to compute the
     MLE according to the sufficient statistics in the /complete data/
     case, or according to the expected sufficient statistics in the
-    case of /missing data/ evidence. Moreover, the fact that conjugate
-    priors of exponential family distributions will be well known
-    exponential family distributions will further help in the
+    case of /missing data/ evidence. Finally, the fact that conjugate
+    priors of exponential family distributions will often be well
+    known exponential family distributions will further help in the
     parameter estimation given that the maximum for such posterior
     distributions are well documented in many statistical textbooks.
 
@@ -1703,7 +1817,10 @@
 
   \newpage
 
+  
   bibliography:../literature/references.bib
   bibliographystyle:unsrt
 
+* Footnotes
 
+[fn:1] Data from [[https://app.dimensions.ai/discover/publication][app.dimensions.ai]] 

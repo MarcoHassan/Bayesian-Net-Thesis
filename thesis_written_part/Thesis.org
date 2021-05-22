@@ -58,9 +58,9 @@
    in the field of genetics in cite:wright1921correlation.
 
    An important moment in the history of such models and the Bayesian
-   Networks subclass was as argued by cite:pearl2011bayesian, during
+   Networks subclass was, as argued by cite:pearl2011bayesian, during
    the late 1970s when such models emerged as the method of choice when
-   dealing with uncertainty in reasoning and expert systems
+   dealing with uncertainty in reasoning and expert systems;
    effectively starting to replace the usage of symbolic artificial
    intelligence and rule-based schema.
 
@@ -79,12 +79,13 @@
 
    Given such properties and the fact that the mathematical machinery
    necessary to deal with such graphs spans multiple distinct
-   subfields[fn:2] attracted the interest of multiple researchers; it
-   comes as no surprise the fact that there is a vibrant research
-   community dealing with such topic. Alone in the last 10 (20) years
-   the numbers of published papers on the topic increased by x4 (x24)
-   factor[fn:1], with a total of ~100'000 published papers on the
-   topic of Bayesian Networks alone for the year 2020.
+   subfields[fn:2]; the models attracted the interest of multiple
+   researchers; it comes as no surprise the fact that there is a
+   vibrant research community dealing with such topic. Alone in the
+   last 10 (20) years the numbers of published papers on the topic
+   increased by x4 (x24) factor[fn:1], with a total of ~100'000
+   published papers on the topic of Bayesian Networks alone for the
+   year 2020.
 
    In this sense, a thorough review of the ongoing research in the
    field would be impossible. While important progress has been done
@@ -96,7 +97,7 @@
    modeling Bayesian Networks have been only marginally addressed that
    far.
 
-   This will pose the focus to this Thesis. By a rigorous literature
+   This will pose the focus to this manuscript. By a rigorous literature
    review as well as some theoretical contributions we will try to
    partially address such a gap in the Bayesian Network modeling
    research. In this sense, we will start with a formal definition of
@@ -310,7 +311,7 @@
    #+begin_export latex
    \begin{definition}
    Fixed (Non-fixed) Probabilistic evidence: A probabilistic finding
-   is fixed (non-fixed) when the distribution R(X_i) can not be (can
+   is fixed (non-fixed) when the distribution $R(X_i)$ can not be (can
    be) modified by the propagation of other findings.
    \end{definition}  
    #+end_export
@@ -357,67 +358,198 @@
 
 ** Literature Review and Research Outline
 
-   - STATE HERE THE TWO WAYS FOR SOLVING THE PARAMETER LEARNING - MLE
-     AND BAYESIAN APPROACH. 
+   Irrespective of the type of uncertainty, we distinguish among two
+   class of methods in order to estimate parameters in Bayesian
+   Networks, namely the Maximum Likelihood Estimation (MLE)
+   cite:spiegelhalter1990sequential and Bayesian Learning
+   cite:Smith_2001. The theoretical framework on which the two models
+   build on is different. While in MLE we assume the parameter of
+   interest to be a fixed but unknown variable, in Bayesian Learning
+   we treat the parameter of interest themselves as a random
+   variable.
 
-   - STATE RESEARCH AND BASIC RESULTS IN THE CASE OF COMPLETE AND
-     MISSING EVIDENCE
+   Both such methods have been extensively studied in statistical
+   research.
 
-   - STATE RESEARCH AND BASIC RESULTS IN THE CASE OF LIKELIHOOD
-     EVIDENCE
+   For MLE we have to guarantee the existence of such an estimator and
+   then perform the optimization exercise in order to find the maximum
+   likelihood estimator. In this sense a particular important result
+   that we will leverage in the manuscript is the realization that in
+   the case of an exponential family as treated by
+   cite:barndorff1978hyperbolic, we can obtain the MLE as solving for
+   the reverse I-projection (or M-projection) as defined in
+   cite:csiszar1975divergence.
 
-   - STATE RESEARCH AND BASIC RESULTS IN THE CASE OF UNCERTAIN
-     EVIDENCE
+   In contrast to that in the case of Bayesian Learning the situation
+   is more complex. On the one hand it is necessary to define a prior
+   probability distribution on the parameter of interest before the
+   flow of information arising from the observed evidence. This can be
+   done either with the help of subject matter experts by expressing
+   some degree of knowledge gained over the years, or by the usage of
+   non-informative priors as in cite:syversveen1998noninformative. On
+   the other hand, it is necessary to decide on a fix point estimator
+   given a posterior distribution. Standard point estimator of choice
+   are the maximum a posteriori estimator or the first moment of the
+   posterior distribution. Important is in this sense to realize that
+   we might not be able to integrate over every posterior such that it
+   will be necessary to rely on approximate methods for computing the
+   moments of interest. Or a possible different solution, is to
+   restrict the modeling approach to exponential families with the
+   respective conjugate priors, as defined in
+   cite:schlaifer1961applied, such that the posterior will be a
+   standard distribution such that moments and mode can be expressed
+   by functions and coded efficiently in statistical software.
 
-   - STATE RESEARCH OUTLINE 
-   
+   Given the general theoretical framework for the two parameter
+   estimation techniques mentioned above, we are left with a
+   generalization of the above to the density function of Bayesian
+   Networks. Seminal was the work of cite:spiegelhalter1990sequential
+   who laid the foundation of the learning problem by expressing the
+   assumption of global parameter independence coming to the central
+   notion of decomposability of the likelihood function that we are
+   going to treat in the next sections. Based on such work multiple
+   papers were published expanding the theory for different classes of
+   Bayesian Networks such as tree-CPDs cite:buntine1993tree, linear
+   Gaussian BN cite:heckerman1995learning as well as different
+   learning settings such as learning with parameter sharing networks,
+   hierarchical Bayesian models and non-parametric estimation.
 
+   The theoretical foundation for the theory exposed above was the one
+   of complete evidence. Leaving such an ideal case and turning to
+   missing evidence where missing values occurs for some network
+   random variables, some further reasoning is
+   necessary. cite:rubin1976inference and cite:little1976inference
+   started to reason about the notion of /missing completely at
+   random/ and /missing at random/ data, a topic we will re-encounter
+   in later section of this manuscript. Given such a distinction it is
+   possible to set out the fundamentals for the parameter learning
+   task. We will show that in the case of /missing completely at
+   random/ data some of the decomposability properties of the
+   likelihood function under complete data are lost such that it is
+   necessary to rely on some tailored learning technique such as the
+   EM-algorithm first presented by cite:dempster1977maximum and its
+   application to graphical models as in cite:lauritzen1995algorithm.
+   We will show then that under missing evidence such an algorithm
+   will be correct and converge to a local maxima of the joint
+   distribution of the Bayesian Network.  
 
+   Moving to the case of uncertain evidence, we will first build on
+   the theory of cite:Wasserkrug_all to augment the EM-algorithm in
+   order to deal with /likelihood evidence/ keeping the correctness
+   and convergence properties of the algorithm. This will be done by
+   exploiting the idea of augmenting Bayesian Network via virtual
+   evidence nodes as outlined by cite:pearl2014probabilistic.
 
-   We will discuss next how to handle the three types of uncertain
-   evidence. We will start with a discussion of missing evidence as
-   expanding on this it will be possible to accomplish the task
-   parameter learning under uncertain evidence settings.
+   Then in a second step we will generalize the theory of
+   cite:Wasserkrug_all in order to the Bayesian Learning setting and
+   the fixed point maximum a posteriori estimator. We will show there
+   that it is possible to apply the EM algorithm in such a setting
+   keeping in a way that its correctness and convergence properties
+   are guaranteed.
 
+   Finally, we will move to the case of /probabilistic
+   evidence/. There we will reason how the algorithm proposed by
+   cite:Wasserkrug_all will generalize to the case of /non-fixed
+   probabilistic evidence/ in the case a single /probabilistic
+   finding/ is expressed on a node of the Bayesian Network. We will
+   then conclude the section by reasoning on how the iterative
+   proportional fitting procedure might generalize EM algorithm to the
+   case of an arbitrary number of probabilistic evidence in the
+   network.
 
-   BLABLA BLA.... say what is coming next
-   
+   Summing up, the manuscript continues as follows:
 
+   - MAKE ROADMAP AND LINK CHAPTERS
+        
 
 * Learning under Complete Evidence
   :PROPERTIES:
   :CUSTOM_ID: complete-learning
   :END:
-    
-   As we will discuss, in such a case important properties hold for
-   the network such as the global likelihood decomposition. This
-   allows the possibility to work with local conditional probabilities
-   in order to reach the optimal solution.
 
-*** TODO state the difference between types of networks. global parameter sharing and a priori independent
+  In this section we will lay out the fundamental characteristics of
+  parameter learning under complete evidence. On the one hand we will
+  propose the global decomposition property as in
+  cite:spiegelhalter1990sequential. On the other hand we will
+  introduce the a priori independence assumption of the parameters for
+  the case of Bayesian Learning; this is a fundamental property that
+  Bayesian Networks need to display in order to fulfill the global
+  decomposition property. In fact, we will see in the next section
+  that in the case of missing evidence such a property is not
+  fulfilled such that global decomposability of Bayesian Networks is
+  lost.
 
-    and that we will just work with a priori independent networks.
+  The major result of cite:spiegelhalter1990sequential, was the
+  realization that in the case of complete data the likelihood of the
+  Bayesian Network decomposes over the set of local likelihood
+  functions of the individual nodes *X_i*. Hence despite the fact that
+  the likelihood function of Bayesian Networks is a product of
+  multiple chained CPDs, it is possible to estimate the parameters of
+  each CPDs locally, via one of the two presented learning methods, in
+  order to get an overall network parameterization fulfilling the
+  functional requirements of the estimation technique.
 
+  In order to see that consider the following network $\mathscr{B} =
+  (\mathscr{G}, P)$ with \theta parameterization and a set of complete
+  evidence $\mathscr{D}$ consisting of sample instances $\xi[1], ...,
+  \xi[M]$ for nodes $i = 1, ..., k$.
+
+  Given the network structure it is possible to express the network
+  overall probability via chain rule as:
+
+  #+begin_export latex
+  \begin{equation} \label{eq:global_decomposition}
+  P_{\theta} (x_1, ..., x_n) = \prod_i \prod_m P_{\theta_i}(x_i[m] | pa_i^{\mathscr{G}}[m])  \nonumber
+  \end{equation}
+  #+end_export
+
+  Noting now that it is possible to invert the order of multiplication
+  we get the following global likelihood decomposition for the
+  Bayesian Network decomposition. 
   
-  As vastly documented in the literature there are essentially two
-  types of approaches when performing the task of parameter
-  learning. The first one is a parameter estimation via /Maximum
-  Likelihood Estimation (MLE)/ as in cite:Myung_2003 while the second
-  amounts to parameter estimation via /Bayesian Learning/ as presented
-  in cite:Smith_2001.
+  #+begin_export latex
+  \begin{align} \label{eq:global_decomposition}
+  L(\theta : \mathscr{D})       &=  P_{\theta} (x_1[m], ..., x_k[m]) \nonumber \\ 
+  P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_m \prod_i  P_{\theta_i}(x_i[m] | pa_i^{\mathscr{G}}[m])  \nonumber \\
+  P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_i [\prod_m  P_{\theta_i}(x_i[m] | pa_i^{\mathscr{G}}[m])]  \nonumber \\
+                                &= \prod_i L(\theta_i : X_i[m])  \nonumber    
+  \end{align}
+  #+end_export
 
-  While in the case of a single random variable the definition of the
-  two parameter estimation techniques is straightforward, in the case
-  of Bayesian Networks the situation is more involving due to the more
-  complex functional form of the joint distribution of the entire
-  network structure.
+  It is then immediate to see that when solving for the MLE
+  parameterization of the above you might well as well get your
+  parameters by locally solving for the MLE estimators of the local
+  likelihoods $L(\theta_i : X_i[m])$.
 
-  Despite of this, as we will show next, in the case of fully observed
-  network instances the likelihood of the Bayesian Network decomposes
-  over the set of local likelihood functions of the individual nodes
-  *X*. Given this fact, it will be possible to maximize the global
-  likelihood of the network by maximizing individual conditional
-  probability functions.
+  A similar reasoning holds for the case of Bayesian Learning. In such
+  a case we require on the top of complete data a Bayesian Network
+  /a priori independent/ parameters defined as follows leveraging on
+  the notes of cite:koller2009probabilistic:
+
+    #+begin_export latex
+   \begin{definition} \label{def:a_priori_parameters}
+   A Priori Global Parameter Independece: Let G be a Bayesian network
+   structure with parameters \theta = (\theta_{X_1}|Pa_{X_1} , ...,
+   \theta{X_n}|Pa_{X_n}).
+
+   A prior P(\theta) is said to satisfy global parameter independence
+   if it has the form:
+
+   P(\theta) = \prod_i P(\theta_{X_i}|Pa_{X_i})
+   
+   \end{definition}  
+   #+end_export
+
+   Such that with /a-priori global parameter independence/ you have
+   the property that knowing the value of one parameter does not add
+   any information regarding another parameter value. 
+
+   With this notion 
+   
+
+
+
+
   
 ** write the gloabl decomposition etc. properties
 
@@ -474,6 +606,16 @@
    $\sum_m P(d[m], h[m])$ such that you can ultimately use such a
    likelihood by marginalizing the missing finding out. This is in
    fact the approach of the EM-algorithm, which we will discuss next.
+
+
+   - THE ESSENTIAL IDEA IS THE ONE OF D-SEPARATION. YOU DO NOT HAVE
+     D-SEPARATION AMONG NODES ANYMORE WITH MISSING DATA. YOU CLIMB UP
+     THE NETWORK AND YOU ADD INFORMATION TO PARAMETERS OF OTHER
+     NODES. IN THIS SENSE THE ENTIRE DECOMPOSABILITY THEORY IS GONE.
+     
+   In this sense the trails among nodes are d-separated in the
+   network theory sense.
+
 
 ** The Mathematics of the EM
    :PROPERTIES:
@@ -1909,7 +2051,7 @@
 
     
 * TODOs
-
+  
 **** TODO check if particle formulation in energy functional ok as such
 **** TODO note that network structure G(V,X) how you described. Correct later
 **** TODO make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
@@ -1930,13 +2072,13 @@
      have to adjust the entire thing
 
 **** TODO have to insert as well as the sigma as parameter for the ess map in the exercise above
+**** TODO REASON ON HOW JEFFERY's method can work with the EM algorithm
 
-
-  \newpage
+   \newpage
 
   
-  bibliography:../literature/references.bib
-  bibliographystyle:unsrt
+   bibliography:../literature/references.bib
+   bibliographystyle:unsrt
 
 * Footnotes
 

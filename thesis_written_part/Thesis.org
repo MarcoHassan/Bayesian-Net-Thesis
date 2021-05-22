@@ -357,6 +357,10 @@
    manuscript. 
 
 ** Literature Review and Research Outline
+  :PROPERTIES:
+  :CUSTOM_ID: literature_review
+  :END:
+
 
    Irrespective of the type of uncertainty, we distinguish among two
    class of methods in order to estimate parameters in Bayesian
@@ -471,13 +475,12 @@
   parameter learning under complete evidence. On the one hand we will
   propose the global decomposition property as in
   cite:spiegelhalter1990sequential. On the other hand we will
-  introduce the a priori independence assumption of the parameters for
-  the case of Bayesian Learning; this is a fundamental property that
-  Bayesian Networks need to display in order to fulfill the global
-  decomposition property. In fact, we will see in the next section
-  that in the case of missing evidence such a property is not
-  fulfilled such that global decomposability of Bayesian Networks is
-  lost.
+  introduce the parameter independence assumption; this is a
+  fundamental property that Bayesian Networks need to display in order
+  to fulfill the global decomposition property. In fact, we will see
+  in the next section that in the case of missing evidence such a
+  property is not fulfilled such that global decomposability of
+  Bayesian Networks is lost.
 
   The major result of cite:spiegelhalter1990sequential, was the
   realization that in the case of complete data the likelihood of the
@@ -524,7 +527,7 @@
   A similar reasoning holds for the case of Bayesian Learning. In such
   a case we require on the top of complete data a Bayesian Network
   /a priori independent/ parameters defined as follows leveraging on
-  the notes of cite:koller2009probabilistic:
+  the notes of cite:koller2009probabilistic 
 
     #+begin_export latex
    \begin{definition} \label{def:a_priori_parameters}
@@ -532,10 +535,10 @@
    structure with parameters \theta = (\theta_{X_1}|Pa_{X_1} , ...,
    \theta{X_n}|Pa_{X_n}).
 
-   A prior P(\theta) is said to satisfy global parameter independence
+   A prior $P(\theta)$ is said to satisfy global parameter independence
    if it has the form:
 
-   P(\theta) = \prod_i P(\theta_{X_i}|Pa_{X_i})
+   $$P(\theta) = \prod_i P(\theta_{X_i}|Pa_{X_i})$$
    
    \end{definition}  
    #+end_export
@@ -544,27 +547,28 @@
    the property that knowing the value of one parameter does not add
    any information regarding another parameter value. 
 
-   With this notion 
+   With this notion in mind and the global likelihood decomposition
+   property it is possible to see that it holds for Bayesian Learning
+   under complete data:
    
+   #+begin_export latex
+   \begin{align} \label{eq:bayes_learning_complete_data}
+   P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_i L(\theta_i : X_i[m])  \nonumber \\
+   P(\theta) &= \prod_i P(\theta_{X_i}|Pa_{X_i})   \nonumber \\
+   P(\theta | \mathscr{D}) &= \frac{1}{P(\mathscr{D})} \prod_i L(\theta_i : X_i[m]) * P(\theta_{X_i}|Pa_{X_i}) \nonumber
+   \end{align}
+   #+end_export
 
+   Such that once more we might for instance be able to compute the
+   maximum a posteriori parameterization for the entire network, by
+   taking the maximum a posteriori parameterization of individual
+   CPDs.
 
-
-
-  
-** write the gloabl decomposition etc. properties
-
-   - DEFINE COMPLETE DATA
-
-   - STATE THE THEOREM THAT UNDER COMPLETE DATA THE LIKELIHOOD DECOMPOSES.
-
-   - CHECK AT YOUR MIND-MAP FOR MENTAL FRAMEWORK TO PROVE THIS
-
+   We turn next to the case of missing evidence where we are going to
+   see that such a neat properties will fade away such that it will be
+   necessary to rely on more sophisticated techniques in order to
+   perform the learning task.
    
-
-   Given this general overview, we will abandon next the case of
-   /complete data/ observations for  
-  
-
 
 
 * On Missing Evidence
@@ -580,7 +584,7 @@
   $\mathscr{X} - \mathscr{Y}$.
 
   As both of the parameter learning techniques, as presented in
-  [[ref:complete-learning]], involve a likelihood term, the question is on
+  [[ref:literature_review]], involve a likelihood term, the question is on
   the way such likelihood term can be represented in the case of
   missing evidence.
 

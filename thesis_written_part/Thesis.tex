@@ -1,4 +1,4 @@
-% Created 2021-05-22 Sat 17:09
+% Created 2021-05-22 Sat 18:16
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -76,7 +76,7 @@
 \newpage
 
 \section{Bayesian Networks - Overview and Manuscript Outline}
-\label{sec:org749c47d}
+\label{sec:orge029270}
 
 
 Probabilistic models based on directed acyclic graphs (DAGs) have
@@ -133,7 +133,7 @@ rigorous definition of the different types of uncertain evidence
 from which we will expand on.
 
 \subsection{Bayesian Networks - Formal Definition}
-\label{sec:org2462e5f}
+\label{sec:org8e5abcd}
 Before starting to dig into the material we provide a general
 definition of a Bayesian Network as in \cite{pearl2011bayesian}.
 
@@ -244,7 +244,7 @@ We turn next to a formal definition of evidence and especially of
 research presented in this manuscript.
 
 \subsection{Types of Evidence}
-\label{sec:orgddca32c}
+\label{sec:org2d4e7c0}
 
 The most basic case of evidence is the one of complete
 evidence. This occurs when we are provided with complete
@@ -374,8 +374,7 @@ evidence. We will finally propose the research outline for this
 manuscript. 
 
 \subsection{Literature Review and Research Outline}
-\label{sec:orgd41bf3d}
-
+\label{literature_review}
 Irrespective of the type of uncertainty, we distinguish among two
 class of methods in order to estimate parameters in Bayesian
 Networks, namely the Maximum Likelihood Estimation (MLE)
@@ -488,8 +487,12 @@ In this section we will lay out the fundamental characteristics of
 parameter learning under complete evidence. On the one hand we will
 propose the global decomposition property as in
 \cite{spiegelhalter1990sequential}. On the other hand we will
-introduce the a priori independence assumption of the parameters; a
-central piece for the estimation of parameters in Bayesian Networks.
+introduce the parameter independence assumption; this is a
+fundamental property that Bayesian Networks need to display in order
+to fulfill the global decomposition property. In fact, we will see
+in the next section that in the case of missing evidence such a
+property is not fulfilled such that global decomposability of
+Bayesian Networks is lost.
 
 The major result of \cite{spiegelhalter1990sequential}, was the
 realization that in the case of complete data the likelihood of the
@@ -529,35 +532,51 @@ parameterization of the above you might well as well get your
 parameters by locally solving for the MLE estimators of the local
 likelihoods \(L(\theta_i : X_i[m])\).
 
+A similar reasoning holds for the case of Bayesian Learning. In such
+a case we require on the top of complete data a Bayesian Network
+\emph{a priori independent} parameters defined as follows leveraging on
+the notes of \cite{koller2009probabilistic} 
 
+\begin{definition} \label{def:a_priori_parameters}
+A Priori Global Parameter Independece: Let G be a Bayesian network
+structure with parameters \theta = (\theta_{X_1}|Pa_{X_1} , ...,
+\theta{X_n}|Pa_{X_n}).
 
+A prior $P(\theta)$ is said to satisfy global parameter independence
+if it has the form:
 
+$$P(\theta) = \prod_i P(\theta_{X_i}|Pa_{X_i})$$
 
-Given this fact, it will be possible to maximize the global
-likelihood of the network by maximizing individual conditional
-probability functions.
+\end{definition}  
 
-\subsection{write the gloabl decomposition etc. properties}
-\label{sec:orgf048e63}
+Such that with \emph{a-priori global parameter independence} you have
+the property that knowing the value of one parameter does not add
+any information regarding another parameter value. 
 
-\begin{itemize}
-\item DEFINE COMPLETE DATA
+With this notion in mind and the global likelihood decomposition
+property it is possible to see that it holds for Bayesian Learning
+under complete data:
 
-\item STATE THE THEOREM THAT UNDER COMPLETE DATA THE LIKELIHOOD DECOMPOSES.
+\begin{align} \label{eq:bayes_learning_complete_data}
+P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_i L(\theta_i : X_i[m])  \nonumber \\
+P(\theta) &= \prod_i P(\theta_{X_i}|Pa_{X_i})   \nonumber \\
+P(\theta | \mathscr{D}) &= \frac{1}{P(\mathscr{D})} \prod_i L(\theta_i : X_i[m]) * P(\theta_{X_i}|Pa_{X_i}) \nonumber
+\end{align}
 
-\item CHECK AT YOUR MIND-MAP FOR MENTAL FRAMEWORK TO PROVE THIS
-\end{itemize}
+Such that once more we might for instance be able to compute the
+maximum a posteriori parameterization for the entire network, by
+taking the maximum a posteriori parameterization of individual
+CPDs.
 
-
-
-Given this general overview, we will abandon next the case of
-\emph{complete data} observations for  
-
+We turn next to the case of missing evidence where we are going to
+see that such a neat properties will fade away such that it will be
+necessary to rely on more sophisticated techniques in order to
+perform the learning task.
 
 
 
 \section{On Missing Evidence}
-\label{sec:orgf96644a}
+\label{sec:org4fad22c}
 
 In the case of missing evidence we have two types of findings for
 the random variables in our network \(G(\mathscr{V}, \mathscr{X})\).
@@ -570,12 +589,12 @@ non-observed findings \(h[m]\) for a subset of variables
 \(\mathscr{X} - \mathscr{Y}\).
 
 As both of the parameter learning techniques, as presented in
-\ref{complete-learning}, involve a likelihood term, the question is on
+\ref{literature_review}, involve a likelihood term, the question is on
 the way such likelihood term can be represented in the case of
 missing evidence.
 
 \subsection{{\bfseries\sffamily TODO} write down the idea of nasty likelihood and why you need the EM algorithm as a solution}
-\label{sec:orgfd551be}
+\label{sec:org0dd9ba8}
 
 One solution that was proposed is the one of completely ignoring
 the missing evidence and computing a likelihood function just based
@@ -597,6 +616,18 @@ Then in such a case you have this likelihood just depending on
 \(\sum_m P(d[m], h[m])\) such that you can ultimately use such a
 likelihood by marginalizing the missing finding out. This is in
 fact the approach of the EM-algorithm, which we will discuss next.
+
+
+\begin{itemize}
+\item THE ESSENTIAL IDEA IS THE ONE OF D-SEPARATION. YOU DO NOT HAVE
+D-SEPARATION AMONG NODES ANYMORE WITH MISSING DATA. YOU CLIMB UP
+THE NETWORK AND YOU ADD INFORMATION TO PARAMETERS OF OTHER
+NODES. IN THIS SENSE THE ENTIRE DECOMPOSABILITY THEORY IS GONE.
+\end{itemize}
+
+In this sense the trails among nodes are d-separated in the
+network theory sense.
+
 
 \subsection{The Mathematics of the EM}
 \label{math_em}
@@ -678,7 +709,7 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsubsection{The Expectation Step}
-\label{sec:org39e1c13}
+\label{sec:org6dbe62b}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -705,7 +736,7 @@ interpret the E-step as the step involving the maximization of the
 energy functional along the Q coordinate.
 
 \subsubsection{The Maximization Step}
-\label{sec:org64dafc4}
+\label{sec:org048941e}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -732,7 +763,7 @@ log-likelihood increases such that theorem \ref{thm:one} is proved.
 
 
 \subsection{An Exponential Family Example}
-\label{sec:org28ce42f}
+\label{sec:org0bef1f8}
 
 This section provides an application of theory presented above for
 the general case of exponential families. The idea is to
@@ -1104,7 +1135,7 @@ maximizing the score map of \ref{eq:bayes_map2}. This will be the main
 exercise of the next section.
 
 \subsubsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:orgb6906e6}
+\label{sec:orgf58a80e}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -1267,7 +1298,7 @@ of the maximum a posteriori point estimate such that we will choose
 a local maximum point estimator.
 
 \subsubsection{Bayesian Parameter Learning - An Exponential Family Generalization}
-\label{sec:org22affbd}
+\label{sec:org959b1c6}
 
 This section generalizes the exercise of the above section for
 general exponential family distributions. As discussed in
@@ -1320,7 +1351,7 @@ to obtain the maximum by getting the mode of the resulting
 multivariate t-distribution according to such hyperparameters.
 
 \subsection{On Numerical EM}
-\label{sec:org26a9207}
+\label{sec:orgef3e253}
 
 As argued in the previous section when working with conjugate prior
 we might easily get to closed form solutions for the maximum of the
@@ -1352,7 +1383,7 @@ dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
 \subsubsection{Numerical EM for MLE estimator}
-\label{sec:orgd0aa65d}
+\label{sec:org6b9478b}
 
 In order to understand how to compute M-step according to an
 iterative method, think at the following.
@@ -1422,7 +1453,7 @@ for our solution. In that case the EM theory would collapse and
 there is no guarantee to reach a local maximum.
 
 \subsubsection{Numerical EM for MAP estimator}
-\label{sec:org61a5728}
+\label{sec:org4282c05}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -1455,7 +1486,7 @@ need now to account for the prior distribution influence.
 
 
 \section{On Likelihood Evidence}
-\label{sec:orga9640bb}
+\label{sec:orga39d11e}
 
 Recall that as defined in \cite{Mrad_2015} in likelihood evidence an
 observation is uncertain due to unreliable source of information.
@@ -1495,7 +1526,7 @@ parameter learning under likelihood evidence describing the
 approach as in \cite{Wasserkrug_all}.
 
 \subsection{Adjusted EM - Likelihood Evidence}
-\label{sec:orgbb7c2ea}
+\label{sec:org2492389}
 
 One of the most widespread ways to deal with likelihood evidence
 was introduced by \cite{pearl2014probabilistic}. The idea is to
@@ -1698,7 +1729,7 @@ it is possible to perform MAP estimation in Bayesian settings.
 \newpage
 
 \subsection{Bayesian Learning MAP - Adjusted EM for Likelihood Evidence}
-\label{sec:org85c06fb}
+\label{sec:org0a90fb9}
 
 The idea of this section is to extend \ref{alg:EM-Likelihood} in
 order to obtain the MAP estimator in a Bayesian Learning setting
@@ -1745,7 +1776,7 @@ Given such a computation it is possible to get to a local maximum
 for the MAP estimator.
 
 \subsection{Numerical M-step}
-\label{sec:org09fc388}
+\label{sec:org0388d52}
 
 This section concludes the chapter on Bayesian Parameter Learning
 by substituting the M-step of \ref{alg:Bayes-EM-Likelihood}, by a
@@ -1779,13 +1810,13 @@ analytical derivation of the maximum in the M-step.
 
 
 \subsubsection{{\bfseries\sffamily TODO} formulate the things in the paper below}
-\label{sec:orga5ac8f3}
+\label{sec:org8fc4a24}
 
 and incorporate them in the algo above.
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} define how you compute such numerical derivative.
-\label{sec:orgfe5a81f}
+\label{sec:org90e1659}
 
 note that you must have the guarantee of positive definite so that
 you move towards the maximum despite working with an approximate
@@ -1798,7 +1829,7 @@ wow. so you thought well.
 
 
 \item {\bfseries\sffamily TODO} note that the above Q terms are nothing else than the expected score and expected fisher information
-\label{sec:orgc20e792}
+\label{sec:orgcfb51ad}
 
 good paper in \href{https://arxiv.org/pdf/1608.01734.pdf}{this sense}.
 
@@ -1811,7 +1842,7 @@ incorporate everything in the next step.
 
 
 \section{On Probabilistic Evidence}
-\label{sec:orgeddda00}
+\label{sec:orgea20cd6}
 
 In the previous chapter we showed how it is possible to rephrase a
 likelihood evidence as an observed event by means of augmenting the
@@ -1941,19 +1972,19 @@ Learning.
 
 
 \section{TODOs}
-\label{sec:org2eb5d8a}
+\label{sec:org8374094}
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
-\label{sec:org1dc6641}
+\label{sec:orgdaedfa0}
 \item {\bfseries\sffamily TODO} note that network structure G(V,X) how you described. Correct later
-\label{sec:orgb1dde7e}
+\label{sec:org895ac45}
 \item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
-\label{sec:org4aeab29}
+\label{sec:org5b9edfa}
 \item {\bfseries\sffamily TODO} note that the EM you loose global decomposition such that at the end with the local maxima of CPDs achieved by EM you ultimately just get a local maximum.
-\label{sec:org0c15a84}
+\label{sec:org6eba6c2}
 \item {\bfseries\sffamily TODO} for last section - check at the following chapter.
-\label{sec:org52d6123}
+\label{sec:orgb17eb00}
 
 Concept: Representation Independence - in chapter 17 of the
 koller book. this is central as if that breaks apart the entire
@@ -1963,16 +1994,16 @@ thesis fall apart.
 you should therefore be careful with it.
 
 \item {\bfseries\sffamily TODO} check chapter 17 for making the point below
-\label{sec:orgfd124ff}
+\label{sec:org17341d1}
 
 say at the end that the entire theory does not hold for locally
 shared and globally shared network parameters. there you would
 have to adjust the entire thing
 
 \item {\bfseries\sffamily TODO} have to insert as well as the sigma as parameter for the ess map in the exercise above
-\label{sec:orgb82e663}
+\label{sec:org9adeaec}
 \item {\bfseries\sffamily TODO} REASON ON HOW JEFFERY's method can work with the EM algorithm
-\label{sec:orgce79550}
+\label{sec:org1a5dc6a}
 
 \newpage
 

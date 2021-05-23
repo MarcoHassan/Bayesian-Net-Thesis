@@ -361,7 +361,6 @@
   :CUSTOM_ID: literature_review
   :END:
 
-
    Irrespective of the type of uncertainty, we distinguish among two
    class of methods in order to estimate parameters in Bayesian
    Networks, namely the Maximum Likelihood Estimation (MLE)
@@ -475,12 +474,12 @@
   parameter learning under complete evidence. On the one hand we will
   propose the global decomposition property as in
   cite:spiegelhalter1990sequential. On the other hand we will
-  introduce the parameter independence assumption; this is a
+  introduce the parameter independence condition; this is a
   fundamental property that Bayesian Networks need to display in order
-  to fulfill the global decomposition property. In fact, we will see
-  in the next section that in the case of missing evidence such a
-  property is not fulfilled such that global decomposability of
-  Bayesian Networks is lost.
+  to fulfill the decomposition properties. In fact, we will see in the
+  next section that in the case of missing evidence such a property is
+  not fulfilled such that decomposability of Bayesian Networks are
+  lost.
 
   The major result of cite:spiegelhalter1990sequential, was the
   realization that in the case of complete data the likelihood of the
@@ -492,17 +491,23 @@
   order to get an overall network parameterization fulfilling the
   functional requirements of the estimation technique.
 
-  In order to see that consider the following network $\mathscr{B} =
+  In order to see that, consider the following network $\mathscr{B} =
   (\mathscr{G}, P)$ with \theta parameterization and a set of complete
   evidence $\mathscr{D}$ consisting of sample instances $\xi[1], ...,
   \xi[M]$ for nodes $i = 1, ..., k$.
 
-  Given the network structure it is possible to express the network
+  We note here, that in this manuscript we will work under the
+  assumption that the parameters in the network are disjoint. Meaning
+  that there is no /global parameter sharing/ as well as /local
+  parameter sharing/ in the network as described in
+  cite:koller2009probabilistic.
+
+  Given such network structure it is possible to express the network
   overall probability via chain rule as:
 
   #+begin_export latex
   \begin{equation} \label{eq:global_decomposition}
-  P_{\theta} (x_1, ..., x_n) = \prod_i \prod_m P_{\theta_i}(x_i[m] | pa_i^{\mathscr{G}}[m])  \nonumber
+  P_{\theta} (x_1, ..., x_n) = \prod_i \prod_m P_{\theta_i}(x_i[m] | Pa_i^{\mathscr{G}}[m])  \nonumber
   \end{equation}
   #+end_export
 
@@ -513,8 +518,8 @@
   #+begin_export latex
   \begin{align} \label{eq:global_decomposition}
   L(\theta : \mathscr{D})       &=  P_{\theta} (x_1[m], ..., x_k[m]) \nonumber \\ 
-  P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_m \prod_i  P_{\theta_i}(x_i[m] | pa_i^{\mathscr{G}}[m])  \nonumber \\
-  P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_i [\prod_m  P_{\theta_i}(x_i[m] | pa_i^{\mathscr{G}}[m])]  \nonumber \\
+  P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_m \prod_i  P_{\theta_i}(x_i[m] | Pa_i^{\mathscr{G}}[m])  \nonumber \\
+  P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_i [\prod_m  P_{\theta_i}(x_i[m] | Pa_i^{\mathscr{G}}[m])]  \nonumber \\
                                 &= \prod_i L(\theta_i : X_i[m])  \nonumber    
   \end{align}
   #+end_export
@@ -525,15 +530,15 @@
   likelihoods $L(\theta_i : X_i[m])$.
 
   A similar reasoning holds for the case of Bayesian Learning. In such
-  a case we require on the top of complete data a Bayesian Network
-  /a priori independent/ parameters defined as follows leveraging on
-  the notes of cite:koller2009probabilistic 
+  a case we require on the top of complete data the property of /a
+  priori independent/ parameters defined as follows as in
+  cite:koller2009probabilistic
 
     #+begin_export latex
    \begin{definition} \label{def:a_priori_parameters}
    A Priori Global Parameter Independece: Let G be a Bayesian network
-   structure with parameters \theta = (\theta_{X_1}|Pa_{X_1} , ...,
-   \theta{X_n}|Pa_{X_n}).
+   structure with parameters \theta = (\theta_{X_1|Pa_{X_1}} , ...,
+   \theta_{X_n|Pa_{X_n}}).
 
    A prior $P(\theta)$ is said to satisfy global parameter independence
    if it has the form:
@@ -564,61 +569,237 @@
    taking the maximum a posteriori parameterization of individual
    CPDs.
 
-   We turn next to the case of missing evidence where we are going to
-   see that such a neat properties will fade away such that it will be
-   necessary to rely on more sophisticated techniques in order to
-   perform the learning task.
-   
+   As a final note, we stress here the point that, in a similar line
+   of reasoning, if observing the data the parameterization for a
+   local CPD are d-separated - such that, after observing complete
+   data, $\theta_{Y|pa_i_j}$ is independent from $\theta_{Y|pa_i_l}$
+   for all local parents $j,l = 1, ..., p$ and with $i \neq l$ - then
+   a network satisfies the local decomposability property. In such a
+   case it would then hold for the parameter local independence:
 
+   #+begin_export latex
+   \begin{align}
+   P(\theta) &= \prod_i P(\theta_{X_i}|Pa_i) \nonumber \\ 
+             &= \prod_i \prod_j P(\theta_{X_i}|pa_i_j) \nonumber  
+   \end{align}
+   #+end_export
+
+   And correspondingly for your likelihood
+   
+   #+begin_export latex
+   \begin{align} 
+   L(\theta : \mathscr{D}) &= \prod_i^K [\prod_m^M [\prod_j^P  P_{\theta_i_j}(x_i[m] | pa_i_j^{\mathscr{G}}[m])] \nonumber \\
+                           &= \prod_i^K [\prod_j^P [\prod_m^M  P_{\theta_i_j}(x_i[m] | pa_i_j^{\mathscr{G}}[m])]] \nonumber \\
+                           &= \prod_i \prod_j L(\theta_i_j : X_i[m])  \nonumber
+   \end{align}
+   #+end_export
+
+   Such that it would ultimately hold for Bayesian Learning
+
+   #+begin_export latex
+   \begin{align} 
+   P(\theta | \mathscr{D}) &= \frac{1}{P(\mathscr{D})} \prod_i \prod_j L(\theta_i_j : X_i[m]) * P(\theta_{X_i}|pa_i_j) \nonumber
+   \end{align}
+   #+end_export
+
+   It is then clear that in such a case it is then possible to
+   maximize at an even more narrow local level reducing the difficulty
+   of the optimization task.
+   
+   We turn next to the case of missing evidence where we are going to
+   see that such neat properties fade away such that it will be
+   necessary to rely on more sophisticated techniques in order to
+   perform the learning task. In fact, as we will see it will not be
+   possible anymore to perform local operations for coming to a global
+   solution.
 
 * On Missing Evidence
 
   In the case of missing evidence we have two types of findings for
   the random variables in our network $G(\mathscr{V}, \mathscr{X})$.
 
-  Say that you have $m = 1, ..., M$ instances of your network. Then on
-  the one hand you will have observed random variables realizations
-  $d[m]$ for a subset of variables $\mathscr{Y} \subset
+  Once more, consider $m = 1, ..., M$ instances of your network. Then
+  on the one hand you will have observed random variables realizations
+  $d[m]$ for a subset of variables $\mathscr{D} \subset
   \mathscr{X}$. On the other hand you will have missing or
   non-observed findings $h[m]$ for a subset of variables
-  $\mathscr{X} - \mathscr{Y}$.
+  $\mathscr{H} \vcentcolon= \mathscr{X} - \mathscr{D}$.
 
   As both of the parameter learning techniques, as presented in
   [[ref:literature_review]], involve a likelihood term, the question is on
   the way such likelihood term can be represented in the case of
   missing evidence.
 
-** TODO write down the idea of nasty likelihood and why you need the EM algorithm as a solution
+  In order to answer such a question we will shortly distinguish among
+  data /missing completely at random/ and data /missing at random/ as
+  reasoned in cite:little1976inference, cite:rubin1976inference.
 
-   One solution that was proposed is the one of completely ignoring
-   the missing evidence and computing a likelihood function just based
-   on the observed $d[m]$. As argued in cite:koller2009probabilistic,
-   in the case when there is no relation between the missing data and
-   the observed data, i.e. in the case of data /missing completely at
-   random/, the likelihood decomposes into local probabilities so that
-   you can focus on terms involving your parameters of interest and
-   you can obtain them by standard MLE arguments as you can ignore
-   parameters governing missing evidence all together.
+  We start by defining a data hiding mechanism $P_\psi(O_{X_i}|X_i)$ where
+  $O_{X_i}$ is a binary random variable representing whether the
+  random variable $X_i$ is observed or missing. It then follows that
+  it is possible to express the probability of the random variable
+  $X_i$ through $P_{missing}(X_i, O_{X_i}) = P_{theta}(X_i) *
+  P_\psi(O_{X_i}|X_i)$.
 
-   Another case is the one of data /missing at random/. Here the
-   realization is that data /missing completely at random/ is a
-   sufficient but not necessary condition for the decomposition of the
-   likelihood function. I.e. in the case of conditional independence
-   structure the same decomposability property applies.
+  Given such a model we turn to the definition of the two essential
+  hiding mechanisms leveraging once more the work of cite:koller2009probabilistic:
 
-   Then in such a case you have this likelihood just depending on
-   $\sum_m P(d[m], h[m])$ such that you can ultimately use such a
-   likelihood by marginalizing the missing finding out. This is in
-   fact the approach of the EM-algorithm, which we will discuss next.
+  #+begin_export latex
+  \begin{definition}
+  Missing Completely at Random: A missing data model $P_{missing}$ governing a
+  random variable $X_i$ is missing
+  completely at random (MCAR) if $P_{missing} \models (X_i \perp O_{X_i})$.
+  I.e. in the case marginal independence among the two random variables.
+  \end{definition}  
+  #+end_export
 
+  Then given such property it is immediate to see that the likelihood
+  decomposes on terms depending on the parameters of interest
+  $\theta$ and on terms governing the data hiding mechanism
+  $\psi$. If the ultimate interest of your study is on the
+  parameterization of the data governing mechanism of the random
+  variables $X_i$, i.e. on $\theta$, it is then obvious that can just
+  focus on such portion of the likelihood function forgetting about
+  the data hiding mechanism.
 
-   - THE ESSENTIAL IDEA IS THE ONE OF D-SEPARATION. YOU DO NOT HAVE
-     D-SEPARATION AMONG NODES ANYMORE WITH MISSING DATA. YOU CLIMB UP
-     THE NETWORK AND YOU ADD INFORMATION TO PARAMETERS OF OTHER
-     NODES. IN THIS SENSE THE ENTIRE DECOMPOSABILITY THEORY IS GONE.
-     
-   In this sense the trails among nodes are d-separated in the
-   network theory sense.
+  Then defining the set of random variables $Y = \{Y_1, . . . , Y_n\}$,
+  where $Val(Y_i) = Val(X_i) \cup \{?\}$, where $\{?\}$ represents a
+  missing evidence, we can define the following data hiding mechanism:
+
+  #+begin_export latex
+  \begin{definition}
+  Missing at Random: A data model $P_{missing}$ is missing at random (MAR)
+  if for all observations with $P(y) > 0$, i.e. if for all possible realizations,
+  and for all $h \in Val(\mathscr{H})$, we have with $d \in \mathscr{D}$
+  observed evidence, that $ P_{missing} \models (h \perp o_{X_i} | d) $.
+  \end{definition}  
+  #+end_export
+
+  Or in other words, we talk about data /missing at random/ when
+  conditioning on the observed evidence we have conditional
+  independence among the hidden, non-observed variables, and the
+  hiding mechanism.
+
+  As pointed out by cite:koller2009probabilistic, MAR is a powerful
+  condition as it is a necessary condition in order to write the
+  likelihood function under missing evidence as a product of terms
+  involving the parameters governing the probabilistic structure of
+  the random variables of interest $X_i$ and the hiding mechanism
+  $O_{X_i}$. Such that it is possible as in the case of /missing
+  completely at random/ to distinguish between the two and just focus
+  on the observed variables when estimating the \theta parameters.
+
+  In order to see this note first that in the case of MAR, the
+  observation pattern $o_X$ gives no additional information about the
+  hidden variables given the observed variables, that is:
+
+  $$ P_{missing} (h | d, o_{X_i}) =  P_{missing} (h | d) $$
+
+  It holds then that 
+  
+  
+   #+begin_export latex
+   \begin{align}
+   P_{missing}(y) &= \sum_h P_{\theta} (h, d) * P_\psi(o_{X_i} | h, d) \nonumber \\
+                &= \sum_h P_{\theta} (h, d) * P_\psi(o_{X_i} | d) \nonumber \\
+                &= P_\psi(o_{X_i} | d) * \sum_h P_{\theta} (h, d)  \nonumber \\
+		&= P_\psi(o_{X_i} | d) * P_{\theta} (d)  \nonumber		
+   \end{align}
+   #+end_export
+
+   Such that you can easily see that if $P_{missing}$ is MAR then
+   $L(\theta, \psi : \mathscr{D})$ decomposes into two terms $L(\theta :
+   \mathscr{D}), L(\psi : \mathscr{D})$.
+
+   Noting now that as we can always reach the /MAR/ condition by
+   expanding a Bayesian Network, we can will assume for the theory in
+   this manuscript that the Bayesian Network of interest presenting
+   missing evidence satisfies /MAR/, such that the question of
+   interest will be the functional form of the likelihood $P_{\theta}
+   (d)$ in the case of missing data, the topic we will address in the
+   next section.
+
+** On the Observed Variables Likelihood under Missing Data
+
+   This section sets the focus on the likelihood of the observed data,
+   in the case of missing evidence.
+
+   We know in fact that in a Network with missing data satisfying
+   /MAR/, it is possible to just focus on such a term forgetting the
+   parameters governing the data hiding mechanism in order to estimate
+   the parameterization \theta that maximizes the likelihood of the
+   random variables of interest $X_i$.
+
+   Starting from the principle it holds that for a set of observed
+   variables $\mathscr{D}$ we have:
+
+   $$ L(\theta: \mathscr{D}) = \prod_m^M P(d[m] | \theta) $$
+
+   Despite the above looks similar to the case of complete data
+   observations and we might be tempted to say that the learning task
+   does not differ, the difference lies in the fact that under missing
+   evidence we loose the parameter independence property. This because
+   as we will reason next in the case of missing evidence, the trails
+   among parameters in the networks are not anymore d-separated such
+   that information on one node will not only yield information for
+   the particular node parameters governing the observation but rather
+   for other local and global network parameters as well.
+
+   In order to understand why the decomposition property is gone think
+   for instance at the following basics network structure with
+   table-CPDs and binary random variables: $\mathscr{G}_{X_1
+   \rightarrow X_2}$. It follows then that you have six parameters
+   governing the random variables realizations: $\theta_{x_1^0},
+   \theta_{x_1^1}, \theta_{x_2^1| x_1^1}, \theta_{x_2^0 | x_1^1},
+   \theta_{x_2^1 | x_1^0}, \theta_{x_2^0 | x_1^0}$.
+
+   To see why the local decomposition is lost in the above graph
+   consider the case:
+
+   $$\theta_{X_2 | x_1^1} \rightarrow X_2 \leftarrow \theta_{X_2 |
+   x_1^0}$$
+
+   It is then straightforward to see that observing both $X_2$ and
+   $X_1$, $\theta_{X_2 | x_1^0}$ and $\theta_{X_2 | x_1^1}$ are
+   d-separated cause we can rule out the arcs that are not
+   active. However, when $X_1$ is missing with $X_2$ being observed
+   the above will be d-connected due to the common effect factor. In
+   this sense local decomposability is lost and we will have to /sum/
+   up the likelihoods of both the case $x_1^1$ and $x_1^0$.
+
+   An analogous case would be exist for the case of the global
+   decomposition. Think for instance at the network:
+
+   $$H \rightarrow X_1 \leftarrow H \rightarrow X_2$$
+
+   Then in the case of missing $H$, $X_1$ and $X_2$ would be
+   d-connected due to the common factor and no-inactive arrows. It
+   follows once more that the likelihood would be given by the sum of
+   all of the possible likelihood realizations of the missing variable
+   $H$, such that the likelihood would then be given in general by the
+   following expression:
+
+   $$ L(\theta: \mathscr{D}) = \prod_m \sum_h P(d, h | \theta)$$
+
+   such that it is not anymore possible to invert the order of the
+   multiplication due to the interaction of summing and multiplication
+   operations. Moreover, it is also immediate to see that the above
+   will require an inference step to get to the probabilities of the observations.
+   
+   In this sense both the /local/ as well as the /global/ likelihood
+   decomposition properties are possibly lost under missing evidence
+   and the computational difficulty of the learning task increases, as
+   it is necessary now to deal with multimodal likelihood arising from
+   the sum of unimodal distributions.
+
+   We will cover in the next section the idea of the EM-algorithm in
+   order to deal with the difficulties that arise from such a complex
+   observed variables likelihood function. We will see that due to an
+   expectation step we will restore the likelihood decomposability
+   property. Moreover, we will see by reviewing the EM-theory that
+   convergence to local maxima is guaranteed such that we know that
+   such a method will reach one of the local maxima of the overall
+   likelihood distribution of observed data. 
 
 
 ** The Mathematics of the EM
@@ -671,15 +852,15 @@
    \end{equation}
    #+end_export
 
-   With this choice it becomes clear that $Z (\theta) = P (D|
-   \theta)$ and $\tilde{P} = P (H, Do| \theta)$. It
+   With this choice it becomes clear that $Z = P (D|
+   \theta)$ and $\tilde{P} = P (H, D| \theta)$. It
    follows then immediately that given such probability function we
    can compute the likelihood of realizations $\mathscr{D}, \mathscr{H}$:
   
    #+begin_export latex
    \begin{align} \label{eq:likelihood_particle}
-   \mathscr{L} (\theta: \mathscr{D}, \mathscr{H}) =& \  P (\mathscr{H}, \mathscr{D}| \theta)\\
-   \mathscr{L} (\theta: \mathscr{D}) =& \ P (\mathscr{D}| \theta)
+   L (\theta: \mathscr{D}, \mathscr{H}) =& \  P (\mathscr{H}, \mathscr{D}| \theta)\\
+   L (\theta: \mathscr{D}) =& \ P (\mathscr{D}| \theta)
    \end{align}
    #+end_export
 
@@ -755,10 +936,6 @@
      $E_Q[l (\theta: \mathscr{D}, \mathscr{H})]$, the maximization is
      equivalent to maximizing the expected log-likelihood."
 
-     It follows now that given the linearity of expectation it is
-     possible to take the expectation of the sufficient statistics and
-     maximizing for \theta.
-
      This is in fact exactly the standard M-step of the EM algorithm so
      that we can interpret the M-step as the coordinate ascent along
      the second axis. 
@@ -767,7 +944,6 @@
     optimized such that it increases it follows from proposition
     [[ref:eq:likelihood_energy_functional_relation]] that the
     log-likelihood increases such that theorem [[ref:thm:one]] is proved.
-
 
 ** An Exponential Family Example
 
@@ -780,7 +956,7 @@
     the presented theory to a general class of distribution allowing
     rich modeling for probabilistic graphical models.
 
-    In order to see this recall at first the set $\mathscr{Q}$ of
+    In order to see this define at first the set $\mathscr{Q}$ of
     parametric distributions belonging to the exponential family
     P_{\theta}(X), defined as:
 
@@ -863,16 +1039,18 @@
 
     Consider now the case of /missing evidence/. Here again it is
     possible to extend the theory exposed in the previous section in a
-    straightforward way. The idea is again to synthetically complete
-    the dataset and work then according to the theory developed for
-    the /complete data/ case.
+    straightforward way. In this sense we showed how alternating an
+    M-step maximizing the likelihood of missing and observed values
+    and an E-step performing some inference for a given
+    parameterization, we are guaranteed to reach a local maxima for
+    the likelihood of the observed data.
 
     Consider complete instances $m = 1, ..., M$. Then for a general
     exponential family you have a local CPD likelihood of the form:
 
     #+begin_export latex
     \begin{align} \label{eq:exponential-family-likelihood}
-    P(X_i|\theta_i) = \prod_m \frac{1}{Z(\theta_i)} exp[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau(X_i[m])}] * A(X_i[m]) 
+    P(D_i, H_i|\theta_i) = \prod_m \frac{1}{Z(\theta_i)} exp[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau(X_i[m])}] * A(X_i[m]) 
     \end{align}
     #+end_export        
 
@@ -885,9 +1063,9 @@
 
     #+begin_export latex
     \begin{align} \label{eq:complete-exponential-family-likelihood}
-    P(X_i|\theta_i) =& \ - Mlog(Z(\theta_i) + \sum_m^M \sum_{h_i[m] \in Val(\mathscr{H}_i[m])} Q(h_i[m]) * \mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])\\
-                & + \sum_m^M \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) * log(A(d[m], h[m]))  \nonumber \\
-    P(X_i|\theta_i) =& \ - Mlog(Z(\theta_i) + \sum_m^M E_Q[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))]
+    E_Q(l(\theta_i :D_i, H_i)) =& \ - Mlog(Z(\theta_i) + \sum_m^M \sum_{h_i[m] \in Val(\mathscr{H}_i[m])} Q(h_i[m]) * \mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])\\
+                & + \sum_m^M \sum_{h_i[m] \in Val(\mathscr{H}_i[m])} Q(h_i[m]) * log(A(d_i[m], h_i[m]))  \nonumber \\
+    E_Q(l(\theta_i :D_i, H_i)) =& \ - Mlog(Z(\theta_i)) + \sum_m^M E_Q[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))]
     \end{align}
     #+end_export                
 
@@ -896,16 +1074,16 @@
 
     #+begin_export latex
     \begin{align} \label{eq:global-likelihood}
-    P(X|\theta) =& \ \prod_i^K P(X_i|\theta_i) \nonumber \\
-    P(X|\theta) =& \ \prod_i^K - Mlog(Z(\theta_i) + \sum_m^M E_Q[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))] \\
-    P(X|\theta) =& \ \prod_i^K - Mlog(Z(\theta_i) + \mathbf{c(\theta_i)}^\intercal \sum_m^M E_Q[\mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))] \nonumber  
+    E_Q(l(\theta :D, H)) =& \ \prod_i^K E_Q(l(\theta_i :D_i, H_i)) \nonumber \\
+                   =& \ \prod_i^K - Mlog(Z(\theta_i)) + \sum_m^M E_Q[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))] \\
+                   =& \ \prod_i^K - Mlog(Z(\theta_i)) + \mathbf{c(\theta_i)}^\intercal \sum_m^M E_Q[\mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))] \nonumber  
     \end{align}
     #+end_export                
 
     Hence, it is possible to see that due to the linearity of the
-    expectation we have global decomposability such that we can
-    estimate the global MLE by estimating local MLE parameter after
-    the inference step.
+    expectation we have global decomposability of the expected
+    likelihood function such that we can estimate the global MLE by
+    estimating local MLE parameter of the expected likelihood.
 
     Performing this exercise for the two examples above we get the
     following.
@@ -1603,6 +1781,7 @@
     parameter learning under likelihood evidence describing the
     approach as in cite:Wasserkrug_all.
 
+
 ** Adjusted EM - Likelihood Evidence
 
    One of the most widespread ways to deal with likelihood evidence
@@ -2070,7 +2249,7 @@
      you should therefore be careful with it.
   
 **** TODO check chapter 17 for making the point below
-
+     
      say at the end that the entire theory does not hold for locally
      shared and globally shared network parameters. there you would
      have to adjust the entire thing
@@ -2080,9 +2259,9 @@
 
    \newpage
 
-  
    bibliography:../literature/references.bib
    bibliographystyle:unsrt
+
 
 * Footnotes
 

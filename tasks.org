@@ -57,13 +57,16 @@
 
     maybe start with probabilistic evidence as this is the easiest.
     
-*** DONE try with a different distribution. i.e. different CPT distribution and prior
-    CLOSED: [2021-05-20 Thu 21:29]
+**** TODO start with the probabilistic evidence. there you have to change the smallest amount of things
 
-    this is an ask of Radu. maybe prioritze shortly. go for instance
-    with the exponential family. this is already very straightforward
-    in the book and a generalization with a conjugate prior should be
-    of no difficulty.
+
+** DONE derive the theory for other types of distributions
+   CLOSED: [2021-05-20 Thu 21:29]
+
+   this is an ask of Radu. maybe prioritze shortly. go for instance
+   with the exponential family. this is already very straightforward
+   in the book and a generalization with a conjugate prior should be
+   of no difficulty.
 
     
 
@@ -81,6 +84,7 @@
 
     
 
+     
 ** DONE understand why global decomposition with complete data and why not with missing
    CLOSED: [2021-04-02 Fri 17:16]
    :PROPERTIES:
@@ -108,7 +112,7 @@
 *** DONE reformulate and write down everything in a neat way to prepare for the discussion with Radu
     CLOSED: [2021-04-11 Sun 17:59] SCHEDULED: <2021-04-06 Tue 18:00>
 
-*** TODO understand what are the assumptions for the above? global decomposition? etc.? (have to specify MAR property for it).
+*** IN-PROGRESS understand what are the assumptions for the above? global decomposition? etc.? (have to specify MAR property for it).
 *** DONE start to write this piece as for the thesis. Like this you can show it to Radu and you will have it ready for the thesis.    
     CLOSED: [2021-04-11 Sun 17:59]
     
@@ -149,7 +153,6 @@
 
 
 ** TODO consider to put theorems in the theory and work from there in iterative loops
-   
    
 ** WAITING other possible generalizations
    

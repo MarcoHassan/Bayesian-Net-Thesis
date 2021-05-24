@@ -1,0 +1,81 @@
+% Created 2021-05-24 Mon 18:48
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{listingsutf8}
+\usepackage{minted}
+\author{Marco Hassan}
+\date{\today}
+\title{HELP}
+\hypersetup{
+ pdfauthor={Marco Hassan},
+ pdftitle={HELP},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 27.2.50 (Org mode 9.4.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\algrenewcommand\algorithmicindent{1.5em}%
+
+\begin{algorithm*}[h!]
+\caption{EM-Proabilistic: an EM algorithm for learning with probabilistic evidence}
+\label{alg:EM-Probabilistic}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
+
+\Procedure{EM}{$\mathcal{B}$, $S$}
+\State Initialize $\mathcal{B}$'s parameters $\theta \leftarrow \theta^0$
+\ForAll{$t=1, \ldots$ until convergence}
+  \State $M-step \ as \ in \ Algorithm \ 1$
+
+\\
+\Function{Compute-ESS}{$\mathcal{B}=(G, \theta)$, 
+
+\State Run IPFP given current parameterization
+\State $Q_k \leftarrow$ {Return convergence distribution of algorithm IPFP above} \Comment {Note that you have to perform such iteration at each iteration - very expensive}
+
+\ForAll {$i\in1,\ldots,n$}
+  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+   \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
+  \EndFor
+\EndFor
+
+% \State (Go over all evidence nodes, creating an augmented network
+% for each one, and collect all of the evidence for the nodes in $G$)
+\ForAll{example $S_{j}\in S$}
+
+    \State Run inference on $(G, Q_k, \theta)$ with evidence $d_{j}$
+
+    \ForAll{i$ = 1,\ldots,n$}
+      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+
+        \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} Q_{(G,\theta)}(x_{i},u_{i}|d_{j})$ \Comment {Note that inference is based on the adjusted distriution Q obtained above}
+      \EndFor
+    \EndFor
+\EndFor
+\EndProcedure
+
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+\end{document}

@@ -1,4 +1,4 @@
-* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [5/8]
+* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [7/10]
   :PROPERTIES:
   :CATEGORY: Bayesian_Net_Thesis
   :END:
@@ -44,7 +44,6 @@
     doing so. so actually very poor method. would need to compute the
     gradient and hessian for each all of the possible completion.
         
-    
 *** TODO ask radu the 3 networks examples they worked with in their paper
 
     think about a network structure where you can apply the
@@ -52,108 +51,19 @@
 
     ask radu for them.
 
-
 *** TODO start to implement the thing in the code
 
     maybe start with probabilistic evidence as this is the easiest.
     
 **** TODO start with the probabilistic evidence. there you have to change the smallest amount of things
 
-
-** DONE derive the theory for other types of distributions
-   CLOSED: [2021-05-20 Thu 21:29]
-
-   this is an ask of Radu. maybe prioritze shortly. go for instance
-   with the exponential family. this is already very straightforward
-   in the book and a generalization with a conjugate prior should be
-   of no difficulty.
-
-    
-
-
-**** TODO Look at chapter 8.5.2 often referred in that section
-
-     check at your notes on your blog. did it there. essentially there
-     is the theory to get M-projection.
-
-     then this plus chapter 17 - there is a link between M-projection
-     and MLE such that you can understand how to solve MLE by means of
-     M-projection theory.
-
      
-
-    
-
-     
-** DONE understand why global decomposition with complete data and why not with missing
-   CLOSED: [2021-04-02 Fri 17:16]
-   :PROPERTIES:
-   :WILD_NOTIFIER_NOTIFY_BEFORE: 30 10 5
-   :END:
-   :LOGBOOK:
-   CLOCK: [2021-04-02 Fri 14:58]--[2021-04-02 Fri 15:23] =>  0:25
-   CLOCK: [2021-04-02 Fri 14:27]--[2021-04-02 Fri 14:52] =>  0:25
-   CLOCK: [2021-04-02 Fri 12:36]--[2021-04-02 Fri 12:41] =>  0:05
-   CLOCK: [2021-04-02 Fri 12:11]--[2021-04-02 Fri 12:36] =>  0:25
-   CLOCK: [2021-04-02 Fri 11:20]--[2021-04-02 Fri 11:29] =>  0:09
-   CLOCK: [2021-04-02 Fri 10:16]--[2021-04-02 Fri 10:41] =>  0:25
-   CLOCK: [2021-04-02 Fri 09:45]--[2021-04-02 Fri 10:10] =>  0:25
-   CLOCK: [2021-04-02 Fri 08:58]--[2021-04-02 Fri 09:23] =>  0:25
-   :END:
-
-   Check at the mind map.
-
-
-** DONE solve exercise 19.20 to understand how EM generalizes to the case of MAP bayesian estim.
-   CLOSED: [2021-04-03 Sat 16:17] SCHEDULED: <2021-04-03 Sat 10:00>
-
-   Pretty simple in the end. See tablet
-
-*** DONE reformulate and write down everything in a neat way to prepare for the discussion with Radu
-    CLOSED: [2021-04-11 Sun 17:59] SCHEDULED: <2021-04-06 Tue 18:00>
-
-*** IN-PROGRESS understand what are the assumptions for the above? global decomposition? etc.? (have to specify MAR property for it).
-*** DONE start to write this piece as for the thesis. Like this you can show it to Radu and you will have it ready for the thesis.    
-    CLOSED: [2021-04-11 Sun 17:59]
-    
-*** DONE well behaved condition?
-    CLOSED: [2021-04-03 Sat 16:31]
-
-    can take derivative so that it is sufficiently easy to compute the
-    argmax of the sum of the two.
-
-
-** DONE understand if it does not break anything of the EM as in the paper
-   CLOSED: [2021-04-03 Sat 17:23] SCHEDULED: <2021-04-04 Sun 08:30>
-
-   this should be the case. we should be done like this. => just need
-   to implement it then.
-
-   => it does not to the best of my understanding so you should be
-   fine. You can easily extend the EM-algorithm to the Bayesian
-   Setting.
-   
-
-** DONE use template of other Thesis for the new one.
-
-
-
-** TODO add the algorithm for plain EM and from there sequentially increment algorithm throughout the thesis
-
-** DONE notice that at the end there is this nice thing.
-   CLOSED: [2021-05-20 Thu 21:29]
-
-   - likelihood evidence alters the e-step. cause it alters the way you
-     do the inference step in your network.
-
-   - map estimation and bayes prior changes the M-step
-
-   so taking the two together you will have both an updated E and M
-   step.
-
-
 ** TODO consider to put theorems in the theory and work from there in iterative loops
-   
+
+** TODO consider splitting numerical reasoning on separate chapter.
+
+   would make much more order in the general section.
+
 ** WAITING other possible generalizations
    
 *** TODO consider at some point the following enlargement of the EM algorithm (at least mention it in the thesis).
@@ -168,6 +78,14 @@
      - Also here at the theoretical level nothing has changed.
 
 *** TODO consider how non-informative prior would affect the whole thing
+
+*** TODO should also probably write a section as this
+
+    [[file:~/Desktop/Screenshots/Bildschirmfoto 2021-05-24 um
+    15.23.40.png]]
+    
+
+
 *** DONE think about performing M-step in numeric way - how are the properties of EM affected
     CLOSED: [2021-04-18 Sun 11:00]
 
@@ -192,3 +110,98 @@
     
     
        
+
+
+
+
+    
+** FINISHED
+    
+*** DONE derive the theory for other types of distributions
+    CLOSED: [2021-05-20 Thu 21:29]
+
+    this is an ask of Radu. maybe prioritze shortly. go for instance
+    with the exponential family. this is already very straightforward
+    in the book and a generalization with a conjugate prior should be
+    of no difficulty.
+
+    
+
+
+***** DONE Look at chapter 8.5.2 often referred in that section
+      CLOSED: [2021-05-24 Mon 11:21]
+
+      check at your notes on your blog. did it there. essentially there
+      is the theory to get M-projection.
+
+      then this plus chapter 17 - there is a link between M-projection
+      and MLE such that you can understand how to solve MLE by means of
+      M-projection theory.
+
+     
+
+    
+*** DONE understand why global decomposition with complete data and why not with missing
+    CLOSED: [2021-04-02 Fri 17:16]
+    :PROPERTIES:
+    :WILD_NOTIFIER_NOTIFY_BEFORE: 30 10 5
+    :END:
+    :LOGBOOK:
+    CLOCK: [2021-04-02 Fri 14:58]--[2021-04-02 Fri 15:23] =>  0:25
+    CLOCK: [2021-04-02 Fri 14:27]--[2021-04-02 Fri 14:52] =>  0:25
+    CLOCK: [2021-04-02 Fri 12:36]--[2021-04-02 Fri 12:41] =>  0:05
+    CLOCK: [2021-04-02 Fri 12:11]--[2021-04-02 Fri 12:36] =>  0:25
+    CLOCK: [2021-04-02 Fri 11:20]--[2021-04-02 Fri 11:29] =>  0:09
+    CLOCK: [2021-04-02 Fri 10:16]--[2021-04-02 Fri 10:41] =>  0:25
+    CLOCK: [2021-04-02 Fri 09:45]--[2021-04-02 Fri 10:10] =>  0:25
+    CLOCK: [2021-04-02 Fri 08:58]--[2021-04-02 Fri 09:23] =>  0:25
+    :END:
+
+    Check at the mind map.
+
+*** DONE solve exercise 19.20 to understand how EM generalizes to the case of MAP bayesian estim.
+    CLOSED: [2021-04-03 Sat 16:17] SCHEDULED: <2021-04-03 Sat 10:00>
+
+    Pretty simple in the end. See tablet
+
+**** DONE reformulate and write down everything in a neat way to prepare for the discussion with Radu
+     CLOSED: [2021-04-11 Sun 17:59] SCHEDULED: <2021-04-06 Tue 18:00>
+
+**** DONE understand what are the assumptions for the above? global decomposition? etc.? (have to specify MAR property for it).
+     CLOSED: [2021-05-24 Mon 11:21]
+**** DONE start to write this piece as for the thesis. Like this you can show it to Radu and you will have it ready for the thesis.    
+     CLOSED: [2021-04-11 Sun 17:59]
+    
+**** DONE well behaved condition?
+     CLOSED: [2021-04-03 Sat 16:31]
+
+     can take derivative so that it is sufficiently easy to compute the
+     argmax of the sum of the two.
+
+*** DONE understand if it does not break anything of the EM as in the paper
+    CLOSED: [2021-04-03 Sat 17:23] SCHEDULED: <2021-04-04 Sun 08:30>
+
+    this should be the case. we should be done like this. => just need
+    to implement it then.
+
+    => it does not to the best of my understanding so you should be
+    fine. You can easily extend the EM-algorithm to the Bayesian
+    Setting.
+   
+*** DONE use template of other Thesis for the new one.
+
+*** DONE add the algorithm for plain EM and from there sequentially increment algorithm throughout the thesis
+    CLOSED: [2021-05-24 Mon 11:21]
+
+*** DONE notice that at the end there is this nice thing.
+    CLOSED: [2021-05-20 Thu 21:29]
+
+    - likelihood evidence alters the e-step. cause it alters the way you
+      do the inference step in your network.
+
+    - map estimation and bayes prior changes the M-step
+
+    so taking the two together you will have both an updated E and M
+    step.
+
+    

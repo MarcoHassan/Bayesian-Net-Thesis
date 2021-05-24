@@ -623,7 +623,7 @@
   $d[m]$ for a subset of variables $\mathscr{D} \subset
   \mathscr{X}$. On the other hand you will have missing or
   non-observed findings $h[m]$ for a subset of variables
-  $\mathscr{H} \vcentcolon= \mathscr{X} - \mathscr{D}$.
+  $\mathscr{H} \vcentcolon= \mathscr{X} \textbackslash \mathscr{D}$.
 
   As both of the parameter learning techniques, as presented in
   [[ref:literature_review]], involve a likelihood term, the question is on
@@ -638,7 +638,7 @@
   $O_{X_i}$ is a binary random variable representing whether the
   random variable $X_i$ is observed or missing. It then follows that
   it is possible to express the probability of the random variable
-  $X_i$ through $P_{missing}(X_i, O_{X_i}) = P_{theta}(X_i) *
+  $X_i$ realization through $P_{missing}(X_i, O_{X_i}) = P_{theta}(X_i) *
   P_\psi(O_{X_i}|X_i)$.
 
   Given such a model we turn to the definition of the two essential
@@ -649,7 +649,8 @@
   Missing Completely at Random: A missing data model $P_{missing}$ governing a
   random variable $X_i$ is missing
   completely at random (MCAR) if $P_{missing} \models (X_i \perp O_{X_i})$.
-  I.e. in the case marginal independence among the two random variables.
+  I.e. in the case marginal independence among the the observation mechanism
+  and the random variable.
   \end{definition}  
   #+end_export
 
@@ -685,9 +686,10 @@
   likelihood function under missing evidence as a product of terms
   involving the parameters governing the probabilistic structure of
   the random variables of interest $X_i$ and the hiding mechanism
-  $O_{X_i}$. Such that it is possible as in the case of /missing
-  completely at random/ to distinguish between the two and just focus
-  on the observed variables when estimating the \theta parameters.
+  $O_{X_i}$. It is then possible as in the case of /missing completely
+  at random/ to distinguish between the two likelihood terms and just
+  focus on the likelihood of the observed variables when estimating
+  the \theta parameters.
 
   In order to see this note first that in the case of MAR, the
   observation pattern $o_X$ gives no additional information about the
@@ -709,19 +711,19 @@
 
    Such that you can easily see that if $P_{missing}$ is MAR then
    $L(\theta, \psi : \mathscr{D})$ decomposes into two terms $L(\theta :
-   \mathscr{D}), L(\psi : \mathscr{D})$.
+   \mathscr{D}), L(\psi : \mathscr{D}, O_X)$.
 
    Noting now that as we can always reach the /MAR/ condition by
-   expanding a Bayesian Network, we can will assume for the theory in
-   this manuscript that the Bayesian Network of interest presenting
-   missing evidence satisfies /MAR/, such that the question of
-   interest will be the functional form of the likelihood $P_{\theta}
-   (d)$ in the case of missing data, the topic we will address in the
-   next section.
+   expanding a Bayesian Network, we will assume for the theory in this
+   manuscript that the Bayesian Network of interest presenting missing
+   evidence satisfies /MAR/, such that the question of interest will
+   be the functional form of the likelihood $P_{\theta} (d)$ in the
+   case of missing data, the topic we will address in the next
+   section.
 
 ** On the Observed Variables Likelihood under Missing Data
 
-   This section sets the focus on the likelihood of the observed data,
+   This section sets the focus on the likelihood of the observed data
    in the case of missing evidence.
 
    We know in fact that in a Network with missing data satisfying
@@ -733,7 +735,7 @@
    Starting from the principle it holds that for a set of observed
    variables $\mathscr{D}$ we have:
 
-   $$ L(\theta: \mathscr{D}) = \prod_m^M P(d[m] | \theta) $$
+   $$ L(\theta: \mathscr{D}) = \prod_m^M P_\theta(d[m]) $$
 
    Despite the above looks similar to the case of complete data
    observations and we might be tempted to say that the learning task
@@ -743,7 +745,7 @@
    among parameters in the networks are not anymore d-separated such
    that information on one node will not only yield information for
    the particular node parameters governing the observation but rather
-   for other local and global network parameters as well.
+   yield information for other local and global network parameters as well.
 
    In order to understand why the decomposition property is gone think
    for instance at the following basics network structure with
@@ -761,45 +763,47 @@
 
    It is then straightforward to see that observing both $X_2$ and
    $X_1$, $\theta_{X_2 | x_1^0}$ and $\theta_{X_2 | x_1^1}$ are
-   d-separated cause we can rule out the arcs that are not
+   d-separated as we can rule out the arcs that are not
    active. However, when $X_1$ is missing with $X_2$ being observed
    the above will be d-connected due to the common effect factor. In
    this sense local decomposability is lost and we will have to /sum/
    up the likelihoods of both the case $x_1^1$ and $x_1^0$.
 
-   An analogous case would be exist for the case of the global
+   An analogous case emerges for the case of the global
    decomposition. Think for instance at the network:
 
-   $$H \rightarrow X_1 \leftarrow H \rightarrow X_2$$
+   $$ X_2 \leftarrow  H \rightarrow X_1 $$
 
-   Then in the case of missing $H$, $X_1$ and $X_2$ would be
-   d-connected due to the common factor and no-inactive arrows. It
+   Then in the case of missing $H$; $X_1$ and $X_2$ would be
+   d-connected due to the common factor and no-inactive arcs. It
    follows once more that the likelihood would be given by the sum of
    all of the possible likelihood realizations of the missing variable
-   $H$, such that the likelihood would then be given in general by the
+   $H$, such that the likelihood would be given in general by the
    following expression:
 
-   $$ L(\theta: \mathscr{D}) = \prod_m \sum_h P(d, h | \theta)$$
+   $$ L(\theta: \mathscr{D}) = \prod_m \sum_h P_\theta(d, h)$$
 
-   such that it is not anymore possible to invert the order of the
-   multiplication due to the interaction of summing and multiplication
-   operations. Moreover, it is also immediate to see that the above
-   will require an inference step to get to the probabilities of the observations.
+   It is immediate to see that it is not anymore possible to invert
+   the order of the multiplication due to the interaction of summing
+   and multiplication operations. Moreover, it is also immediate to
+   see that the above will require an inference step to get to the
+   probabilities of the observations.
    
    In this sense both the /local/ as well as the /global/ likelihood
    decomposition properties are possibly lost under missing evidence
    and the computational difficulty of the learning task increases, as
-   it is necessary now to deal with multimodal likelihood arising from
-   the sum of unimodal distributions.
+   it is necessary to deal with multimodal likelihood arising from the
+   sum of unimodal distributions.
 
-   We will cover in the next section the idea of the EM-algorithm in
-   order to deal with the difficulties that arise from such a complex
-   observed variables likelihood function. We will see that due to an
-   expectation step we will restore the likelihood decomposability
+   We will cover in the next section the idea of the
+   EM-algorithm. This emerged as a powerful algorithm in order to deal
+   with the difficulties that arise from such a complex multinomial
+   likelihood function. We will see that due to an expectation step we
+   will restore an /expected/ likelihood decomposability
    property. Moreover, we will see by reviewing the EM-theory that
    convergence to local maxima is guaranteed such that we know that
-   such a method will reach one of the local maxima of the overall
-   likelihood distribution of observed data. 
+   such a method will reach one of the local maxima of the likelihood
+   distribution of the observed data.
 
 
 ** The Mathematics of the EM
@@ -848,12 +852,12 @@
 
    #+begin_export latex
    \begin{equation} \label{eq:particle_distribution}
-   P (H | D, \theta) =   \frac{P (H, D| \theta)}{P (D| \theta)}
+   P (\mathscr{H} | \mathscr{D}, \theta) =   \frac{P (\mathscr{H}, \mathscr{D}| \theta)}{P (\mathscr{D}| \theta)}
    \end{equation}
    #+end_export
 
-   With this choice it becomes clear that $Z = P (D|
-   \theta)$ and $\tilde{P} = P (H, D| \theta)$. It
+   With this choice it becomes clear that $Z = P (\mathscr{D}|
+   \theta)$ and $\tilde{P} = P (\mathscr{H}, \mathscr{D}| \theta)$. It
    follows then immediately that given such probability function we
    can compute the likelihood of realizations $\mathscr{D}, \mathscr{H}$:
   
@@ -884,7 +888,7 @@
    log-likelihood relative to Q, for any choice of Q.
 
    Moreover it is straightforward to see in the above that choosing the
-   Q-measure as $P (H| D, \theta)$ the relative term
+   Q-measure as $P (\mathscr{H}| \mathscr{D}, \theta)$ the relative term
    fades away such that the entropy term is the overall measure on the
    difference between the expected log-likelihood and the real
    log-likelihood. It is in fact clear that in such a case the
@@ -981,12 +985,12 @@
 
     #+begin_export latex
     \begin{align} \label{eq:multinomial-cpd}
-    P(X_i|\theta) = \prod_{x_i \in Val(X_i), pa_i \in Val(Pa_i)} \theta_{x_i | Pa_i}^{x_i}
+    P(X_i|\theta) = \prod_{x_i \in Val(X_i), pa_i \in Val(Pa_i)} \theta_{x_i | pa_i}^{x_i}
     \end{align}
     #+end_export
 
     You can now frame the above in the exponential family form by
-    defining the sufficient statistics as $\tau(X_i | Pa_i) =
+    defining the sufficient statistics as $\tau(x_i | pa_i) =
     \mathbbm{1}_{\{X = x, Pa_i = pa_i : x \in Val(X), pa_i \in
     Val(Pa_i)\}}$ and $c(\theta_{x_i | Pa_i}) = ln(\theta_{x_i |
     pa_i})$.
@@ -995,7 +999,7 @@
     
     #+begin_export latex
     \begin{align} \label{eq:multinomial-cpd}
-    P(X_i|\theta) = exp[\sum_{x_i \in Val(X_i), pa_i \in Val(Pa_i)} c(\theta_{x_i | Pa_i}) * \tau(X_i | Pa_i)] 
+    P(X_i|\theta) = exp[\sum_{x_i \in Val(X_i), pa_i \in Val(Pa_i)} c(\theta_{x_i | pa_i}) * \tau(x_i | pa_i)] 
     \end{align}
     #+end_export
 
@@ -1020,7 +1024,7 @@
     #+end_export        
 
     You can then see by expanding the square that the sufficient
-    statistics for such local exponential distribution is: $\tau(X|Pa) =
+    statistics for such local exponential distribution is: $\tau(x|pa) =
     (1,x,pa_1, ..., pa_p, x^2, xpa_1, . . . , xpa_p, pa_1^2, pa_1pa_2,
     . . . , pa_p^2)$.
 
@@ -1037,29 +1041,30 @@
     analytical theory or by means of M-projection theory and moment
     matching as argued by cite:koller2009probabilistic.
 
+    This means that for a general exponential family you have a local
+    CPD likelihood on M complete instance you can maximize:
+
+    #+begin_export latex
+    \begin{align} \label{eq:exponential-family-likelihood}
+    P(X_i|\theta_i) = \prod_m^M \frac{1}{Z(\theta_i)} exp[c(\theta_i)^\intercal \tau(X_i[m])] * A(X_i[m]) 
+    \end{align}
+    #+end_export            
+
     Consider now the case of /missing evidence/. Here again it is
-    possible to extend the theory exposed in the previous section in a
+    possible to apply the theory exposed in the previous section in a
     straightforward way. In this sense we showed how alternating an
     M-step maximizing the likelihood of missing and observed values
     and an E-step performing some inference for a given
     parameterization, we are guaranteed to reach a local maxima for
     the likelihood of the observed data.
 
-    Consider complete instances $m = 1, ..., M$. Then for a general
-    exponential family you have a local CPD likelihood of the form:
-
-    #+begin_export latex
-    \begin{align} \label{eq:exponential-family-likelihood}
-    P(D_i, H_i|\theta_i) = \prod_m \frac{1}{Z(\theta_i)} exp[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau(X_i[m])}] * A(X_i[m]) 
-    \end{align}
-    #+end_export        
-
     In the case of missing evidence, for each instance we might have
     both observed evidence $d_i[m]$ as well as missing evidence $h_i[m]$.
 
-    Next we generate synthetically complete data and weight these
-    according to their probabilistic occurrence given the network
-    current parameterization.
+    Given the inference step where, given the current network
+    parameterization, we compute the probabilistic realization of
+    possible synthetically complete data, we can express and maximize
+    the following expected likelihood function.
 
     #+begin_export latex
     \begin{align} \label{eq:complete-exponential-family-likelihood}
@@ -1082,14 +1087,15 @@
 
     Hence, it is possible to see that due to the linearity of the
     expectation we have global decomposability of the expected
-    likelihood function such that we can estimate the global MLE by
-    estimating local MLE parameter of the expected likelihood.
+    likelihood function such that we can estimate the global MLE of
+    the expected likelihood of the network by estimating the local MLE
+    of the CPDs expected likelihood.
 
     Performing this exercise for the two examples above we get the
     following.
 
     Starting with the multinomial table CPDs and defining a random
-    variable Y representing the synthetically completed data $<H, D>$,
+    variable $Y$ representing the /synthetically completed data/ $<H, D>$,
     we have that
 
     #+begin_export latex
@@ -1123,7 +1129,7 @@
 
 \begin{algorithm*}[h!]
 \caption{EM-Likelihood: an EM algorithm for learning with likelihood evidence}
-\label{alg:EM-Likelihood-Complete data}
+\label{alg:EM-Likelihood-Missing-Data}
 %\begin{\algsize}
 \vspace{-10pt}
 \begin{multicols}{2}
@@ -1157,18 +1163,11 @@
 % \State (Go over all evidence nodes, creating an augmented network
 % for each one, and collect all of the evidence for the nodes in $G$)
 \ForAll{example $S_{j}\in S$}
-
-    \State Let $O_j$ be the observations induced by $S_j$
-    %  (We'll denote $<G',\theta'>$ by $BN_{i}$ as it is the BN induced by example $i$)
-    \ForAll{$o \in O_j$}
-      \State Set the value of $o_V$ to $true$
-    \EndFor
     \State Run inference on $(G,\theta)$ with evidence $d_{j}$
     \ForAll{i$ = 1,\ldots,n$}
       \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
     
-        \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
-    
+        \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G,\theta)}(x_{i},u_{i}|d_{j})$
       \EndFor
     \EndFor
 \EndFor
@@ -1224,12 +1223,12 @@
    and finally inserting the empirical moments of the expected
    sufficient statistics.
 
-   Note that due to the virtual evidence synthetically completed
-   dataset you work with the expected - expected sufficient
-   statistics. Where the double expectation has to account on the one
-   hand the expectation of the virtual evidence and, on the other
-   hand, the moment matching expectation given the exponential family
-   parameterization from the M-projection theory. 
+   Note that due to the synthetically completed dataset you work with
+   the expected - expected sufficient statistics. Where the double
+   expectation has to account on the one hand the expectation of the
+   synthetically completed evidence and, on the other hand, the moment
+   matching expectation given the exponential family parameterization
+   from the M-projection theory.
 
    Doing the above exercise for a simple linear Gaussian CPD with a
    single parent we would get the following picture
@@ -1264,7 +1263,7 @@
   \end{align}
    #+end_export
 
-   where the empirical moments are given by $E_D(E_Q(X)) = \frac{1}{M}
+   where the empirical moments are given by $E_D(E_Q(Y)) = \frac{1}{M}
    \sum_m \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) y[m]$ and
    similar.    
 
@@ -1273,13 +1272,14 @@
    the MLE result of the multinomial case achieved via Lagrange method
    through the moment matching idea presented above.
 
-   In general the methodical frame is the following; you substitute
-   the inference step in line 27 of Algorithm
-   [[ref:alg:EM-Likelihood-Complete data]] with an inference step
-   calculating the expected sufficient statistics of interest given
-   the exponential family distribution of choice. You can insert in
+   In general the methodical frame for exponential families CPDs is
+   the following; you substitute the inference step in line 27 of
+   Algorithm [[ref:alg:EM-Likelihood-Missing-Data]] with an inference step
+   calculating the expected sufficient statistics /of interest/ given
+   the exponential family distribution of choice. You then insert in
    the M-step of line 6-9, the M-projection parameterization obtained
-   as discussed above. Finally you iterate until convergence.
+   by the moment-matching of expected sufficient statistics as
+   discussed above. Finally you iterate until convergence.
 
 ** Bayesian Parameter Learning
    :PROPERTIES:
@@ -1316,15 +1316,16 @@
    prior distribution.
 
    It is clear then, that depending on how you want to leverage the
-   information of your posterior you would require a different
-   mathematical exercise. I.e. in case you want to use as your
-   point estimate of choice the expected value you would need an
-   integration exercise and similar reasonings can be done for the
-   other metrics.
+   information of your posterior for finding a point estimate for your
+   network parameterization, you would require a different
+   mathematical exercise. I.e. in case you want to use as your point
+   estimate of choice the expected value you would need an integration
+   exercise and similar reasonings can be done for the other metrics.
 
-   Another way you can set your parameters is by choosing the most
-   likely point estimate. This is the maximum a posteriori point
-   estimate and is defined in mathematical terms as follows:
+   As argued in the introductory chapter, another way you can set your
+   parameters is by choosing the most likely point estimate. This is
+   point estimate maximizing your posteriori likelihood, i.e. it is
+   defined as:
 
    #+begin_export latex
    \begin{align} \label{eq:bayes_map}
@@ -1334,6 +1335,7 @@
    \end{align}
    \begin{align} \label{eq:bayes_map2}
    score_{MAP} (\theta : \mathscr{D}) =& \ log (P (\mathscr{D} | \theta)) + log (P(\theta)) \nonumber\\
+   \nonumber\\
    \tilde{\theta} =& \operatorname*{argmax}_{\theta} score_{MAP}(\theta : \mathscr{D}) 
    \end{align}
    #+end_export
@@ -1385,7 +1387,8 @@
     \end{align}
     #+end_export  
 
-    It follows immediately that choosing $Q$ as $P (H|D, \theta)$ and
+    It follows immediately that choosing $Q$ as $P
+    (\mathscr{H}|\mathscr{D}, \theta)$ and
     maximizing the adjusted energy functional we are in fact maximizing
     the score-map such that the results of the previous section
     apply. 
@@ -1399,8 +1402,8 @@
     account.
 
     In order to see this consider our discussion in the previous
-    chapter. The way you choose the Q distribution is unaffected and we
-    will need to perform the same step in order to get the
+    chapter. The way you choose the Q distribution is unaffected and
+    we will need to perform the same exercise in order to get the
     $\operatorname*{argmax}_{Q} \tilde{F}_D[\theta, Q]$.
 
     However, what is affected is the optimization along the other
@@ -1447,14 +1450,14 @@
     #+end_export
 
     And consider the adjusted energy functional
-    [[ref:eq:adj_energy_functional]] from which we can derive the new
-    likelihood expression in the case of missing evidence by defining a
-    new random variable $Y$ expressing complete data observations
-    $<H, D>$:
+    [[ref:eq:adj_energy_functional]]. We can derive the new likelihood
+    expression in the case of missing evidence by defining a new
+    random variable $Y$ expressing synthetically completed data observations $<H,
+    D>$:
    
     #+begin_export latex
     \begin{align} \label{eq:dirichlet-multinomial-likelihood}
-    \tilde{F}[\theta, Q] =& \ E_Q[P_\theta(Y)] + H_Q (Y)
+    \tilde{F}[\theta, Q] =& \ E_Q[P_\theta(Y)] + H_Q (Y) + log(P_{hyperparameters}(\theta))
     \end{align}
     #+end_export
 
@@ -1526,19 +1529,18 @@
     This will be the way you update the parameters in the M-step.
 
     It is straightforward to see from the above that it is possible to
-    perform the same exercise in similar settings and, as was proved,
-    as long as the prior distribution $P(\theta)$ is well behaved such
-    that the resulting posterior:
+    perform the same exercise in similar settings possibly leveraging
+    the M-projection theory in the case of exponential family posterior
+    distributions. 
 
-    (i) is concave \\
-    (ii) is differentiable \\
-    (ii) is smooth such that it is possible to exchange differentiation and integration
-
-    then the MAP estimator will exists.
-
-    The correctness and convergence properties of EM apply to the score
-    of the maximum a posteriori point estimate such that we will choose
-    a local maximum point estimator.
+    We conclude by noting that as long as the prior distribution
+    $P(\theta)$ is well behaved in the sense that the resulting
+    posterior (i) is concave (ii) is differentiable (iii) is smooth
+    such that it is possible to exchange differentiation and
+    integration; then the MAP estimator will exists, the correctness
+    and convergence properties of EM apply to the score of the maximum
+    a posteriori point estimate and we will choose a local maximum
+    point estimator for the likelihood of the observed data.
 
 *** Bayesian Parameter Learning - An Exponential Family Generalization
 
@@ -1568,15 +1570,15 @@
     parameter estimation given that the maximum for such posterior
     distributions are well documented in many statistical textbooks.
 
-    You can note in fact that Dirichlet prior chosen in the previous
+    You can note in fact that the Dirichlet prior chosen in the previous
     section is nothing else then the conjugate prior to the
     multinomial distribution. Note however that the resulting
     posterior is not an exponential distribution such that you cannot
     apply the M-projection theory to get the result above.
 
     Turning to the linear Gaussian parametric model presented in this
-    thesis it is possible to see that the conditional distribution of
-    local nodes in the network arises by a multivariate normal
+    manuscript it is possible to see that the conditional distribution
+    of local nodes in the network arises by a multivariate normal
     distribution of the parents, see for instance
     cite:koller2009probabilistic.
 
@@ -1590,161 +1592,20 @@
     prior hyperparameters and the sufficient (expected) sufficient
     statistics in the case of complete (missing) data, it is possible
     to obtain the maximum by getting the mode of the resulting
-    multivariate t-distribution according to such hyperparameters.
+    multivariate t-distribution parameterized according to the
+    hyperparameters and expected sufficient statistics.
+
+    Similar reasonings are possible by specifying accordingly the CPDs
+    and prior distributions, such that a rich modeling set is
+    available and easily implementable in statistical software.
     
-** On Numerical EM
-
-   As argued in the previous section when working with conjugate prior
-   we might easily get to closed form solutions for the maximum of the
-   posterior.
-
-   However, as was previously discussed it might be limiting to
-   restrict the prior specification to conjugate priors of exponential
-   distributions.
-
-   To tackle this issue and address the possibility of using a richer
-   class of likelihood-priors instantiations we propose in this
-   section some arguments for iteratively computing the maximum of an
-   arbitrary well behaved distribution as discussed in section [[ref:cpt:cpt_bayes_learning]].
-       
-   In order to do that we propose a numerical solution to the M-step
-   of the EM algorithm leveraging the theory presented in
-   cite:ruud1989comparison.
-
-   We will generalize the theory presented that far such that it is
-   possible to implement general software without having to limit the
-   end-user to very specific pre-defined cases, where the algorithm
-   running in the background has necessarily to know the closed-form
-   analytical solution of the M-step.
-
-   Note that this will come at costs. We will need in fact to compute
-   the Hessian of our expected log-likelihood which is one of the most
-   computationally intensive tasks. This especially in highly
-   dimensional problems. One of the major benefits in using the EM over
-   gradient based methods would be lost in this sense.
-
-*** Numerical EM for MLE estimator
-
-    In order to understand how to compute M-step according to an
-    iterative method, think at the following.
-
-    Consider that in the E-step you set $Q = P (H| D, \theta_0)$, such
-    that you can reformulate
-    [[ref:eq:likelihood_energy_functional_relation]] as follows
-
-    #+begin_export latex
-    \begin{align} \label{eq:likelihood_energy_iterative}
-    l (\theta: \mathscr{D}) =& \ H_Q (\mathscr {H}) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H}) \\
-    \nonumber\\
-    Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
-    \nonumber\\  
-    H(\theta_0, \theta: \mathscr{D}) \eqdef& \ Q(\theta, \theta_0 : \mathscr{D}) - l (\theta: \mathscr{D}) \\
-                                     =& H_Q (\mathscr {H}) = \sum_h - P(h | \mathscr{D}, \theta_0) * P(\theta | h, \mathscr{D}) \nonumber
-    \end{align}
-    #+end_export  
-
-    It follows
-  
-    #+begin_export latex
-    \begin{align} 
-    \frac{\partial}{\partial \theta} l (\theta: \mathscr{D}) =& \ l_1 (\theta: \mathscr{D}) = \frac{\partial}{\partial \theta} Q(\theta, \theta_0, \mathscr{D}) - \frac{\partial}{\partial \theta} H(\theta, \theta_0, \mathscr{D}) \nonumber \\
-    =& Q_1(\theta, \theta_0 : \mathscr{D}) - H_1(\theta, \theta_0 : \mathscr{D})  \label{eq:m-condition-iterative1} \\
-    \nonumber \\
-    \frac{\partial^2}{\partial \theta \partial \theta'} l (\theta: \mathscr{D}) =& \frac{\partial^2}{\partial \theta \partial \theta'}  Q(\theta, \theta_0, \mathscr{D}) -  \frac{\partial^2}{\partial \theta \partial \theta'}  H(\theta, \theta_0, \mathscr{D}) \nonumber \\
-      =& \ Q_{11}(\theta, \theta_0 : \mathscr{D}) - H_{11}(\theta, \theta_0 : \mathscr{D}) \label{eq:m-condition-iterative2}
-    \end{align}
-    #+end_export
-
-    Moreover given the following condition
-
-    #+begin_export latex
-    \begin{align} 
-     H_1(\theta_0, \theta_0 : \mathscr{D})  = 0 \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative}
-    \end{align}
-    #+end_export
-
-     we have for [[ref:eq:m-condition-iterative1]] that:
-
-    #+begin_export latex
-    \begin{align} 
-     l_1(\theta_0: \mathscr{D})  = Q_1(\theta_0, \theta_0: \mathscr{D}) \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative2} 
-    \end{align}
-    #+end_export
-
-    Such that ultimately it holds using the classical derivation of the
-    Newton-Raphson Method as in cite:storvik2007numerical:
-
-  
-    #+begin_export latex
-    \begin{align} 
-     \theta_{EM}  = \theta_{0} - Q_{11}^{-1} Q_1 + o(||\theta_{EM} - \theta_{0}||) \label{eq:em-iterative}
-    \end{align}
-    #+end_export  
-
-    where both $Q_{11}, Q_{1}$ are evaluated at $\theta_0$.
-
-    It follows immediately that for log-concave functions each iteration
-    of [[ref:eq:em-iterative]] increases the likelihood. It is therefore
-    possible to apply the above by inserting the numerical computed
-    Hessian and gradient until convergence to a maximum.
-
-    It is as well possible to set a predefined amount of iterations
-    before switching to the next E-step in the EM-algorithm. Due to the
-    increased computational cost of performing new inferences as well as
-    computing new Hessian matrices such second option is not
-    recommended albeit theoretically viable.
-
-    As a final remark, note that methods to improve the computational
-    speed of such numerical M-step have been proposed, such in
-    cite:Louis_1982. As uphill steps cannot be guaranteed under all
-    circumstances in such algorithm, we just refer to the literature
-    the interested reader and do not consider this as a viable option
-    for our solution. In that case the EM theory would collapse and
-    there is no guarantee to reach a local maximum.
-
-*** Numerical EM for MAP estimator
-
-    This section generalizes the arguments of the previous section to
-    the case of MAP estimator in the case of Bayesian Parameter
-    Learning.
-
-    Using [[ref:eq:adj_energy_functional]] it follows immediately using the
-    notation of the last section that:
-
-    #+begin_export latex
-    \begin{align} \label{eq:likelihood_energy_map_iterative}
-    l (\theta: \mathscr{D}) + log(P(\theta)) =& \ H_Q (\mathscr {H}) + log(P(\theta)) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
-    \nonumber\\
-    Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \ log(P(\theta)) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
-    \nonumber\\  
-    H(\theta_0, \theta: \mathscr{D}) \eqdef& \ Q(\theta, \theta_0 : \mathscr{D}) - l (\theta: \mathscr{D}) \\
-                                     =& H_Q (\mathscr {H}) = \sum_h - P(h | \mathscr{D}, \theta_0) * P(\theta | h, \mathscr{D}) \nonumber
-    \end{align}
-    #+end_export  
-   
-    The idea is that as long as the likelihood and the prior are
-    concave such that the sum of two concave functions will yield a $Q$
-    function that is concave, we might apply the very same
-    Newton-Raphson method to get iteratively to the maximum of the
-    function.
-
-    #+begin_export latex
-    \begin{align} 
-     \theta_{EM}  = \theta_{0} - Q_{11}^{-1} Q_1 + o(||\theta_{EM} - \theta_{0}||) \label{eq:em-iterative}
-    \end{align}
-    #+end_export
-
-    where $Q_{11}, Q_1$ are defined as in the previous section and
-    need now to account for the prior distribution influence.
-   
-
 * On Likelihood Evidence
 
     Recall that as defined in cite:Mrad_2015 in likelihood evidence an
     observation is uncertain due to unreliable source of information.
 
     Here evidence in a finding is expressed as a vector containing the
-    relative likelihood of a Random Variable realization. Consider for
+    relative likelihood of a random variable realization. Consider for
     instance a random variable *X* then its likelihood evidence is
     defined as:
 
@@ -1769,24 +1630,27 @@
     from probabilistic evidence is, as mentioned, the fact that a
     likelihood evidence vector as in [[ref:eq:likelihood-evidence]] is
     specified without a prior. This means that the prior encoding the
-    probabilistic structure of the network is not taken into
-    account. I.e. the information resulting $P(X|Pa(X))$ is not
-    considered when expressing such an evidence such that when
-    updating the belief on the realization of the random variable *X*
-    the likelihood evidence provided by the unreliable source of
-    information must be combined with the prior probability resulting
-    from the probabilistic structure implied by the network.
+    probabilistic structure of the network for the local random
+    variable realization is not taken into account. I.e. the
+    information resulting from $P(X_i|Pa(X_i))$ is not considered when
+    expressing such an evidence.
 
-    We will turn next to the task of doing inference and the task of
-    parameter learning under likelihood evidence describing the
-    approach as in cite:Wasserkrug_all.
+    This means, that when updating the belief on the realization of
+    the random variable *X_i*, i.e. at inference time, the likelihood
+    evidence provided by the unreliable source of information must be
+    combined with the prior probability resulting from the
+    probabilistic structure implied by the network.
+
+    We will turn next to the task of doing such inference and the task
+    of parameter learning under likelihood evidence describing the
+    approach proposed in cite:Wasserkrug_all.
 
 
 ** Adjusted EM - Likelihood Evidence
 
    One of the most widespread ways to deal with likelihood evidence
    was introduced by cite:pearl2014probabilistic. The idea is to
-   remodel the network structure $<\mathscr{G}, \mathscr{X}>$ in order
+   remodel the network structure $G(\mathscr{V}, \mathscr{X})$ in order
    to represent the likelihood evidence as a hard-finding on a newly
    created /virtual-node/.
 
@@ -1798,14 +1662,14 @@
 
    Consider now the right hand side of Figure [[ref:fig:AsiaNet]]. Assume,
    as in cite:Wasserkrug_all that likelihood evidence is obtained for
-   the Dysponea node via an optical NLP tool [ONLP] analyzing
-   historical medical records. Then as proposed by
-   cite:pearl2014probabilistic we augment the network as on the right
-   hand side of Figure [[ref:fig:AsiaNet]] by creating a child node of the
-   Dysponea node. Such a child node will encode the likelihood
-   evidence as hard finding by specifying the relation between
-   Dysponea and Dysponea Observed of interest, i.e. it will encode the
-   likelihood evidence via the CPD of $P(DysponeaObs | Dysponea)$.
+   the Dysponea node via an NLP tool [NLP] analyzing historical
+   medical records. Then as proposed by cite:pearl2014probabilistic we
+   augment the network as on the right hand side of Figure
+   [[ref:fig:AsiaNet]] by creating a child node of the Dysponea node. Such
+   a child node will encode the likelihood evidence as hard finding by
+   specifying the relation between Dysponea and Dysponea Observed of
+   interest; i.e. it will encode the likelihood evidence via the CPD
+   of $P(DysponeaObs | Dysponea)$.
 
    #+begin_export latex
 \begin{figure}[!h]\vspace{2mm}
@@ -1881,15 +1745,15 @@
 \end{figure}
    #+end_export
 
-   Concretely assume as in cite:Wasserkrug_all that the ONLP correctly
-   characterizes Dysponea 70% of the times when this does in fact
-   occurs. Note that the ONLP tool does not consider any prior
+   Concretely assume as in cite:Wasserkrug_all that the NLP correctly
+   characterizes Dysponea 70% of the times, when this does in fact
+   occurs. Note that the NLP tool does not consider any prior
    information resulting from the probabilistic structure of our
-   network. Then you might encode such likelihood evidence of the ONLP
+   network. Then you might encode such likelihood evidence of the NLP
    as in Table [[ref:tb:virt-evidence]].
 
    #+begin_export latex
-   \begin{table}
+   \begin{table}[!h]
 
    \begin{center}
    \begin{tabular}{|l||*{2}{c|}}\hline
@@ -1988,7 +1852,7 @@
 \end{algorithm*}
    #+end_export
 
-\newpage
+   \newpage
    
 ** Bayesian Learning MAP - Adjusted EM for Likelihood Evidence 
 
@@ -2004,11 +1868,11 @@
    Such procedure was outlined by the modification of the E-step in
    comparison to the standard EM algorithm with missing evidence.
 
-   Moreover we discussed in section [[ref:bayes-parameter-learning]] we
-   can adjust the M-step of the EM-algorithm to perform the task of
-   MAP estimation. Both correctness and convergence properties will
-   apply such that we will converge to a local maximum for our
-   posterior distribution.
+   Moreover, we discussed in section [[ref:bayes-parameter-learning]], how
+   it is possible to adjust the M-step of the EM-algorithm to perform
+   the task of MAP estimation. Both correctness and convergence
+   properties will apply such that we will converge to a local maximum
+   for our posterior distribution.
 
    Combining the two steps it is immediate to see that it is possible
    to perform Bayesian Parameter Learning under likelihood evidence
@@ -2038,7 +1902,447 @@
    Given such a computation it is possible to get to a local maximum
    for the MAP estimator.
 
-** Numerical M-step
+
+* On Probabilistic Evidence
+
+  In the previous chapter we showed how it is possible to rephrase a
+  likelihood evidence as an hard evidence by means of augmenting the
+  network via /virtual evidence/.
+
+  We could then perform the inference step and propagate the
+  information by means of Bayes Rule updating the probabilistic
+  structure of the network.
+
+  In this section we extend the theory presented that far by
+  introducing some techniques in order to deal with parameter learning
+  for the case of /non-fixed probabilistic evidence/.
+  
+  By contrast, with probabilistic evidence such an approach is not
+  viable. This because, as argued by cite:PENG_2010, propagating a
+  probabilistic finding on $X_i \in \textbf{X}$ requires a revision of
+  the probability distribution of the network $P_\theta(\textbf{X})$
+  on $X_i$ by a local probability distribution defined by the
+  probabilistic evidence statement $R(X_i)$. And given that $R(X_i)$,
+  although acting as a condition for the update, is not itself an
+  event, Bayes Rule and standard inference based on message passing
+  algorithms fail. Hence, as mentioned in cite:Mrad_2015, a
+  probabilistic finding $R(X_i)$ requires a reconsideration of the
+  entire joint probability distribution $P_\theta(\textbf{X})$ because
+  it replaces the existing /prior/ on the variable $X_i$.
+
+  In simple words, in the presence of probabilistic evidence it is not
+  possible to propagate evidence by standard message passing
+  algorithms. The solution proposed by cite:jeffrey1990logic, is then
+  to replace the initial probabilistic structure of the network
+  $P_\theta(\textbf{X})$ by a new probabilistic structure
+  $Q_\theta(\textbf{X})$ that reflects the beliefs in the variables of
+  the model /after accepting the probabilistic evidence/.
+
+  In the specifics, as well outlined by cite:Mrad_2015, according to
+  what is usually referred as Jeffrey's /probability kinematics/, $Q$
+  must satisfy the following requirements:
+
+  1. the posterior probability distribution considering the network
+     structure on the observed variable $Q(X_i)$ is unchanged: $Q(X_i)
+     = R(X_i)$. This is in fact the functional requirement of the
+     probabilistic evidence.
+
+  2. the conditional probability distribution of other variables given
+     $X_i$ remains invariant under the observation: $Q(\textbf{X}
+     \textbackslash X_i | X_i) = P (\textbf{X} \textbackslash X_i |
+     X_i)$. This essentially means that even if P and Q disagree on
+     $X_i$, they agree on the consequences of $X_i$ on other variables
+     cite:Mrad_2015.
+
+  With the above specification of a new probabilistic structure
+  satisfying the functional requirements of probabilistic evidence it
+  is possible to compute the probability of a given event by means of
+  Jeffrey's rule:
+
+  #+begin_export latex
+  \begin{equation} \label{eq:Jeffreys_Update}
+   Q(Z = z) = \sum_{x_i \in Val(X_i)} P(Z = z | X = x_i) R(X = x_i)
+  \end{equation}
+  #+end_export   
+
+  Albeit being theoretically compelling, Jeffrey's formula above
+  [[ref:eq:Jeffreys_Update]], cannot be directly applied in Bayesian
+  Networks. In fact such a formula requires the specification and
+  functional form of the full probabilistic structure of the network
+  in any state of the network in order to compute $P(Z = z | X_i =
+  x_i)$. I.e. in order to compute the new probabilistic structure
+  Q_\theta you would need to perform an inference step over all
+  possible sates combinations. A very computationally intensive task.
+
+  The solution to this problem as suggested by cite:Chan_2005 and
+  cite:PENG_2010 is to frame probabilistic evidence into likelihood
+  evidence by computing the likelihood ratio as defined by:
+
+  #+begin_export latex
+  \begin{align} \label{eq:probabilistic-to-likelihood-evidence}
+   L(X_i) = (\frac{R(x_{i_1})}{P(x_{i_1})}: ... : \frac{R(x_{i_k})}{P(x_{i_k})})
+  \end{align}
+  #+end_export
+
+  It is then possible to prove that propagating such likelihood
+  evidence by means of Pearl's method as described in the previous
+  section, is equivalent to propagating and obtain the probabilistic
+  structure by means of Jeffrey's method [[ref:eq:Jeffreys_Update]].
+
+  It is in fact possible to prove, as in cite:PENG_2010, that with
+  such an approach the posterior probability of $X_i$ after propagating
+  $L(X_i)$ by Pearl’s method, is equal to $R(X_i)$.
+
+  Given such theory it is straightforward to understand that
+  in the case of a single probabilistic evidence we can easily learn
+  the parameters of the Bayesian Network via the following adjustment
+  of the *AUGMENT-BN* function of [[ref:alg:EM-Likelihood]]
+
+   #+begin_export latex
+\algrenewcommand\algorithmicindent{1.5em}%
+
+\begin{algorithm*}[h!]
+\caption{EM-Likelihood: an EM algorithm for learning with likelihood evidence}
+\label{alg:EM-Probabilistic-Evidence}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$, Observations $O$
+
+\Function{Augment-BN}{$\mathcal{B}=(G,\theta)$, $O$} 
+  \State Initialize $G'\leftarrow G$, $\theta'\leftarrow\theta$, $Conf \leftarrow \emptyset$
+  \ForAll{$r_{j_i}\in ProbEv(x_j)$}  \Comment{$ProbEv$ is the passed probabilistic evidence. r are the states for the Node.}
+    \State {$Conf \leftarrow Conf \cup \frac{r_{j_i}}{\mathbf{P}_{x_{j_i}}}$}
+  \EndFor
+  \ForAll{$o\in O$}
+    \State $G'_{\mathbb{V}}\leftarrow G'_{\mathbb{V}}\cup o_{V}$, $G'_{\mathbb{E}}\leftarrow G'_{\mathbb{E}}\cup(V,o_{V})$      \Comment{Add a new observation node to the graph and connect it to the relevant node}
+    \ForAll{$c_{i}\in Conf$}   \Comment{$Conf$ computed likelihood for a probabilistic node}
+      \State $\theta'\leftarrow\theta'\cup\theta_{O_{V}=true|v_{i}}=c_{i}$ \Comment{Set the relevant CPT entry to be $Pr(obs|V=v_{i})$}
+    \EndFor
+  \EndFor
+\State \textbf{return} $(G',\theta')$
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+   #+end_export
+
+   This concludes the section. It is important to mention, to this
+   point that in the case of multiple probabilistic evidence on
+   different nodes, the above approach does not apply.
+
+   This because, as shown by example in cite:PENG_2010, the algorithm
+   above is not commutative and does not guarantee the functional
+   requirement $R(X_i) = Q(X_i)$ for at least one node $i$. This
+   intuitively because it just guarantees the property for the last
+   virtual node for which inference is propagated using Pearl virtual
+   evidence method.
+
+   This is for instance what happens in cite:PENG_2010 with two
+   probabilistic evidence, $R(X_1), R(X_2)$ and the property that
+   $Q(X_1) \neq R(X_1)$ or $Q(X_2) \neq R(X_2)$, depending on the
+   order of propagation.
+
+   In order to solve such an issue, and guarantee the functional
+   requirement of probabilistic evidence, the /Iterative Proportional
+   Fitting Procedure (IPFP) algorithm/ was proposed by
+   cite:Valtorta_2002.
+
+   The algorithm is based on the following theorem as reported in
+   cite:PENG_2010:
+
+   #+begin_export latex
+   \begin{theorem}\label{thm:two-I-projection}
+   Let $Q(X_i)$ be the distribution resulted from updating $P(\textbf{X})$ by $R(X_i)$,
+   $X_i \subset \textbf{X}$ using Jeffrey’s rule described above. Then $Q(X_i)$ is the I-projection of $P(\textbf{X})$ on
+   $\textbf{P}_{R(X_i)}$, where $\textbf{P}_{R(X_i)}$ is the set of distributions whose marginal over $X_i$ equal $R(X_i)$.
+   \end{theorem}
+   #+end_export
+   
+   The idea of the IPFP algorithm is then the one of allowing multiple
+   probabilistic evidence by leveraging the theorem above.
+
+   As well outlined in cite:PENG_2010, the idea is in fact to modify
+   $P(\textbf{X})$ incorporating the multiple constraints arising from
+   the multiple probabilistic evidence conditions passed by the
+   user. Consider $j = 1, ..., J$ restrictions, then you can perform
+   such an exercise by iteratively projecting the distribution
+   resulted from the previous iteration $\textbf{P}_{R(X_j)}$ on the
+   next set of constraints $R(X_{j+1})$.
+
+   Formally the IPFP would look as follows:
+
+   #+begin_export latex
+\algrenewcommand\algorithmicindent{1.5em}%
+
+\begin{algorithm*}[h!]
+\caption{IPFP Algorithm}
+\label{alg:IPFP-algorithm}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Probabilistic Evidence $R(X_j, ..., X_J)$, intial distribution $P(\textbf{X})$, necessary condition $R(X_j) << Q_{k-1}(X_j) \ \forall \ k$
+
+\Function{IPFP-Distribution}{$Q_k(\textbf{X})$} 
+  \State Initialize $Q_0(\textbf{X}) \leftarrow P(\textbf{X})$
+  \For{$k = 1, ..., m = 1 + (k − 1) \ mod \ J$}
+    \State {
+
+$Q_k(x) = \left\{
+\begin{array}{ll}
+Q_{k-1}(x) * \frac{R(x_j)}{Q_{k-1}(x_j)}
+& Q_{k-1}(x_j) \geq 0 \\
+0 & \, else \\
+\end{array}
+\right. $} \Comment{note that $j$ represent the constraint used at each iteration }
+  \EndFor
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+   #+end_export
+
+   As proved by several authors such method converge. Moreover, given
+   the new probabilistic structure $Q_k(\textbf{X})$ that reflects the
+   beliefs in the variables of the model /after accepting the
+   probabilistic evidence/, we can learn the parameters of the network
+   using the standard EM-algorithm.
+
+   It holds in fact that given complete or missing evidence we can
+   leverage the theory developed in the previous chapters to learn the
+   parameters of a network displaying multiple probabilistic evidence
+   by leveraging the updated network probabilistic structure
+   $Q_k(\textbf{X})$ at the inference step in the E-step.
+
+   This is summarized in algorithm [[ref:alg:EM-Probabilistic]]:
+
+   #+begin_export latex
+\algrenewcommand\algorithmicindent{1.5em}%
+
+\begin{algorithm*}[h!]
+\caption{EM-Proabilistic: an EM algorithm for learning with probabilistic evidence}
+\label{alg:EM-Probabilistic}
+%\begin{\algsize}
+\vspace{-10pt}
+\begin{multicols}{2}
+\begin{algorithmic}[1] 
+\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
+
+\Procedure{EM}{$\mathcal{B}$, $S$}
+\State Initialize $\mathcal{B}$'s parameters $\theta \leftarrow \theta^0$
+\ForAll{$t=1, \ldots$ until convergence}
+  \State $M-step \ as \ in \ Algorithm \ 1$
+\EndFor
+\\
+\Function{Compute-ESS}{$\mathcal{B}=(G, \theta)$}
+
+\State {Run IPFP given current parameterization}\Comment {Note - you have to perform such  iteration at each iteration}
+\State {$Q_k \leftarrow$ Return convergence distribution of algorithm IPFP above} 
+
+\ForAll {$i\in1,\ldots,n$}
+  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+   \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
+  \EndFor
+\EndFor
+
+\ForAll{example $S_{j}\in S$}
+
+    \State {Run inference on $(G, Q_k, \theta)$ with evidence $d_{j}$}
+
+    \ForAll{i$ = 1,\ldots,n$}
+      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+
+        \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} Q_{(G,\theta)}(x_{i},u_{i}|d_{j})$ \Comment {Note that inference is based on the adjusted distriution Q obtained above}
+      \EndFor
+    \EndFor
+\EndFor
+\EndProcedure
+
+\end{algorithmic}
+\end{multicols}
+%\end{\algsize}
+\end{algorithm*}
+   #+end_export
+   
+   This concludes the theory for Parameter Learning under
+   probabilistic evidence. We note two problems, the first being that
+   the algorithm needs to perform IPFP at each E-step given the new
+   parameterization. You run in fact a chicken-egg problem that makes
+   the solution to such problem very expensive. IPFP requires the
+   parameterization of the node to be known in order to perform
+   inference and get to the updated probabilistic structure of the
+   network after consider probabilistic evidence. But we desire to
+   learn such a parameterization such that we need to repeat the above
+   until convergence.
+
+   Moreover, we note that IPFP requires to run inference and compute
+   the new probabilistic structure for all possible realizations in
+   the network $x \in Val(\textbf{X})$. Moreover to perform such task
+   the full joint probability distribution P(\textbf{X}) would be
+   necessary. It is obvious that for such big Bayesian Networks such a
+   task full-joint would be infeasible to compute. In this sense,
+   further refinements were propose such a /big clique/ refinement as 
+   discussed in cite:PENG_2010, which you could then plug-in
+   [[ref:alg:IPFP-algorithm]].
+   
+   
+* On Numerical EM
+
+  As argued in the previous section when working with conjugate prior
+  we might easily get to closed form solutions for the maximum of the
+  posterior.
+
+  However, as was previously discussed it might be limiting to
+  restrict the prior specification to conjugate priors of exponential
+  distributions.
+
+  To tackle this issue and address the possibility of using a richer
+  class of likelihood-priors instantiations we propose in this
+  section some arguments for iteratively computing the maximum of an
+  arbitrary well behaved distribution as discussed in section
+  [[ref:cpt:cpt_bayes_learning]].
+
+  One classical tool to perform the task is the one of leveraging
+  stochastic simulation methods to sample from the posterior
+  distribution of interest and leverage asymptotic theory to get to
+  the statistics of interest.
+       
+  Another option, which we will focus next, is to apply a numerical
+  solution to the M-step of the EM algorithm leveraging the theory
+  presented in cite:ruud1989comparison.
+
+  Hence, in this section, we will aim to generalize the theory
+  presented that far such that it is possible to implement general
+  statistical software without having to limit the end-user to very
+  specific pre-defined cases, where the algorithm running in the
+  background has necessarily to know the closed-form analytical
+  solution of the M-step.
+
+  Note that this will come at costs. We will need in fact to compute
+  the Hessian of our expected log-likelihood which is one of the most
+  computationally intensive tasks. This especially in highly
+  dimensional problems. One of the major benefits in using the EM over
+  gradient based methods would be lost in this sense.
+
+** Numerical EM for MLE estimator
+
+   In order to understand how to compute M-step according to an
+   iterative method, think at the following.
+
+   Consider that in the E-step you set $Q = P (\mathscr{H}| \mathscr{D}, \theta_0)$, such
+   that you can reformulate
+   [[ref:eq:likelihood_energy_functional_relation]] as follows
+
+   #+begin_export latex
+   \begin{align} \label{eq:likelihood_energy_iterative}
+   l (\theta: \mathscr{D}) =& \ H_Q (\mathscr {H}) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H}) \\
+   \nonumber\\
+   Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
+   \nonumber\\  
+   H(\theta_0, \theta: \mathscr{D}) \eqdef& \ Q(\theta, \theta_0 : \mathscr{D}) - l (\theta: \mathscr{D}) \\
+                                    =& H_Q (\mathscr {H}) = \sum_h - P(h | \mathscr{D}, \theta_0) * P(\theta | h, \mathscr{D}) \nonumber
+   \end{align}
+   #+end_export  
+
+   It follows
+  
+   #+begin_export latex
+   \begin{align} 
+   \frac{\partial}{\partial \theta} l (\theta: \mathscr{D}) =& \ l_1 (\theta: \mathscr{D}) = \frac{\partial}{\partial \theta} Q(\theta, \theta_0, \mathscr{D}) - \frac{\partial}{\partial \theta} H(\theta, \theta_0, \mathscr{D}) \nonumber \\
+   =& Q_1(\theta, \theta_0 : \mathscr{D}) - H_1(\theta, \theta_0 : \mathscr{D})  \label{eq:m-condition-iterative1} \\
+   \nonumber \\
+   \frac{\partial^2}{\partial \theta \partial \theta'} l (\theta: \mathscr{D}) =& \frac{\partial^2}{\partial \theta \partial \theta'}  Q(\theta, \theta_0, \mathscr{D}) -  \frac{\partial^2}{\partial \theta \partial \theta'}  H(\theta, \theta_0, \mathscr{D}) \nonumber \\
+     =& \ Q_{11}(\theta, \theta_0 : \mathscr{D}) - H_{11}(\theta, \theta_0 : \mathscr{D}) \label{eq:m-condition-iterative2}
+   \end{align}
+   #+end_export
+
+   Moreover given the following condition
+
+   #+begin_export latex
+   \begin{align} 
+    H_1(\theta_0, \theta_0 : \mathscr{D})  = 0 \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative}
+   \end{align}
+   #+end_export
+
+    we have for [[ref:eq:m-condition-iterative1]] that:
+
+   #+begin_export latex
+   \begin{align} 
+    l_1(\theta_0: \mathscr{D})  = Q_1(\theta_0, \theta_0: \mathscr{D}) \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative2} 
+   \end{align}
+   #+end_export
+
+   Such that ultimately it holds using the classical derivation of the
+   Newton-Raphson Method as in cite:storvik2007numerical:
+
+  
+   #+begin_export latex
+   \begin{align} 
+    \theta_{EM}  = \theta_{0} - Q_{11}^{-1} Q_1 + o(||\theta_{EM} - \theta_{0}||) \label{eq:em-iterative}
+   \end{align}
+   #+end_export  
+
+   where both $Q_{11}, Q_{1}$ are evaluated at $\theta_0$.
+
+   It follows immediately that for log-concave functions each iteration
+   of [[ref:eq:em-iterative]] increases the likelihood. It is therefore
+   possible to apply the above by inserting the numerical computed
+   Hessian and gradient until convergence to a maximum.
+
+   It is as well possible to set a predefined amount of iterations
+   before switching to the next E-step in the EM-algorithm. Due to the
+   increased computational cost of performing new inferences as well as
+   computing new Hessian matrices such second option is not
+   recommended; albeit being theoretically viable.
+
+   As a final remark, note that methods to improve the computational
+   speed of such numerical M-step have been proposed, such in
+   cite:Louis_1982. As uphill steps cannot be guaranteed under all
+   circumstances in such algorithm, we just refer to the literature
+   the interested reader and do not consider this as a viable option
+   for our solution. In that case the EM theory would collapse and
+   there is no guarantee to reach a local maximum.
+
+** Numerical EM for MAP estimator
+
+   This section generalizes the arguments of the previous section to
+   the case of MAP estimator in the case of Bayesian Parameter
+   Learning.
+
+   Using [[ref:eq:adj_energy_functional]] it follows immediately using the
+   notation of the last section that:
+
+   #+begin_export latex
+   \begin{align} \label{eq:likelihood_energy_map_iterative}
+   l (\theta: \mathscr{D}) + log(P(\theta)) =& \ H_Q (\mathscr {H}) + log(P(\theta)) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
+   \nonumber\\
+   Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \ log(P(\theta)) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
+   \nonumber\\  
+   H(\theta_0, \theta: \mathscr{D}) \eqdef& \ Q(\theta, \theta_0 : \mathscr{D}) - l (\theta: \mathscr{D}) \\
+                                    =& H_Q (\mathscr {H}) = \sum_h - P(h | \mathscr{D}, \theta_0) * P(\theta | h, \mathscr{D}) \nonumber
+   \end{align}
+   #+end_export  
+   
+   The idea is that as long as the likelihood and the prior are
+   concave such that the sum of two concave functions will yield a $Q$
+   function that is concave, we might apply the very same
+   Newton-Raphson method to get iteratively to the maximum of the
+   function.
+
+   #+begin_export latex
+   \begin{align} 
+    \theta_{EM}  = \theta_{0} - Q_{11}^{-1} Q_1 + o(||\theta_{EM} - \theta_{0}||) \label{eq:em-iterative}
+   \end{align}
+   #+end_export
+
+   where $Q_{11}, Q_1$ are defined as in the previous section and
+   need now to account for the prior distribution influence.
+   
+
+
+** How to compute the numerical Hessian and Gradient
 
    This section concludes the chapter on Bayesian Parameter Learning
    by substituting the M-step of [[ref:alg:Bayes-EM-Likelihood]], by a
@@ -2100,139 +2404,14 @@
      incorporate everything in the next step.
    
 
-* On Probabilistic Evidence
+* Empirical Results
 
-  In the previous chapter we showed how it is possible to rephrase a
-  likelihood evidence as an observed event by means of augmenting the
-  network via /virtual evidence/.
-
-  We could then propagate the information by means of Bayes Rule
-  and update the probabilistic structure of the network.
   
-  By contrast, with probabilistic evidence such an approach is not
-  viable. This because, as argued by cite:PENG_2010, propagating a
-  probabilistic finding on $X \in \textbf{X}$ requires a revision of
-  the probability distribution of the network P on X by a local
-  probability distribution defined by the probabilistic evidence
-  statement R(X). Or, in other words, as in cite:Mrad_2015, a
-  probabilistic finding R(X) requires a reconsideration of the joint
-  probability distribution P because it replaces the existing prior on
-  the variable X.
 
-  Given the fact that in the presence of probabilistic evidence it is
-  not possible to propagate evidence in the standard way for the
-  initial probability, the solution proposed by cite:jeffrey1990logic,
-  is to replace the initial probabilistic structure of the network $P$
-  by a new probabilistic structure $Q$ that reflects the beliefs in
-  the variables of the model after accepting the probabilistic
-  evidence.
+  \newpage
+     
 
-  In the specifics, as well outlined by cite:Mrad_2015, according to
-  what is usually referred as Jeffrey's /probability kinematics/, $Q$
-  must satisfy the following requirements:
 
-  1. the posterior probability distribution on the observed variable X
-     $Q(X)$ is unchanged: $Q(X) = R(X)$. This is in fact the
-     functional requirement of the probabilistic evidence.
-
-  2. the conditional probability distribution of other variables given
-     $X$ remains invariant under the observation: $Q(\textbf{X} \
-     {X} | X) = P (\textbf{X} \ {X} | X)$. This essentially means that
-     even if P and Q disagree on X, they agree on the consequences of
-     X on other variables cite:Mrad_2015.
-
-  With the above specification of a new probabilistic structure
-  satisfying the functional requirements of probabilistic evidence it
-  is possible to compute the probability of a given event by means of
-  Jeffrey's rule:
-
-  #+begin_export latex
-  \begin{equation} \label{eq:Jeffreys_Update}
-   Q(Z = z) = \sum_x P(Z = z | X = x) R(X = x)
-  \end{equation}
-  #+end_export   
-
-  Note that Jeffrey's formula above [[ref:eq:Jeffreys_Update]], albeit
-  being theoretically compelling, cannot be directly applied in
-  Bayesian Networks, as it requires the specification and functional
-  form of the full probabilistic structure of the network in any state
-  of the network in order to compute P(Z = z | X = x). This must be
-  computed according to some inference step.
-
-  The solution to this problem as suggested by cite:Chan_2005 and
-  cite:PENG_2010 is to frame probabilistic evidence into likelihood
-  evidence by computing the likelihood ratio as defined by:
-
-  #+begin_export latex
-  \begin{align} \label{eq:probabilistic-to-likelihood-evidence}
-   L(X) = (\frac{R(x_1)}{P(x_1)}: ... : \frac{R(x_k)}{P(x_k)})
-  \end{align}
-  #+end_export
-
-  It is then possible to prove that propagating such likelihood
-  evidence by means of Pearl's method as described in the previous
-  section, is equivalent to propagating and obtain the probabilistic
-  structure by means of Jeffrey's method [[ref:eq:Jeffreys_Update]].
-
-  It is in fact possible to prove, as in cite:PENG_2010, that with
-  such an approach the posterior probability of X after propagating
-  L(X) by Pearl’s method, is equal to R(X).
-
-  Given such theory it is straightforward to understand that
-  in the case of a single probabilistic evidence we can easily learn
-  the parameters of the Bayesian Network via the following adjustment
-  of the *AUGMENT-BN* function of [[ref:alg:EM-Likelihood]]
-
-   #+begin_export latex
-\algrenewcommand\algorithmicindent{1.5em}%
-
-\begin{algorithm*}[h!]
-\caption{EM-Likelihood: an EM algorithm for learning with likelihood evidence}
-\label{alg:EM-Likelihood}
-%\begin{\algsize}
-\vspace{-10pt}
-\begin{multicols}{2}
-\begin{algorithmic}[1] 
-\Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$, Observations $O$
-
-\Function{Augment-BN}{$\mathcal{B}=(G,\theta)$, $O$} 
-  \State Initialize $G'\leftarrow G$, $\theta'\leftarrow\theta$, $Conf \leftarrow \emptyset$
-  \ForAll{$r_i\in ProbEv(x_j)$}  \Comment{$ProbEv$ is the passed probabilistic evidence. r are the states for the Node.}
-    $Conf \leftarrow \frac{r_i}{\mathbf{P}_{x_j}}$ 
-  \EndFor
-  \ForAll{$o\in O$}
-    \State $G'_{\mathbb{V}}\leftarrow G'_{\mathbb{V}}\cup o_{V}$, $G'_{\mathbb{E}}\leftarrow G'_{\mathbb{E}}\cup(V,o_{V})$      \Comment{Add a new observation node to the graph and connect it to the relevant node}
-    \ForAll{$c_{i}\in Conf$}   \Comment{$Conf$ computed likelihood for a probabilistic node}
-      \State $\theta'\leftarrow\theta'\cup\theta_{O_{V}=true|v_{i}}=c_{i}$ \Comment{Set the relevant CPT entry to be $Pr(obs|V=v_{i})$}
-    \EndFor
-  \EndFor
-\State \textbf{return} $(G',\theta')$
-\end{algorithmic}
-\end{multicols}
-%\end{\algsize}
-\end{algorithm*}
-   #+end_export
-
-   This concludes the section. It is important to mention, to this
-   point that in the case of multiple probabilistic evidence on
-   different nodes, the above approach does not apply.
-
-   This because, as shown by example, by cite:PENG_2010, the algorithm
-   above is not commutative and does not guarantee - for instance for
-   the case R1(X1) and R2(X2) - $Q(X1) \neq R1(X1)$ or $Q(X2) \neq
-   R(X2)$, depending on the order of propagation.
-
-   In order to solve such an issue, and guarantee the functional
-   requirement of probabilistic evidence, a method was proposed by
-   cite:PENG_2010. This involves the combination of an /Iterative
-   Proportional Fitting Procedure (IPFP) algorithm/ with the /big
-   clique algorithm/. Nonetheless, we leave it as a further avenue of
-   research to extend such methods in order Bayesian Parameter
-   Learning.
-   
-   \newpage
-
-    
 * TODOs
   
 **** TODO check if particle formulation in energy functional ok as such

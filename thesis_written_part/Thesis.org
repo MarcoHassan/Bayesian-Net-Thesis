@@ -1645,7 +1645,6 @@
     of parameter learning under likelihood evidence describing the
     approach proposed in cite:Wasserkrug_all.
 
-
 ** Adjusted EM - Likelihood Evidence
 
    One of the most widespread ways to deal with likelihood evidence

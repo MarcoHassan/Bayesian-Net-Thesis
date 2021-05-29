@@ -34,6 +34,10 @@
 
 
 ** General Code Structure
+   :LOGBOOK:
+   CLOCK: [2021-05-29 Sat 16:28]--[2021-05-29 Sat 16:53] =>  0:25
+   CLOCK: [2021-05-29 Sat 16:03]--[2021-05-29 Sat 16:28] =>  0:25
+   :END:
 
    #+begin_src plantuml :file ./images/strucutre.png
    @startuml
@@ -76,13 +80,14 @@
        cte .. EM
        graphical_model .. factors
 
-
    /' Class Functions '/
 
        /'Merlin'/
        Merlin : set arguments, \ni.e. file of interes, \noutput format etc.
        Merlin : read the passed model in the uai format. \nand extracts the factors of the model.
        Merlin : run() - runs the engine; here s.run() runs the aglo
+       Merlin : run() - note that when running the engine there is a check \ntest if there is presence for virtual evidence. \naugments graphical model gm in case of presence.
+       Merlin : run() - note that when running the engine you instantiate the inference object \n see for instance **merlin::bte s(fs);** in there.
        Merlin : init() - checks paramters and return fals if smth not working
 
        /'EM Algorithm'/
@@ -94,8 +99,20 @@
    [[file:./images/strucutre.png]]
 
 
-** Reminder of c++
+** TODO ask radu
+
+   I know that I had already asked it... but don't find my
+   answer. why do we have two ways to enlarge the network with virtual
+   evidence?
+
+   one in the =merlin.cpp= and one in the =em.cpp=?
+
+   what is the difference in there
+
    
+   
+** Reminder of c++
+
 *** Pointers and Addresses
 
     The general syntax is the following:
@@ -127,6 +144,7 @@
     =typedef unsigned char BYTE=
 
     
+
 
 *** constructors and member initialization functions
 
@@ -327,90 +345,29 @@ return 0;
     rooms.resize(shape)
     #+END_SRC    
 
-
-** .uai structure is important for developing the graph and pass it along.
-
-   Note that factors are general function mapping from a domain of
-   variables (D) to the real numbers. It is therefore a general
-   function but it is used in our sense as a map from network
-   variables to probability functions. (usually - i.e. if the order is
-   meaningful in the sense that the multiplication of factors follows
-   the conditional independence structure and factors represent ).
-
-///
-/// \brief Factor for graphical models.
-///
-/// Table based representation of a factor for graphical models. A 
-/// factor encodes a potential (sometimes a probability distribution)
-/// defined over a subset of discrete random variables, called a *scope*, and 
-/// associates each configuration of the variables in the scope with a 
-/// positive real value (sometimes a probability value). The scope is assumed
-/// to be sorted lexicogaphically (e.g., [x1,x2,x3]) Also, the indexing of
-/// configurations in the factor table is assumed to be based on the BigEndian
-/// convention, namely the *first* variable in the ordered scope changes
-/// the fastest, then the *second* variable changes its value and so on.
-/// For example, consider a factor over binary variables [x1,x2,x3].
-/// The corresponding factor table is indexed as follows (internally):
-///
-/// 0: [0,0,0]    4: [0,0,1]
-/// 1: [1,0,0]    5: [1,0,1]
-/// 2: [0,1,0]    6: [0,1,1]
-/// 3: [1,1,0]    7: [1,1,1]
-
-   factor logic and indexing is different from the =.uai= representation
-   and this is described above.
-
-   Note that it is important this piece of code:
-
-   #+begin_example
-   The scope is assumed to be sorted lexicogaphically (e.g., [x1,x2,x3])
-   #+end_example
-
-   Also, the indexing of configurations in the factor table is assumed to
-   be based on the BigEndian, namely the *first* variable in the ordered
-   scope changes the fastest, then the *second* variable changes its
-   value and so on.
-
-   I.e. for each factor you have a /factor table/ that maps your Val(D)
-   to real line. In this table there are all of the possible combinations
-   of Val(D). The question is then on how you keep record of these and
-   the solution is the BigEndian notation.
-
-   There is a function *convert_index*  - maybe not a function have to
-   understand that tomorrow. the syntax is not the one of a
-   function.
-   
-   These are in fact both classes that are defined in this file
-   [[file:merlin/include/index.h]].
-
-   I just do not manage to find the size_t class. I wonder what this
-   is.
-
-*** Note that in the factor header also all of the functions for factor summation, entropy etc. are defined.
+    #+RESULTS:
 
 
-** Parameter for the algorithm
+*** templates
 
-      #+begin_example
-   "Order=MinFill" << ","
-   << "Infer=CTE" << ","
-   << "Iter=" << m_iterations << ","
-   << "Debug=" << (m_debug ? "1" : "0") << ","
-   << "Threshold=" << m_threshold << ","
-   << "Init=" << initMethod;
-   #+end_example
-
-   arguments for instantiation the EM.
-
-   - he has a stopping criteria check at each iteration.
-   
-     
-** wmb bucket
-
-   best approximate inference algorithm.
+    check at [[https://www.youtube.com/watch?v=a-3hcS-tEn0][this video]] for understanding templates. basically it is
+    nothing new. you just specify blueprints that you can then call by
+    name. the properties are then derived for such a template.
 
 
-** graphical_model
+*** conditional operator
+
+    I guess this is as in your javascript notes.
+
+    This basically means if the expression =m_evidence.empty()=
+    evaluates to true then return =false= otherwise return =true=
+
+    #+BEGIN_SRC cpp 
+   bool plainEvidence = (m_evidence.empty() ? false : true);
+    #+END_SRC
+
+    
+** CENTRAL TO UNDERSTAND - WORKING STRUCTURE - graphical_model
 
    from uai  variable create factors vector.
 
@@ -442,6 +399,7 @@ return 0;
 
    so the meat is all here:
    
+
 *** uai format
     :LOGBOOK:
     CLOCK: [2021-03-29 Mon 15:23]--[2021-03-29 Mon 15:49] =>  0:26
@@ -472,7 +430,7 @@ BAYES                 // first line always specify the type of graphical model: 
  1 3                  // the first number represents the number of variables per factor - i.e. the scope of the factor
  2 0 1                // so here you have two variables involved for the factor.  
  3 4 2 5              // the other numbers that follow specify which variables are involved for each factor.
- 3 1 5 7              // note that the numbers represent the index of the variables
+ 3 1 5 7              // the variables are represented by the numbers, which represent the index of the variables
  2 0 2                // in the 2 2 2 2 .... 2 above. the index starts from 0
  1 0                  // so for instance this represents the first variable above. 
  2 3 4                
@@ -531,6 +489,100 @@ BAYES                 // first line always specify the type of graphical model: 
 4
  0.98 0.02 0.05 0.95
     #+end_example
+
+
+*** .uai structure is important for developing the graph and pass it along.
+
+    Note that factors are general function mapping from a domain of
+    variables (D) to the real numbers. It is therefore a general
+    function but it is used in our sense as a map from network
+    variables to probability functions. (usually - i.e. if the order is
+    meaningful in the sense that the multiplication of factors follows
+    the conditional independence structure and factors represent ).
+
+ ///
+ /// \brief Factor for graphical models.
+ ///
+ /// Table based representation of a factor for graphical models. A 
+ /// factor encodes a potential (sometimes a probability distribution)
+ /// defined over a subset of discrete random variables, called a *scope*, and 
+ /// associates each configuration of the variables in the scope with a 
+ /// positive real value (sometimes a probability value). The scope is assumed
+ /// to be sorted lexicogaphically (e.g., [x1,x2,x3]) Also, the indexing of
+ /// configurations in the factor table is assumed to be based on the BigEndian
+ /// convention, namely the *first* variable in the ordered scope changes
+ /// the fastest, then the *second* variable changes its value and so on.
+ /// For example, consider a factor over binary variables [x1,x2,x3].
+ /// The corresponding factor table is indexed as follows (internally):
+ ///
+ /// 0: [0,0,0]    4: [0,0,1]
+ /// 1: [1,0,0]    5: [1,0,1]
+ /// 2: [0,1,0]    6: [0,1,1]
+ /// 3: [1,1,0]    7: [1,1,1]
+
+    factor logic and indexing is different from the =.uai= representation
+    and this is described above.
+
+    Note that it is important this piece of code:
+
+    #+begin_example
+   The scope is assumed to be sorted lexicogaphically (e.g., [x1,x2,x3])
+    #+end_example
+
+    Also, the indexing of configurations in the factor table is assumed to
+    be based on the BigEndian, namely the *first* variable in the ordered
+    scope changes the fastest, then the *second* variable changes its
+    value and so on.
+
+    I.e. for each factor you have a /factor table/ that maps your Val(D)
+    to real line. In this table there are all of the possible combinations
+    of Val(D). The question is then on how you keep record of these and
+    the solution is the BigEndian notation.
+
+    There is a function *convert_index*  - maybe not a function have to
+    understand that tomorrow. the syntax is not the one of a
+    function.
+   
+    These are in fact both classes that are defined in this file
+    [[file:merlin/include/index.h]].
+
+    So notice that this conversion is done because of the following
+    reason:
+
+    #+begin_example
+   // BigEndian assumes that the first variable changes the fastest
+   // UAI input is assumed to follow the LittleEndian convention, whereas
+   // the internal representation of the factors assume BigEndian.
+    #+end_example
+
+**** Note that in the factor header also all of the functions for factor summation, entropy etc. are defined.
+
+
+
+    
+    
+
+    
+*** TODO understand the big-endian to little endian trasformation in the c++ document.
+    :LOGBOOK:
+    CLOCK: [2021-05-29 Sat 15:03]--[2021-05-29 Sat 15:28] =>  0:25
+    :END:
+
+    check at the code described above. paste the code and make small
+    experiments to be sure you understand this.
+
+    then given that you understand all of this, you can create files
+    as in the =.uai= notation where you can pass the hyperparameters
+    for each node.
+
+    quite complex piece of code.
+
+    work in the following alternative way:
+
+    (i) start from the em algorithm.. understand all of the sequence
+    of functions that are called. understand just that code and forget
+    about the rest. use a reverse engineering technique in this sense.
+
 
 *** .evid
 
@@ -594,6 +646,30 @@ BAYES                 // first line always specify the type of graphical model: 
     evid files used for inference. train for parmaters.
 
 
+
+
+   
+** Parameter for the algorithm
+
+      #+begin_example
+   "Order=MinFill" << ","
+   << "Infer=CTE" << ","
+   << "Iter=" << m_iterations << ","
+   << "Debug=" << (m_debug ? "1" : "0") << ","
+   << "Threshold=" << m_threshold << ","
+   << "Init=" << initMethod;
+   #+end_example
+
+   arguments for instantiation the EM.
+
+   - he has a stopping criteria check at each iteration.
+   
+     
+** wmb bucket
+
+   best approximate inference algorithm.
+
+
 ** note that factors are key not graphs 
 
    he said that the graph representation in the code is there but is
@@ -606,73 +682,263 @@ BAYES                 // first line always specify the type of graphical model: 
    interpretation there. check at this file [[file:merlin/include/factor.h]]
 
 
-** Recall that in Pearls method the extended virtual node is always set to true.
 
-** IMPORTANT: note that the likelihood ratios are passed normalized in the IBM paper... so that they in fact represent probabilities P(obs | x_i)
+** General function for hyperparameters
+   :properties:
+   :hearder-args:cpp: :session hello
+   :end:
 
-** Linear Gaussian Bayesian Networks
+   Note that like this it works. You can save functions in headers and
+   get them from there by specifying the =-I= option.
 
-   linear
-   Gaussian CPDs the local likelihood is given by:
+   #+begin_src cpp :libs -std=c++11 -I./my_code_env/include
+#include <vector>
+#include <iostream>
 
 
-   Performing this task you would have for the log-likelihood of
-   linear Gaussian Bayesian:
+#include "hello.h"
+
+int main(){
+
+  std::vector<int> input = { 1, 2, 3, 4, 5 };
+
+  // so it is correct yourename the variable later
+  input = { 1, 2, 3, 4, 5, 6, 7, 8 };  
+  
+  print(input);
+
+  return 0;    
+}
+   #+end_src   
+
+   #+RESULTS:
+   : 1 2 3 4 5 6 7 8
+
+   So that is basically it now you have to embed it in the code. This
+   would be a vector containing the prior hyperparameters, starting
+   with the bayesian learning MAP estimator.
+
+   Following the syntax of the code base you should write a function
+   of the following shape
+
+   #+begin_src cpp
+bool Merlin::read_hyperparameters(const char* filename) {
+	try {
+
+		// Read the graphical model
+		m_filename = std::string(filename);
+		std::ifstream is(filename);
+		if (is.fail()) {
+			std::string err_msg("Cannot open the input file: ");
+			err_msg += std::string(filename);
+			throw std::runtime_error(err_msg);
+		}
+		
+
+                // have to specify and read the input out of the .txt file
+		// std::vector<int> input = { 1, 2, 3, 4, 5 };
+
+		return true;
+	} catch (const std::runtime_error& e) {
+		std::cerr << e.what() << std::endl;
+		return false;
+	}
+}
+   #+end_src
+
+   Then adapt the M-step. Keep everything equal. Just use a different
+   function for the maximization step.
+   
+
+** How to save the things in the files
+
+   I decided to save the input of the hyperparameters in a =.prio=
+   file.
+
+   There you will have to specify the hyperparameters for each
+   node(?). Check at the theory again. And understand what you have to
+   use.
+   
+*** TODO define the structure of such a file
+   
+
+** Otherwise you can also set it at parameter at the beginning
+
+   See for instance the =set_init_factor_method= function in the
+   =merlin.cpp= file.
+
+   And also all of the other parameters that you set when running the
+   merlin engine.
+
+   See =main.cpp=.
+
+   Nonetheless, I think it makes better sense to focus on the file
+   solution as there might be quite some parameters if you need
+   hyperparameters for each node.
+   
+
+** TODO Understand the reading process out of the files.
+
+   There is a function in the =graphical_model.h= file. There the
+   =read= function is specified.
+
+   Notice that there you pass as a parameter the =is=. Have to
+   understand what that exactly is.
+
+   This is a file =istream=. So I think it is a standard input
+   =std::istream&= element.
+
+   Notice that you consume a line of the input stream with =>>= each
+   time.
+
+   Try to double check that
+
+   #+BEGIN_SRC cpp :libs -std=c++11 -I./my_code_env/include
+#include <iostream>
+#include <sstream>
+#include <fstream>
+
+void read(std::istream& is, bool positive_mode = false) {
+
+		// Read the header
+                bool m_markov;
+		size_t nvar, ncliques, csize, v, nval; // here the
+						       // type is
+						       // size_t. so
+						       // you do not
+						       // define the
+						       // type but you
+						       // touch it so
+						       // to say,
+						       // storing the
+						       // maximum
+						       // possible
+						       // amount of
+						       // memory for
+						       // that object
+						       // in memory.
+		std::string st;
+		
+		is >> st; 
+		if ( st.compare("MARKOV") == 0 ) {
+		  m_markov = true;
+		} else if ( st.compare("BAYES") == 0 ) {
+		  m_markov = false;
+		} else {
+		  std::string err_msg("Merlin only supports the UAI Markov or Bayes file format.");
+			throw std::runtime_error(err_msg);
+		}
+
+		printf ("%d \n", m_markov);
+
+   }
+
+
+   int main(){
+
+     std::ifstream file ("./merlin/data/multinomial_dirichlet.prio");
+
+     bool m_positive = true; 
+     
+     read(file, m_positive);
+
+     return 0;
+     
+   }
+   #+END_SRC
+
+   #+RESULTS:
+   : 0
+
+   Good so you understand now how to read file.
+
+   You can then expand based on this.
+
+   Should be fine in any case. You just need to understand the order
+   through which you understand the input parameters.
+
+   I.e. with the factor structure etc. Go over it tomorrow morning.
+
+   Then basically do the same structure for passing the
+   hyperparameters.
+
+   Then just adapt m-step and boom! You are good to go. 
+   
+      
+
+
+** General Notes
+   
+*** Recall that in Pearls method the extended virtual node is always set to true.
+
+*** IMPORTANT: note that the likelihood ratios are passed normalized in the IBM paper... so that they in fact represent probabilities P(obs | x_i)
+
+*** Linear Gaussian Bayesian Networks
+
+    linear
+    Gaussian CPDs the local likelihood is given by:
+
+
+    Performing this task you would have for the log-likelihood of
+    linear Gaussian Bayesian:
     
-   #+begin_export latex
-   \begin{align} \label{eq:like-gaussian-cpd}
-   P(X|\theta) = \sum_m -log(\sqrt{2\pi\sigma^2}) \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) * - \mathbf{\theta}^\intercal \mathbf{\tau(d[m], h[m])}
-   \end{align}
-   #+end_export            
+    #+begin_export latex
+    \begin{align} \label{eq:like-gaussian-cpd}
+    P(X|\theta) = \sum_m -log(\sqrt{2\pi\sigma^2}) \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) * - \mathbf{\theta}^\intercal \mathbf{\tau(d[m], h[m])}
+    \end{align}
+    #+end_export            
 
-   Such that
+    Such that
 
      
-*** TODO TO SOLVE THAT PART WORK AS FOLLOWS
+**** TODO TO SOLVE THAT PART WORK AS FOLLOWS
 
-**** TODO Look at the chapter 19
+***** TODO Look at the chapter 19
 
-     there you can see how the same step of expectation is valid for
-     the case of exponential families. there is also clear what the
-     sufficient statistics are - recall your course of mathematical
-     statistics.
+      there you can see how the same step of expectation is valid for
+      the case of exponential families. there is also clear what the
+      sufficient statistics are - recall your course of mathematical
+      statistics.
 
-     apparently you use the very same sufficient statistics for the
-     exercise of performing your Map projection - see first point
-     here above.
+      apparently you use the very same sufficient statistics for the
+      exercise of performing your Map projection - see first point
+      here above.
 
-     so you get this fish and you can most likely write here the
-     theory for the general exponential family. then just a matter of
-     generalizing the above.
+      so you get this fish and you can most likely write here the
+      theory for the general exponential family. then just a matter of
+      generalizing the above.
 
-     there the idea is that you can compute expected sufficient
-     statistics, instead of simple sufficient statistics in the very
-     same way, i.e. through the posterior P(H | O, \theta_{current}).
+      there the idea is that you can compute expected sufficient
+      statistics, instead of simple sufficient statistics in the very
+      same way, i.e. through the posterior P(H | O, \theta_{current}).
 
-     then you can use these when computing the M-step.
+      then you can use these when computing the M-step.
 
-     so it is the same story. have just to understand better the
-     story of the expected sufficient statistics and how it is
-     defined in 17. especially for the empirical distribution and
-     not. then understand the inverting process. and from there it
-     should be clear.
+      so it is the same story. have just to understand better the
+      story of the expected sufficient statistics and how it is
+      defined in 17. especially for the empirical distribution and
+      not. then understand the inverting process. and from there it
+      should be clear.
 
-     the confusing point to this stage is that you will have two
-     expected steps which I do not think will be the same.
+      the confusing point to this stage is that you will have two
+      expected steps which I do not think will be the same.
 
-     I would suggest the following:
+      I would suggest the following:
 
-     1. compute the MLE for a standard case.
+      1. compute the MLE for a standard case.
 
-     2. understand what is the sufficient statistics in there.
+      2. understand what is the sufficient statistics in there.
 
-     3. understand how you can compute the ess from there.
+      3. understand how you can compute the ess from there.
 
-     4. relate everything and make sense of it also in conjunction
-        with the piece of information from the chapter 17 in here.
+      4. relate everything and make sense of it also in conjunction
+         with the piece of information from the chapter 17 in here.
 
 
 
-   \newpage
+    \newpage
+
+   
+
 
    

@@ -48,6 +48,7 @@
    circle main
    class graphical_model
    class cte
+   class observation
 
    /'General Notes and Comments'/
 
@@ -68,6 +69,8 @@
        /'cte'/
        note right of cte: exact inference method. clique tree. 
 
+       /'observation'/
+       note right of observation: there is an observation class that deals with all of the observation types. \nyou have to understand this. \nYou also pass it as type to vector. Can you pass **classes** to vectors? \nNote this is not the only class. There are similar things as well for sets etc. so all defined in there.
 
    /'Diagram Structure and References'/
 
@@ -101,24 +104,288 @@
 
 ** TODO ask radu
 
-   I know that I had already asked it... but don't find my
-   answer. why do we have two ways to enlarge the network with virtual
-   evidence?
-
-   one in the =merlin.cpp= and one in the =em.cpp=?
-
-   what is the difference in there
-
    
-   
+*** augmenting network with virtual evidence
+
+    I know that I had already asked it... but don't find my
+    answer. why do we have two ways to enlarge the network with virtual
+    evidence?
+
+    one in the =merlin.cpp= and one in the =em.cpp=?
+
+    what is the difference in there
+
+*** What are locked Factors in the M-step?
+
+    there is the =m_lockedFactors= variable. Do not manage to properly
+    make sense of it. which factors should be locked in the M-step?
+
+    this is a variable of type =set= and you apply to it all of the
+    operations belonging to that class.
+
+    I guess that this is for some advanced method they used. but it
+    might as well be interesting to me as I might work with it at some
+    point.
+    
+*** ask radu if the em just works with cte inference method to this stage.
+*** what are m_families?
+
+    the argument there in the code is not the clearest.
+
+    ask to go over together to the piece of code in the em_init algorithm.
+*** where do you get if the observation is virtual or not
+
+    cannot understand it at the moment. 
+
+    #+BEGIN_SRC cpp 
+    if (obs.is_virtual()) {
+      virtualEvidence.push_back(obs); // note push_back is a function of the vector operator. it adds obs at the end of the vecctor. 
+    } 
+    #+END_SRC
+
+    there you get observations from om entries coming from
+    =m_dataset=. so there on =m_dataset= it must be somehow described
+    how you would use and work with virtual evidence. 
+    
 ** Reminder of c++
+
+*** Declaration of pointer
+
+    Note that there are two different things you can declare with the
+    =&= operator. You should not confuse these. They look similar but
+    are not.
+
+    On the one hand you have =references= on the other one you have
+    =pointers=.
+
+    These are not the same and should not be confused.
+
+    So on the one hand you have references. These are implemented as
+    follows:
+
+    So you have a reference to x.
+
+    #+BEGIN_SRC cpp :libs -std=c++11 -I./my_code_env/include
+    #include <iostream>
+
+    int main(){
+
+      float x = 10.7;
+
+      float& rx = x;
+
+      rx = 8;
+
+      printf("the value of the x is: %f ", x);
+
+      return 0;
+    }
+    #+END_SRC
+
+    #+RESULTS:
+    : the value of the x is: 8.000000
+
+    So you see that when you modify =rx= you are actually also
+    modifying =x=. This is the entire idea of reference. You have a
+    new variable referencing the other one.
+
+    Note then that there are other subtle things you can do. For
+    instance passing a reference with =const= such that you can just
+    read the referenced variable but you cannot write it itself.
+
+    See for instance the below that would yield an error.
+
+    #+BEGIN_SRC cpp :libs -std=c++11 -I./my_code_env/include
+    #include <iostream>
+
+    int main(){
+
+      float x = 10.7;
+
+      const float& rx = x;
+
+      rx = 8;
+
+      printf("the value of the x is: %f ", x);
+
+      return 0;
+    }
+    #+END_SRC
+
+    #+RESULTS:
+
+    But check that the following works:
+
+    #+BEGIN_SRC cpp :libs -std=c++11 -I./my_code_env/include
+    #include <iostream>
+
+    int main(){
+
+      float x = 10.7;
+
+      const float& rx = x;
+
+      x = 8;
+
+      printf("the value of the rx is: %f ", rx);
+
+      return 0;
+    }
+    #+END_SRC    
+
+    #+RESULTS:
+    : the value of the x is: 8.000000
+
+    Check at pointers next.
+    
+**** Importance of references in c++
+
+     Note that references are especially important in c++ as with it
+     you can specify arguments to pass to functions.
+
+     It is actually a fun idea. so you see that there is the
+     difference that you do not have to pass a variable do the
+     operations and *return* the object at the end of the function
+     with the performed operations and finally assign it again to the
+     memory. you save some operations in this sense.
+
+     See also the second benefit of passing by reference:
+
+     #+begin_quote
+     a function can use the reference parameter to return multiple values to the calling
+     function. Passing by value allows only one result as a return value, unless you
+     resort to using global variables
+     #+end_quote
+
+     Such that it is immediate to see why the above is especially
+     important that is straightforward. You can perform operations on
+     *Multiple values*
+     
+     Check for instance the following:
+
+    #+begin_src cpp
+    #include <iostream>
+
+    void test( float& a, float& b) { ++a; ++b;}
+
+    int main(){
+
+      float x = 10.7;
+
+      float y = 1.7;
+     
+      test(x, y);
+
+      printf("the value of the x, y is: %f, %f ", x, y);
+
+      return 0;
+    }
+    #+end_src
+
+    #+RESULTS:
+    | the value of the x | y is: 11.700000 | 2.7 |
+
+    So you see that the above is working as a charm and a is a
+    reference to x in the function.
+
+    Note that the return type of a function can also be a referenced
+    object.
+
+    Consider the following:
+
+    #+BEGIN_SRC cpp 
+string& message() // Reference!
+{
+static string str = "Today only cold cuts!";
+return str;
+}
+    #+END_SRC
+
+    Then it is immediate to understand that the above would create a
+    reference to a static string with the content defined above.
+
+    Then you can also make the referenced objects returned by a
+    function read only by passing the =const= operator in the
+    following way so to say:
+
+    #+begin_src cpp
+const string& message(); // Read-only
+    #+end_src
+
+    It is therefore clear and immediate that c++ as a language allows
+    you a much richer modeling set.
+
 
 *** Pointers and Addresses
 
-    The general syntax is the following:
+    So here is the syntax for defining pointers.
+
+    Recall that a pointer is an expression that represents both the
+    address and type of another object.
+
+    You can either note that creating the address operator =&= for a
+    *given object* creates a pointer to that object.
+
+    So you can for instance get the address of a defined =int var=
+    with the following: ~&var~.
+
+    A pointer points to a memory address and simultaneously /indicates
+    by its type/ how the memory address can be read or written to.
+
+    You can as well define /pointer variables/. This are used as
+    variables to store pointers references.
+
+    See for instance the following to understand this:
+
+    #+begin_src cpp
+    int *ptr; // or: int* ptr; // creates a variable to store a pointer to an int.
+    #+end_src
+
+    After declaring a pointer variable, you must point the pointer at
+    a memory address. The program on the opposite page does this using
+    the statement
+
+    #+BEGIN_SRC cpp 
+    ptr = &var;
+    #+END_SRC
+
+    So once you defined your pointers, as in the following, this is
+    generally the syntax you work with
+
+    #+BEGIN_SRC cpp
+    #include <iostream>
+
+    int main(){
+
+      double x, y, *px;
+
+      px = &x; // Let px point to x.
+      *px = 12.3; // Assign the value 12.3 to x
+      *px += 4.5; // Increment x by 4.5.
+
+      printf("the value of the x, px: %f, %f ", x, *px);
+
+      return 0;
+    }  
+    #+END_SRC
+
+    #+RESULTS:
+    | the value of the x | px: 16.800000 | 16.8 |
+
+    So you see that the way you operate with pointers and references
+    is the same. What changes is the fact the one is a distinct object
+    and the other is not.
+
+    Notice as well the following syntax for pointer declaration:
+
+    #+BEGIN_SRC cpp 
+    long *ptr;
+    #+END_SRC
+
+    The above essentially means: you create a pointer =ptr= pointing
+    to a =long*= i.e. an address with a long value. This is it essentially.
 
     [[file:images/Bildschirmfoto_2021-03-28_um_16.58.48.png]]
-
 
     Note that this is the difference among adress reference &variable
     and pointer. A pointer is a separate object. It can changes
@@ -133,7 +400,67 @@
     the function then but rather you point to the objects of interest
     in memory.
 
-   
+
+*** Passing by pointer - this is a third option apart from passing by reference and value.
+
+    The idea is the following:
+
+    you declare a function parameter to allow an address to be passed
+    to the function as an argument.
+
+    you can then do this as follows:
+
+    #+BEGIN_SRC cpp 
+#include <iostream>
+using namespace std;
+void swap( float *, float *); // Prototype of swap()
+
+int main()
+{
+
+ float x = 11.1F;
+ float y = 22.2F;
+
+ swap( &x, &y );
+
+ printf("value of x: %f \nvalue of y: %f", x,y);
+
+ return 0;
+
+} 
+
+void swap( float *p1, float *p2) // so notice that you pass a pointer
+				 // to x, and then this extract the
+				 // value in pointer syntax
+{
+ float temp; // Temporary variable
+ temp = *p1; // At the above call p1 points
+ *p1 = *p2; // to x and p2 to y.
+ *p2 = temp;
+}
+    #+END_SRC
+
+    #+RESULTS:
+    | value | of | x: | 22.200001 |
+    | value | of | y: |      11.1 |
+
+    So you can see that this is ultimately extremely close to the
+    reference idea in the way it works. It is just an added layer of
+    customizing and making your code more granular.    
+
+
+*** Diff point and references
+
+    References are similar to pointers: both refer to an object in
+    memory. However, a pointer is *not merely an alias* but an
+    *individual object that has an identity separate from the object* it
+    references.
+
+    A pointer has its own memory address and can be manipulated by
+    pointing it at a /new memory address/ and thus referencing a
+    different object.
+
+
 *** typedef
 
     this is a simple way to give a new name to your specified
@@ -347,6 +674,29 @@ return 0;
 
     #+RESULTS:
 
+    check at the initializer with =-1= and understand what this =-1=
+    is exactly doing:
+
+    #+BEGIN_SRC cpp
+   #include <vector>
+   #include <iostream>
+
+   int main(){
+
+      std::vector<int> hello(8, -1); // so notice that the second argument is the intializator number for the vector. 
+
+      std::cout << hello[2] << std::endl;
+
+      printf("check at the size of this vector: %d", hello[2]);
+
+      return 0;
+    }
+    #+END_SRC
+
+    #+RESULTS:
+    |    -1 |    |     |      |    |      |         |    |
+    | check | at | the | size | of | this | vector: | -1 |
+
 
 *** templates
 
@@ -367,8 +717,27 @@ return 0;
     #+END_SRC
 
     
-** CENTRAL TO UNDERSTAND - WORKING STRUCTURE - graphical_model
+*** some standard functions
 
+    #+begin_src cpp
+    std::copy(m_lockedFactors.begin(), m_lockedFactors.end(), 
+	    std::ostream_iterator<int>(std::cout, " "));
+    #+end_src
+
+    like this you pass each of the locked factors from begin to end to
+    the set to the ostream_iterator that would then cout these.
+    
+
+
+*** linker
+
+    puahh.. I recall that was messy. I have to ask again the pc to
+    martina to get back all of my notes and build on that. was quite
+    annoying with the linker stuff etc. 
+
+    
+** CENTRAL TO UNDERSTAND - WORKING STRUCTURE - graphical_model
+   
    from uai  variable create factors vector.
 
    fixup at the end: from factor creates nodes and edges. (creates the graph).
@@ -867,6 +1236,78 @@ void read(std::istream& is, bool positive_mode = false) {
       
 
 
+** TODO understand the em-algorithm
+
+   Note that for the algorithm you will need three components for
+   which you have to specify properties/ways:
+
+   - factor initialization
+
+   - inference algorithm
+
+   - m-algorithm (i.e. threshold for convergence , order etc.)
+
+   There are then three main functions in the code.
+
+   One for initializing the algorithm.
+
+   One for running the e-step.
+
+   One for running the m-step.
+
+   One for running the algorithm until convergence.
+
+   We will check all of them in turn next.
+
+   
+*** Run the Algorithm
+
+    So very easy. Just calls the two other methods sequentially and
+    stops when the algorithm converged.
+    
+*** Initialize the Algorithm
+
+    so at first checks at the missing and virtual evidence and count
+    how many observations of these are present as well as their share
+    amount.
+
+    then you check which factors are locked. so probably they already
+    started to work on something with locked factors.
+
+    then you initialize the CPTs. you can either do this via uniform
+    or random method.
+    
+    #+begin_src cpp
+    	// Initialize the CPTs uniformly at random
+	if (m_init_method == InitMethod::Uniform) {
+		m_gmo.uniform_bayes(m_lockedFactors);
+	} else if (m_init_method == InitMethod::Random){
+		m_gmo.random_bayes(m_lockedFactors);
+	}
+    #+end_src
+
+    so notice that this is exactly the step that you will be *required
+    to change*.
+
+    then there is a section about the initialization of the junction
+    tree.
+
+    then it follows a bayes net initialization phase. that is quite
+    interesting. it talks about families and that is a bit confusing
+    to me but I guess that there is where you initialize everything
+    together with the initialization of the CPTs above. 
+
+    
+    
+*** M-step
+
+    
+    
+*** E-step
+
+
+
+    
 ** General Notes
    
 *** Recall that in Pearls method the extended virtual node is always set to true.

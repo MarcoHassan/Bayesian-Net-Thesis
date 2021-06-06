@@ -102,9 +102,18 @@
    [[file:./images/strucutre.png]]
 
 
-** TODO ask radu
+
+** Solved Questions
+
+*** ask radu if the em just works with cte inference method to this stage.
+
+    exact inference algorithm. joint-tree.
+
+    in principle you can work with any inference algo - just have to
+    change the codebase. at the moment =cte= is hard-coded in the m-step.    
 
    
+
 *** augmenting network with virtual evidence
 
     I know that I had already asked it... but don't find my
@@ -114,6 +123,22 @@
     one in the =merlin.cpp= and one in the =em.cpp=?
 
     what is the difference in there
+
+    
+**** Answer
+
+     In =merlin.cpp= you extend via Pearl method cause that is the way
+     you operate for some inference tasks.
+
+     Note that then you will have a new set of factors defined on the
+     extended network that you will pass to the engine when making
+     inference.
+
+     When running the engine for the em-task you pass the original
+     network (see the ~merlin::em s(gm);~ command) and then you
+     augment for virtual evidence in case of need in the =em.cpp=
+     file.
+
 
 *** What are locked Factors in the M-step?
 
@@ -126,13 +151,37 @@
     I guess that this is for some advanced method they used. but it
     might as well be interesting to me as I might work with it at some
     point.
-    
-*** ask radu if the em just works with cte inference method to this stage.
-*** what are m_families?
 
-    the argument there in the code is not the clearest.
+**** Answer
 
-    ask to go over together to the piece of code in the em_init algorithm.
+     so yes; it is not needed as feature for the standard em with
+     virtual evidence. it was a requested feature that Radu added.
+
+***** IN-PROGRESS 
+     
+      check if you can leverage on it when performing probabilistic evidence
+
+     
+
+
+
+*** why when you run the em-engine are you calling
+
+    #+BEGIN_SRC cpp 
+e_step();
+m_step();
+    #+END_SRC
+
+    And not the opposite?
+
+    Like this there is convergence and you still update the parameters
+    one last time? Is it not a waste of time.
+
+    Ok so note that also in the book is done like this.
+
+    So apparently that is normal.
+
+
 *** where do you get if the observation is virtual or not
 
     cannot understand it at the moment. 
@@ -145,7 +194,86 @@
 
     there you get observations from om entries coming from
     =m_dataset=. so there on =m_dataset= it must be somehow described
-    how you would use and work with virtual evidence. 
+    how you would use and work with virtual evidence.
+    
+**** Solution
+
+     So understand that this is the mental workflow.
+
+     You have a =read_dataset= function in the =merlin.cpp=
+     file. There you parse the text file you get with the evidence.
+
+     Then the idea is to create a vector of *observations* and save
+     the records in there.
+
+     Notice now the idea of object oriented programming and
+     polymorphism. You specify an observation class where you can
+     instantiate different observation objects with different
+     constructors.
+
+     Then when parsing the file you either get values for the
+     realization or likelihood observations that you store in
+     respective vectors/variables.
+
+     Then you add to the observations vector passing either such value
+     or the likelihood. Depending on what you pass a different
+     constructor will be passed.
+
+     There in the constructor the variable =is_virtual= etc. is
+     initialized in the correct way depending on which constructor is
+     called. And you can then use this information when performing
+     your inference tasks. 
+
+
+*** Virtual evidence syntax
+
+    #+begin_example
+    [0.7;0.5],[0.1;0.4]
+    #+end_example
+
+   ~read_dataset~ function finds virtual evidence in the file and
+   writes it in likelihood vectors.
+   
+**** DONE 
+     CLOSED: [2021-06-06 Sun 10:50]
+
+    when you pass a likelihood vector to the constructor you virtual
+    evidence.
+
+    something like that go over it and understand.
+
+
+    
+      
+** TODO ask radu
+
+*** what are m_families?
+
+    so =m-families= list/ or set of nodes: node =x= and parents.
+
+    I am not sure that this is the case. I think it might also well be
+    the set of the variables present in each clique.
+
+**** TODO 
+
+     You will use this piece of info
+
+     #+BEGIN_SRC cpp 
+	size_t n = m_gmo.nvar();
+	const std::vector<factor>& factors = m_gmo.get_factors(); 
+	size_t m = factors.size();
+	m_families.resize(n);
+	m_counts.resize(m);
+     #+END_SRC
+
+     when computing the M-parameterization with ess. Check at it in
+     the code.
+
+     
+
+
+
+
     
 ** Reminder of c++
 
@@ -460,7 +588,7 @@ void swap( float *p1, float *p2) // so notice that you pass a pointer
     pointing it at a /new memory address/ and thus referencing a
     different object.
 
-
+    
 *** typedef
 
     this is a simple way to give a new name to your specified
@@ -736,7 +864,309 @@ return 0;
     annoying with the linker stuff etc. 
 
     
-** CENTRAL TO UNDERSTAND - WORKING STRUCTURE - graphical_model
+*** Macros
+
+    There is no big point for Macros to this stage. You can generally
+    think as them as global variables and functions. 
+
+    So I mean the point for it is normal. Nothing new.
+
+    You usually define a header file where you define all of the
+    Macros relevant for your program. Then you import the header to
+    the relevant scripts of your program.
+
+    [[file:~/Desktop/Screenshots/Bildschirmfoto 2021-06-01 um 10.19.00.png]]
+
+    Note that the Macros has benefit in the way they are operated by
+    the compiler. This goes low level and is not that interesting to
+    me at the moment.
+
+    Note that you can use with =conditional inclusion= when working
+    with Macros. The idea is to tell the compiler to just compile the
+    section if a the macro is defined...
+
+    #+begin_src cpp
+#ifdef name
+. . . // Block, which will be compiled
+// if name is defined.
+#endif
+    #+end_src
+
+    Note that you can also work with =#ifndef= there the idea is to
+    compile the source block up until the next =#endif= statement.
+
+    See for instance in this sense in Merlin the following strucutre
+
+    #+BEGIN_SRC cpp 
+/*
+ ,* util.h
+ ,*
+ ,*  Created on: 24 Mar 2015
+ ,*      Author: radu
+ ,*
+ ,* Copyright (c) 2015, International Business Machines Corporation
+ ,* and University of California Irvine. All rights reserved.
+ ,*
+ ,* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ ,* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ ,* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ ,* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ ,* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ ,* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ ,* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ ,* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ ,* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ ,* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ ,*/
+
+/// \file util.h
+/// \brief Various utilities
+/// \author Radu Marinescu radu.marinescu@ie.ibm.com
+
+
+#ifndef IBM_MERLIN_UTIL_H_
+#define IBM_MERLIN_UTIL_H_
+
+// code.....
+// code.....
+
+#endif // re-include
+    #+END_SRC
+
+
+    So I do not see exactly the point of why this is used. but
+    probably cause you might call this from multiple places in the
+    code such that it is just complied one time.
+
+    This is in fact what happens above as:
+
+    #+begin_quote
+    A symbol without a substitute text is often used to identify header files and avoid
+    multiple inclusion.
+    #+end_quote
+
+    
+*** Object Oriented Programming
+
+    This has a quite easy syntax. Think for instance to the following:
+
+    #+BEGIN_SRC cpp 
+// car.h: Definition of baseclass Car and
+// of the derived class PassCar
+// --------------------------------------------------
+#include <iostream>
+#include <string>
+using namespace std;
+class Car // Base class
+{
+
+private:
+
+  long nr;
+  string producer;
+
+public:
+  // Default Constructor:
+  Car( long n = 0L, const string& prod = "");
+
+  // Access methods:
+  long getNr(void) const { return nr; }
+  void setNr( long n ) { nr = n; }
+  const string& getProd() const{ return producer; }
+  void setProd(const string& p){ producer = p; }
+  void display( void ) const; // Display a car
+};
+
+class PassCar : public Car // Derived class
+{
+
+private:
+  string passCarType;
+  bool sunRoof;
+
+public:
+  // Constructor:
+  PassCar( const string& tp, bool sd,
+	   int n = 0 , const string& h = "");
+
+  // Access methods:
+  const string& getType() const{ return passCarType; }
+  void setType( const string s) { passCarType = s; }
+  bool getSunRoof() const { return sunRoof; }
+  void setSunRoof( bool b ) { sunRoof = b; }
+  void display() const;
+
+};
+    #+END_SRC
+
+    So you see the syntax. You have a function with the class name in
+    order to create the class.
+
+    Then you have simply functions; these are the methods of the
+    class. As long as they are in the public space they can be
+    accessed by the usual =.= notation.
+
+    Notice the following important characteristic of the derived
+    classes:
+
+    [[file:~/Desktop/Screenshots/Bildschirmfoto 2021-06-01 um 15.38.32.png]]
+
+    I.e. just the public methods are available in the derived class.
+
+    This ultimately means that methods belonging to derived classes
+    only have *indirect* access to the private data members of the base
+    class.
+
+    Note that then you can instantiate an object of a class and
+    perform operations on it via the following syntax:
+
+    #+BEGIN_SRC cpp 
+void PassCar::display( void) const{
+  cout << "\nCar number: "
+       << getNr();
+  cout << "\nProducer: "
+       << getProd();  // note that here you do not have to pass the object as being called from within a constructor what this actually evaluates to is with pointer syntax this->getProd()
+  cout << "Type: "<< passCarType;  
+  cout << "Type: "<< passCarTyp
+    if( sunRoof) cout << "yes";
+    else cout << " no";
+  cout << endl;
+}  
+#+END_SRC
+
+
+*** Name Lookup
+
+    This are general questions you should know the answer for. Last
+    time at the interview you were tricked by it.
+
+    When the compiler finds a function as the =getProd()= above, the
+    usual way to evaluate it is the following:
+
+    - the compiler looks for the name of the method called in the derived class first
+
+    - if the name cannot be found, the compiler walks one step up the
+      tree and looks for a public method with that name.
+
+    This has important consequences, as when defining a derived class
+    you can overwrite some methods.
+
+    if a member is redefined in a derived class, it will mask the
+    corresponding member in the base class.
+
+    
+*** Overloading 
+    
+    Note that you can have multiple methods with the same name but
+    different arguments. Such that you can keep redefining within the
+    same class.
+
+    This is termed /overloading/.
+
+    Even if you have redefined a method in a derived class, you can
+    still call the method in the parent class calling:
+    =bas_class::derived_class();=
+
+    This in the code for a derived class object.
+
+    
+*** Object initialization
+
+    Notice that in the classes above you have specified default
+    constructors. You can however specify other constructors.
+
+    The constructor of a derived class is required to create an object
+    of the derived class type.
+
+    To initialize a constructor for the derived class you must
+    pass all of the elements necessary to construct an object of the
+    derived class. In this case the two =strings=, one =bool= and one
+    =int=.
+
+    #+BEGIN_SRC cpp 
+// first version
+
+PassCar::PassCar(const string& tp, bool sr, int n,
+const string& hs) /// so notice there that you have to pass everything.
+{
+ // here implicitly the default constructor is called //
+
+ // then you specify the arguments for your class as follows //
+ setNr(n); // Initial values for data
+ setProd(hs); // members of the base class.
+
+ passCarType = tp; // Initial values for data memsunRoof = sr; // bers of the derived class
+}
+    #+END_SRC
+
+    Notice that the above is not the usual recommended method.
+
+    This because of the following. The *default constructor* must be
+    available in the base class. Moreover, initialization with
+    incorrect values /before assigning live values/ impacts the response
+    of the program. I.e. you might get errors in that phase.
+
+    In this sense a better initialization method is the following
+
+#+BEGIN_SRC cpp 
+// Second version of the constructors of PassCar
+// ----------------------------------------------------
+PassCar::PassCar(const string& tp, bool sr, int n,
+const string& hs) : Car( n, hs) // so notice that this is how you define the initialization of an object
+{
+passCarType = tp; // Initial values for data memsunRoof = sr; // bers of the derived class
+}
+#+END_SRC
+
+    Note that the third way to initialize an object via a class is
+    with the following syntax:
+
+    #+BEGIN_SRC cpp 
+// Third version of the constructor of PassCar
+// ----------------------------------------------------
+PassCar::PassCar(const string& tp, bool sr, int n,
+const string& hs)
+: Car( n, hs), passCarType( tp ), sunRoof( sr ) // so notice the
+						// syntax. with a
+						// comma separed
+						// values and taking
+						// the arguments from
+						// the first object
+{
+// There remains nothing to do
+}
+    #+END_SRC
+
+    #+RESULTS:
+
+    The only thing that you have to understand is that you start
+    creating an object passing all of the arguments necessary for the
+    base class constructor and then you expand from this core
+    outwards.
+
+    Note that in a similar way when the an object is destroyed, the
+    destructor of the derived class is first called, followed by the
+    destructor of the base class. The reverse order of the constructor
+    calls applies.
+
+    Notice the power of =C++= and =Java= with their type declared
+    variables. With such constructors defined in the =car.h= file you
+    can then instantiate object, for instance as =const=. In such a
+    way you might just be able to call reading methods for the
+    objects. But when calling methods trying to modify the object you
+    get errors.
+    
+
+*** Calling Redefined Methods
+
+    Note that when calling a redefined method, defined in multiple
+    classes, you would actually access the method of the class the
+    object belongs to.
+
+    Nothing new in this sense and makes totally sense.
+
+
+** Central TO UNDERSTAND - WORKING STRUCTURE - graphical_model
    
    from uai  variable create factors vector.
 
@@ -1128,6 +1558,7 @@ bool Merlin::read_hyperparameters(const char* filename) {
    node(?). Check at the theory again. And understand what you have to
    use.
    
+
 *** TODO define the structure of such a file
    
 
@@ -1231,12 +1662,16 @@ void read(std::istream& is, bool positive_mode = false) {
    Then basically do the same structure for passing the
    hyperparameters.
 
-   Then just adapt m-step and boom! You are good to go. 
-   
-      
+   Then just adapt m-step and boom! You are good to go.
+
+   Ok. in this sense; check at the read_dataset function in merlin.
+
+   You can borrow from that. I.e. split by comma and store everything
+   to a vector.
 
 
-** TODO understand the em-algorithm
+** DONE understand the em-algorithm
+   CLOSED: [2021-06-06 Sun 11:19]
 
    Note that for the algorithm you will need three components for
    which you have to specify properties/ways:
@@ -1261,10 +1696,24 @@ void read(std::istream& is, bool positive_mode = false) {
 
    
 *** Run the Algorithm
+    :properties:
+    :custom_id: run_algo
+    :end:
 
     So very easy. Just calls the two other methods sequentially and
     stops when the algorithm converged.
+
+    Note that the stopping criteria is given by the improvement in the
+    log-likelihood.
+
+    You have to find such likelihood. There is in the e-step. Not in
+    the m-step. Makes sense.
+
+    So that the idea is this one in general. You run the inference
+    engine and get the likelihood of your network. You compute the
+    optimal parameters and iterate.
     
+
 *** Initialize the Algorithm
 
     so at first checks at the missing and virtual evidence and count
@@ -1296,14 +1745,77 @@ void read(std::istream& is, bool positive_mode = false) {
     interesting. it talks about families and that is a bit confusing
     to me but I guess that there is where you initialize everything
     together with the initialization of the CPTs above. 
-
-    
     
 *** M-step
 
+    To my understanding the key of the the M-step is in the following
+    one-liner.
+
+    #+BEGIN_SRC cpp 
+    m_infer.reinit(m_gmo.get_factors());
+    #+END_SRC
+
+    The idea is that such a function specified by argument as
+    reference such that when you call such a function you reinit and
+    get the new factors according to the cte algorithm.
+
+    Given such new factors you can then get the new parameters.
     
-    
+**** DONE Understand map from expected sufficient statistics to marginal of the factors.
+     CLOSED: [2021-06-05 Sat 20:38]
+
+     I think that the issue why you do not see the counts when
+     computing the new evidence comes from the following comment:
+
+     #+begin_example
+     // Counts factors must be aligned to the theta factors (by construction)
+     #+end_example
+
+     BUT THAT JUST COUNTS FOR MULTINOMIAL BY CONSTRUCTION - FOR OTHERS
+     YOU MIGHT NEED TO ADJUST THAT COUNT.
+     
+     So you have to understand that in order to understand how the new
+     thetas are parameterized. Otherwise you will always miss a piece
+     of evidence.
+
+     Note that this link must in fact exists. Check for instance at
+     the following in the e-step:
+
+     #+BEGIN_SRC cpp 
+     m_counts[i] += m_infer.get_joint_marginal();
+     #+END_SRC
+
+     Such that there must exist a clear relation among the
+     joint-marginal and the counts.
+
+***** Solution
+
+      Note that this is the case as we showed that in the case of
+      simple multinomial CPD the sufficient statistics corresponds to
+      the probability distribution.
+
+      In this sense you get the joint marginal and the marginal
+      arguments with the evidence and the scope are passed in the
+      previous line:
+
+
+      #+BEGIN_SRC cpp 
+      for (size_t i = 0; i < m_counts.size(); ++i) {
+	variable_set vs = m_counts[i].vars();
+	temp.joint_marginal(vs, evidence); // so here is where you pass the conditioning variables and get the necessary conditional probabilities
+      #+END_SRC
+
+      Check at your thesis text to see that - equation 38.
+
+      So that is basically it. 
+
 *** E-step
+
+    
+
+    
+
+    
 
 
 

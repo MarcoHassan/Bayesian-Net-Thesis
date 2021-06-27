@@ -1,4 +1,4 @@
-% Created 2021-05-27 Thu 11:00
+% Created 2021-06-05 Sat 16:12
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -76,7 +76,7 @@
 \newpage
 
 \section{Bayesian Networks - Overview and Manuscript Outline}
-\label{sec:org7e3ffb3}
+\label{sec:org792afab}
 
 
 Probabilistic models based on directed acyclic graphs (DAGs) have
@@ -133,7 +133,7 @@ rigorous definition of the different types of uncertain evidence
 from which we will expand on.
 
 \subsection{Bayesian Networks - Formal Definition}
-\label{sec:org5b7fcc3}
+\label{sec:org5ec6716}
 Before starting to dig into the material we provide a general
 definition of a Bayesian Network as in \cite{pearl2011bayesian}.
 
@@ -244,7 +244,7 @@ We turn next to a formal definition of evidence and especially of
 research presented in this manuscript.
 
 \subsection{Types of Evidence}
-\label{sec:orgc3f99c9}
+\label{sec:org6195d13}
 
 The most basic case of evidence is the one of complete
 evidence. This occurs when we are provided with complete
@@ -613,7 +613,7 @@ possible anymore to perform local operations for coming to a global
 solution.
 
 \section{On Missing Evidence}
-\label{sec:org359e9ba}
+\label{sec:org1634efa}
 
 In the case of missing evidence we have two types of findings for
 the random variables in our network \(G(\mathscr{V}, \mathscr{X})\).
@@ -716,7 +716,7 @@ case of missing data, the topic we will address in the next
 section.
 
 \subsection{On the Observed Variables Likelihood under Missing Data}
-\label{sec:orgf7e928a}
+\label{sec:org5b054a3}
 
 This section sets the focus on the likelihood of the observed data
 in the case of missing evidence.
@@ -881,7 +881,7 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsubsection{The Expectation Step}
-\label{sec:orgd7beb1d}
+\label{sec:org3ae842f}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -908,7 +908,7 @@ interpret the E-step as the step involving the maximization of the
 energy functional along the Q coordinate.
 
 \subsubsection{The Maximization Step}
-\label{sec:orgc3b5028}
+\label{sec:org731e7a7}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -930,7 +930,7 @@ optimized such that it increases it follows from proposition
 log-likelihood increases such that theorem \ref{thm:one} is proved.
 
 \subsection{An Exponential Family Example}
-\label{sec:orgf655205}
+\label{sec:org6307bf3}
 
 This section provides an application of theory presented above for
 the general case of exponential families. The idea is to
@@ -1302,7 +1302,7 @@ maximizing the score map of \ref{eq:bayes_map2}. This will be the main
 exercise of the next section.
 
 \subsubsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:org984e507}
+\label{sec:org110e59e}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -1465,7 +1465,7 @@ a posteriori point estimate and we will choose a local maximum
 point estimator for the likelihood of the observed data.
 
 \subsubsection{Bayesian Parameter Learning - An Exponential Family Generalization}
-\label{sec:orgf0a8d89}
+\label{sec:orge331dad}
 
 This section generalizes the exercise of the above section for
 general exponential family distributions. As discussed in
@@ -1523,7 +1523,7 @@ and prior distributions, such that a rich modeling set is
 available and easily implementable in statistical software.
 
 \section{On Likelihood Evidence}
-\label{sec:orgcee63cf}
+\label{sec:org1528d97}
 
 Recall that as defined in \cite{Mrad_2015} in likelihood evidence an
 observation is uncertain due to unreliable source of information.
@@ -1566,7 +1566,7 @@ of parameter learning under likelihood evidence describing the
 approach proposed in \cite{Wasserkrug_all}.
 
 \subsection{Adjusted EM - Likelihood Evidence}
-\label{sec:orgd4cc9dd}
+\label{sec:org7931aed}
 
 One of the most widespread ways to deal with likelihood evidence
 was introduced by \cite{pearl2014probabilistic}. The idea is to
@@ -1769,7 +1769,7 @@ it is possible to perform MAP estimation in Bayesian settings.
 \newpage
 
 \subsection{Bayesian Learning MAP - Adjusted EM for Likelihood Evidence}
-\label{sec:org282a8a7}
+\label{sec:orgec2a612}
 
 The idea of this section is to extend \ref{alg:EM-Likelihood} in
 order to obtain the MAP estimator in a Bayesian Learning setting
@@ -1817,7 +1817,7 @@ for the MAP estimator.
 
 
 \section{On Probabilistic Evidence}
-\label{sec:orgf2153dd}
+\label{sec:org9599df3}
 
 In the previous chapter we showed how it is possible to rephrase a
 likelihood evidence as an hard evidence by means of augmenting the
@@ -2093,7 +2093,7 @@ discussed in \cite{PENG_2010}, which you could then plug-in
 
 
 \section{On Numerical EM}
-\label{sec:org6672d51}
+\label{sec:org231d7fd}
 
 As argued in the previous section when working with conjugate prior
 we might easily get to closed form solutions for the maximum of the
@@ -2132,7 +2132,7 @@ dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
 \subsection{Numerical EM for MLE estimator}
-\label{sec:org059d778}
+\label{sec:orgd08eef9}
 
 In order to understand how to compute M-step according to an
 iterative method, think at the following.
@@ -2202,7 +2202,7 @@ for our solution. In that case the EM theory would collapse and
 there is no guarantee to reach a local maximum.
 
 \subsection{Numerical EM for MAP estimator}
-\label{sec:org8ea1958}
+\label{sec:orgc1ce490}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -2236,7 +2236,7 @@ need now to account for the prior distribution influence.
 
 
 \subsection{How to compute the numerical Hessian and Gradient}
-\label{sec:orgb5c0665}
+\label{sec:org820a6ce}
 
 This section concludes the chapter on Bayesian Parameter Learning
 by substituting the M-step of \ref{alg:Bayes-EM-Likelihood}, by a
@@ -2270,13 +2270,13 @@ analytical derivation of the maximum in the M-step.
 
 
 \subsubsection{{\bfseries\sffamily TODO} formulate the things in the paper below}
-\label{sec:orgfbeff0c}
+\label{sec:org110a2ca}
 
 and incorporate them in the algo above.
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} define how you compute such numerical derivative.
-\label{sec:org813c598}
+\label{sec:org4e9c39d}
 
 note that you must have the guarantee of positive definite so that
 you move towards the maximum despite working with an approximate
@@ -2289,7 +2289,7 @@ wow. so you thought well.
 
 
 \item {\bfseries\sffamily TODO} note that the above Q terms are nothing else than the expected score and expected fisher information
-\label{sec:org62aef04}
+\label{sec:org1ba1120}
 
 good paper in \href{https://arxiv.org/pdf/1608.01734.pdf}{this sense}.
 
@@ -2302,7 +2302,7 @@ incorporate everything in the next step.
 
 
 \section{Empirical Results}
-\label{sec:org93af4f5}
+\label{sec:org81c02cb}
 
 
 
@@ -2311,19 +2311,19 @@ incorporate everything in the next step.
 
 
 \section{TODOs}
-\label{sec:orgaadf751}
+\label{sec:org46aa4d5}
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
-\label{sec:org35c1653}
+\label{sec:org41bf692}
 \item {\bfseries\sffamily TODO} note that network structure G(V,X) how you described. Correct later
-\label{sec:orgfdffe59}
+\label{sec:org69d69b6}
 \item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
-\label{sec:orgb365d6b}
+\label{sec:org9bec13a}
 \item {\bfseries\sffamily TODO} note that the EM you loose global decomposition such that at the end with the local maxima of CPDs achieved by EM you ultimately just get a local maximum.
-\label{sec:orgd8001b2}
+\label{sec:org08c1856}
 \item {\bfseries\sffamily TODO} for last section - check at the following chapter.
-\label{sec:org7fd180e}
+\label{sec:orgb16bb45}
 
 Concept: Representation Independence - in chapter 17 of the
 koller book. this is central as if that breaks apart the entire
@@ -2333,16 +2333,16 @@ thesis fall apart.
 you should therefore be careful with it.
 
 \item {\bfseries\sffamily TODO} check chapter 17 for making the point below
-\label{sec:orgd5126f4}
+\label{sec:org530287a}
 
 say at the end that the entire theory does not hold for locally
 shared and globally shared network parameters. there you would
 have to adjust the entire thing
 
 \item {\bfseries\sffamily TODO} have to insert as well as the sigma as parameter for the ess map in the exercise above
-\label{sec:orgcad9c9a}
+\label{sec:orgb0f5337}
 \item {\bfseries\sffamily TODO} REASON ON HOW JEFFERY's method can work with the EM algorithm
-\label{sec:org5ab5877}
+\label{sec:org087e976}
 
 \newpage
 

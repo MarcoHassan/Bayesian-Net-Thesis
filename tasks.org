@@ -57,12 +57,19 @@
     
 **** TODO start with the probabilistic evidence. there you have to change the smallest amount of things
 
-     
+*** TODO integrate the read evidence in the CLI interface.
+
+    start to do this for next week. the logic of the thing is
+    specified.
+
+    also augment the M-step with your derived solution.
+         
 ** TODO consider to put theorems in the theory and work from there in iterative loops
 
 ** TODO consider splitting numerical reasoning on separate chapter.
 
    would make much more order in the general section.
+
 
 ** WAITING other possible generalizations
    
@@ -124,8 +131,6 @@
     with the exponential family. this is already very straightforward
     in the book and a generalization with a conjugate prior should be
     of no difficulty.
-
-    
 
 
 ***** DONE Look at chapter 8.5.2 often referred in that section

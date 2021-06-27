@@ -103,6 +103,7 @@
 
 
 
+
 ** Solved Questions
 
 *** ask radu if the em just works with cte inference method to this stage.
@@ -269,13 +270,10 @@ m_step();
      when computing the M-parameterization with ess. Check at it in
      the code.
 
-     
 
 
-
-
-    
-** Reminder of c++
+* Reminder of c++
+  
 
 *** Declaration of pointer
 
@@ -443,7 +441,6 @@ const string& message(); // Read-only
     It is therefore clear and immediate that c++ as a language allows
     you a much richer modeling set.
 
-
 *** Pointers and Addresses
 
     So here is the syntax for defining pointers.
@@ -470,8 +467,7 @@ const string& message(); // Read-only
     #+end_src
 
     After declaring a pointer variable, you must point the pointer at
-    a memory address. The program on the opposite page does this using
-    the statement
+    a memory address. You can do that in the following way:
 
     #+BEGIN_SRC cpp 
     ptr = &var;
@@ -1156,7 +1152,6 @@ const string& hs)
     objects. But when calling methods trying to modify the object you
     get errors.
     
-
 *** Calling Redefined Methods
 
     Note that when calling a redefined method, defined in multiple
@@ -1165,20 +1160,110 @@ const string& hs)
 
     Nothing new in this sense and makes totally sense.
 
+*** Implicit Conversion among Objects
 
-** Central TO UNDERSTAND - WORKING STRUCTURE - graphical_model
-   
-   from uai  variable create factors vector.
+    Note that when you have objects of derived classes you have
+    implicitly defined the characteristic of the object belonging to
+    the base class - so to say.
 
-   fixup at the end: from factor creates nodes and edges. (creates the graph).
+    In this sense it is interesting that you can define methods that
+    access the base object from an object instantiated from the
+    derived class.
 
-   you will not be worked with graph - you work with list of factors
-   now.
+    Think for instance to the following strucutre:
 
-   so here there is the entire flow: from uai to graphical models to
-   factors. here are also all of the functions to add factors, remove
-   factors etc.
+    [[file:~/Desktop/Screenshots/Bildschirmfoto_2021-06-08_um_18.12.49.png]]
 
+    This is a very interesting use case in that the above allows you
+    to access an object of base class from an object of the derived
+    class.
+
+    So given this possibility the question is /when the conversion
+    takes place/?
+
+    And basically there are the following cases where the conversion
+    takes place:
+
+    - when you assign derived objects to baseclass objects
+
+    - pointers and references *to the base class*
+
+    You can see an example in the picture above. There you see that
+    you pass by reference as in the image above is the following: you
+    are in fact creating a reference to a in the form of an object of
+    base class. And note that the above works well even in the
+    arguments of a function - but recall in this sense the peculiarity
+    of c++ when you pass objects in there. 
+
+    The other mentioned possibility is the one of assigning directly
+    to an object of the base class. Think for instance to the
+    following:
+
+    #+BEGIN_SRC cpp 
+Car auto;
+PassCar bmw("520i", true, 4325, // derived class
+"Bayerische Motorenwerke");
+auto = bmw;  // convert derived class object to base class object
+    #+END_SRC
+
+    The last method - the one of pointer is the more annoying.
+
+    There the idea is to pass the address of derived class object and
+    set a pointer of *base class* to it.
+
+    Then through such a pointer you will just be able to access base
+    class methods with that weird arrow =->= notation.
+
+    Check the following to understand properly:
+
+    #+BEGIN_SRC cpp 
+Car* carPtr = &cabrio;  // cabrio object of derived class
+
+carPtr -> display(); // display method of base class.
+
+carPtr->setSunRoof(false); // Error; method of derived class. cannot be accessed.
+
+// Note that the following is also an error
+PassCar auto; // derived class
+auto = *carPtr; // Error! Pointer to derived object; true. But of **Base** class
+    #+END_SRC
+
+    It is also possible to downcast. However this is not
+    recommended. *Avoid it*.
+
+    There you have to make the casting explicitly. Check at it online
+    in case of interest.
+
+
+** TODO Finish the two tomorrow    
+    
+
+*** Polymorphism
+
+    That is plenty in this project is the idea that depending on the
+    method arguments (with possible overloading) the method performs
+    different tasks.
+
+    Come from greek /multiform/. so the idea is that you specify in a
+    class higher in the hierarchy a virtual method. You specify the
+    method but you do not specify the actual implementation of
+    it. I.e. you do not go in the implementation of it but rather keep
+    it open. I.e. you specify that for this general class category
+    such method must exist but you do not specify a particular
+    functional form of it as not being possible. Think for instance at
+    the classical example of the =area= of a general class =shape=. Of
+    course it is not possible to provide a functional form to the
+    =area= of a =shape= as being the latter an abstraction. 
+
+    Then, how you work when working through polymorphism is by
+    guaranteeing that the derived classes from the class implementing
+    the virtual method specify an exact execution for such virtual
+    method.
+
+*** Data Abstraction
+
+    Here the idea is to create a class describing the objects.
+    
 
 ** understand how you pass structure and evidence
    
@@ -1198,6 +1283,8 @@ const string& hs)
 
    so the meat is all here:
    
+
+
 
 *** uai format
     :LOGBOOK:
@@ -1273,6 +1360,8 @@ BAYES                 // first line always specify the type of graphical model: 
 // [x_5 = 0, x_4 = 1, x_2 = 1]
 // [x_5 = 1, x_4 = 1, x_2 = 1]
 
+// so you see LittleEndian = least significant variable changes the fastest.
+
 8
  0.9 0.1 0.8 0.2 0.7 0.3 0.1 0.9
 
@@ -1290,79 +1379,8 @@ BAYES                 // first line always specify the type of graphical model: 
     #+end_example
 
 
-*** .uai structure is important for developing the graph and pass it along.
-
-    Note that factors are general function mapping from a domain of
-    variables (D) to the real numbers. It is therefore a general
-    function but it is used in our sense as a map from network
-    variables to probability functions. (usually - i.e. if the order is
-    meaningful in the sense that the multiplication of factors follows
-    the conditional independence structure and factors represent ).
-
- ///
- /// \brief Factor for graphical models.
- ///
- /// Table based representation of a factor for graphical models. A 
- /// factor encodes a potential (sometimes a probability distribution)
- /// defined over a subset of discrete random variables, called a *scope*, and 
- /// associates each configuration of the variables in the scope with a 
- /// positive real value (sometimes a probability value). The scope is assumed
- /// to be sorted lexicogaphically (e.g., [x1,x2,x3]) Also, the indexing of
- /// configurations in the factor table is assumed to be based on the BigEndian
- /// convention, namely the *first* variable in the ordered scope changes
- /// the fastest, then the *second* variable changes its value and so on.
- /// For example, consider a factor over binary variables [x1,x2,x3].
- /// The corresponding factor table is indexed as follows (internally):
- ///
- /// 0: [0,0,0]    4: [0,0,1]
- /// 1: [1,0,0]    5: [1,0,1]
- /// 2: [0,1,0]    6: [0,1,1]
- /// 3: [1,1,0]    7: [1,1,1]
-
-    factor logic and indexing is different from the =.uai= representation
-    and this is described above.
-
-    Note that it is important this piece of code:
-
-    #+begin_example
-   The scope is assumed to be sorted lexicogaphically (e.g., [x1,x2,x3])
-    #+end_example
-
-    Also, the indexing of configurations in the factor table is assumed to
-    be based on the BigEndian, namely the *first* variable in the ordered
-    scope changes the fastest, then the *second* variable changes its
-    value and so on.
-
-    I.e. for each factor you have a /factor table/ that maps your Val(D)
-    to real line. In this table there are all of the possible combinations
-    of Val(D). The question is then on how you keep record of these and
-    the solution is the BigEndian notation.
-
-    There is a function *convert_index*  - maybe not a function have to
-    understand that tomorrow. the syntax is not the one of a
-    function.
-   
-    These are in fact both classes that are defined in this file
-    [[file:merlin/include/index.h]].
-
-    So notice that this conversion is done because of the following
-    reason:
-
-    #+begin_example
-   // BigEndian assumes that the first variable changes the fastest
-   // UAI input is assumed to follow the LittleEndian convention, whereas
-   // the internal representation of the factors assume BigEndian.
-    #+end_example
-
-**** Note that in the factor header also all of the functions for factor summation, entropy etc. are defined.
-
-
-
-    
-    
-
-    
-*** TODO understand the big-endian to little endian trasformation in the c++ document.
+*** DONE understand the big-endian to little endian trasformation in the c++ document.
+    CLOSED: [2021-06-26 Sat 15:15]
     :LOGBOOK:
     CLOCK: [2021-05-29 Sat 15:03]--[2021-05-29 Sat 15:28] =>  0:25
     :END:
@@ -1381,7 +1399,6 @@ BAYES                 // first line always specify the type of graphical model: 
     (i) start from the em algorithm.. understand all of the sequence
     of functions that are called. understand just that code and forget
     about the rest. use a reverse engineering technique in this sense.
-
 
 *** .evid
 
@@ -1435,8 +1452,6 @@ BAYES                 // first line always specify the type of graphical model: 
     this is in fact how it works. with the new_thetas. in the em
     algorithm that you compute and then pass to a new graphical_model
     object instantiation.
-    
-
 
 *** training data
 
@@ -1444,10 +1459,6 @@ BAYES                 // first line always specify the type of graphical model: 
 
     evid files used for inference. train for parmaters.
 
-
-
-
-   
 ** Parameter for the algorithm
 
       #+begin_example
@@ -1464,13 +1475,17 @@ BAYES                 // first line always specify the type of graphical model: 
    - he has a stopping criteria check at each iteration.
    
      
+
 ** wmb bucket
 
-   best approximate inference algorithm.
+   best approximate inference algorithm. notice however that
+   approximate inference algorithms were not implemented in the =em=
+   algorithm code-base. 
+
 
 
 ** note that factors are key not graphs 
-
+   
    he said that the graph representation in the code is there but is
    not actually used.
 
@@ -1481,61 +1496,170 @@ BAYES                 // first line always specify the type of graphical model: 
    interpretation there. check at this file [[file:merlin/include/factor.h]]
 
 
+* Hyperparameters
 
-** General function for hyperparameters
-   :properties:
-   :hearder-args:cpp: :session hello
-   :end:
+** General idea
 
-   Note that like this it works. You can save functions in headers and
-   get them from there by specifying the =-I= option.
+   I decided to save the input of the hyperparameters in a =.prio=
+   file.
 
-   #+begin_src cpp :libs -std=c++11 -I./my_code_env/include
-#include <vector>
-#include <iostream>
+   There you will have to specify the hyperparameters for each
+   node.
+   
+*** Hyperparameters Considerations
+
+    yes you need a hyperparameter for each parameter.
+
+    so what you need is the number of parameters in your network.
+
+    Check at the general structure for the /uai file/.
+
+    So it is generally correct; there you pass the parameters of the
+    network. think for instance to the many applications where you
+    would not require to estimate the parameters but these are taken
+    as given.
+
+    So take the exact same structure and replace the parameters with
+    the hyperparameters. Keep the same mapping and structure of the
+    =.uai= files. That should help you as well as somewhere it must
+    hold that.
+
+    An example for the structure is given in [[file:merlin/data/cancer.prio][here]]
+    
+**** IN-PROGRESS How should you set hyperparameters
+
+     check at the book. there is a theory behind that.
+
+     Should be hyper-observations in any case for the case of
+     multinomial-dirichlet distribution. So work with integers. Lower
+     integers -> less weight on priors and more easy for current data
+     to change and influence the posterior.
+
+*** So think for instance at the following 0.1 example of the hyperparameters text file
+
+    #+begin_example
+BAYES
+5
+2 2 2 2 2
+5
+1 0
+2 0 1
+2 0 2
+3 2 1 3
+2 2 4
+
+2
+ 1 1
+
+4
+ 1 1
+ 1 1
+
+4
+ 1 1
+ 1 1
+
+8
+ 1 1
+ 1 1
+ 1 1
+ 1 1
+
+4
+ 1 1
+ 1 1
+    #+end_example
+
+    So it is immediate to see from the above that in the following way
+    you have for the expectation of any theta in the network:
+
+    $$ E(\theta_{x_i| u_j}) = \frac{\alpha_k}{\sum_k \alpha_k} $$
+
+    And in the specific case 1/#param.
+
+    Now check at the next section to implement the reading function of
+    the hyperparameters.
+ 
+*** OUTDATED - Otherwise you can also set it at parameter at the beginning
+    CLOSED: [2021-06-21 Mon 15:19]
+
+    See for instance the =set_init_factor_method= function in the
+    =merlin.cpp= file.
+
+    And also all of the other parameters that you set when running the
+    merlin engine.
+
+    See =main.cpp=.
+
+    Nonetheless, I think it makes better sense to focus on the file
+    solution as there might be quite some parameters if you need
+    hyperparameters for each node.
+   
 
 
-#include "hello.h"
 
-int main(){
 
-  std::vector<int> input = { 1, 2, 3, 4, 5 };
+* Reading Process
 
-  // so it is correct yourename the variable later
-  input = { 1, 2, 3, 4, 5, 6, 7, 8 };  
-  
-  print(input);
+** Central TO UNDERSTAND - WORKING STRUCTURE - graphical_model
+   
+   from uai  variable create factors vector.
 
-  return 0;    
-}
-   #+end_src   
+   fixup at the end: from factor creates nodes and edges. (creates the graph).
 
-   #+RESULTS:
-   : 1 2 3 4 5 6 7 8
+   you will not be worked with graph - you work with list of factors
+   now.
 
-   So that is basically it now you have to embed it in the code. This
-   would be a vector containing the prior hyperparameters, starting
-   with the bayesian learning MAP estimator.
+   so here there is the entire flow: from uai to graphical models to
+   factors. here are also all of the functions to add factors, remove
+   factors etc.
 
-   Following the syntax of the code base you should write a function
-   of the following shape
+*** DONE find this exact workflow in the tree. would help you in developing everything
+    CLOSED: [2021-06-21 Mon 14:51]
 
-   #+begin_src cpp
-bool Merlin::read_hyperparameters(const char* filename) {
+    i.e. where is the =uai= file read in the code?
+
+    I believe that you read the =uai= in the =read_dataset= class. It
+    is not that clear nonetheless. where is this function actually
+    used?
+    
+**** Notes
+
+     Note that the reading structure is defined in the
+     =graphical_model.h= file.
+
+     There you read a graphical model from an *iostream*. There you
+     work with the exact =uai= file structure. So you have to work
+     with it.
+
+     So the music for reading the model is in here. With the
+     =read_dataset= function in the merlin engine, you in fact call
+     the =read= method specified in the graphical model header.
+
+     This occurs in fact in here:
+
+     #+BEGIN_SRC cpp 
+bool Merlin::read_model(std::string model) {
 	try {
-
 		// Read the graphical model
-		m_filename = std::string(filename);
-		std::ifstream is(filename);
-		if (is.fail()) {
-			std::string err_msg("Cannot open the input file: ");
-			err_msg += std::string(filename);
-			throw std::runtime_error(err_msg);
-		}
-		
+	  int id = merlin::randi(12345678);
+	  std::stringstream ss;
+	  ss << "model-" << id << ".uai";
+	  m_filename = ss.str();
+	  std::istringstream is(model); // here you open a stream to the text file. 
+	  if (is.fail()) {
+	    std::string err_msg("Cannot open the input model string");
+	    throw std::runtime_error(err_msg);
+	  }
 
-                // have to specify and read the input out of the .txt file
-		// std::vector<int> input = { 1, 2, 3, 4, 5 };
+	  merlin::graphical_model gm;
+		gm.read(is, m_positive); // here you actually save and read the graphical model.
+
+		// Clear any previous graphical model
+		clear();
+
+		// Store the original graphical model (without evidence)
+		m_gmo = gm.clone();
 
 		return true;
 	} catch (const std::runtime_error& e) {
@@ -1543,41 +1667,229 @@ bool Merlin::read_hyperparameters(const char* filename) {
 		return false;
 	}
 }
-   #+end_src
+     #+END_SRC
 
-   Then adapt the M-step. Keep everything equal. Just use a different
-   function for the maximization step.
+     Note moreover that in the graphical model read function there is
+     this conversion from =littleEndian= to =BigEndian=.
+
+     Note that the difference is in the way the factors values are
+     mapped to the variables. In the =littleEndian= notation the least
+     significant variables (defined as the last variable specified
+     when mapping the variables to the factor scope in the "first
+     section" of the =uai= file. And in the =bigEndian= it is the
+     exact opposite. Make tests to see if that is the case and
+     matches.
+     
+     See in the specific the following bit of code for performing the
+     transformation:
+
+     #+BEGIN_SRC cpp 
+// Read the factor tables (ensure conversion to ordered scopes)
+double fval;
+std::vector<factor> factors(ncliques);
+for (size_t i = 0; i < ncliques; i++) {
+	is >> nval;
+	assert(nval == sets[i].num_states());
+	factors[i] = factor(sets[i], 0.0); // preallocate memory
+	if (m_markov == false) { // for Bayes nets, last variable is the child
+		factors[i].set_child(cliques[i].back().label());
+	}
+	convert_index ci(cliques[i], false, true); // HERE IS THE MUSIC AND CONVERSION; convert from source order (littleEndian) to target order (bigEndian)
+	for (size_t j = 0; j < nval; j++) {
+		size_t k = ci.convert(j);	// get the index in the factor table
+		is >> fval; // read the factor value;
+		if (positive_mode) { // force positive values (> 0) if enabled
+			if (fval == 0.0) {
+				fval += MERLIN_EPSILON; // adjust slightly for numerical stability
+			} else if (fval == 1.0) {
+				fval -= MERLIN_EPSILON; // adjust slightly for numerical stability
+			}
+		}
+
+		factors[i][k] = fval; // save the factor value into the table
+	}
+}
+     #+END_SRC
+     
+**** DONE UNDERSTAND HOW THIS FACTOR TABLE IS EXACTLY CREATED
+     CLOSED: [2021-06-21 Mon 14:51]
+
+***** big Endian and little Endian Convention
+      
+      To understand this understand the following table - we work with
+      the =uai= explained in this file.
+
+      So recall that the general structure is the following:
+
+      #+begin_example
+      BAYES
+      8
+       2 2 2 2 2 2 2 2
+      8
+       1 3
+       2 0 1
+       3 4 2 5
+       3 1 5 7
+       2 0 2
+       1 0
+       2 3 4
+       2 5 6
+      #+end_example
+
+      Such that you have, from the =uai= file with =littleEndian= notation:
+
+      #+begin_example
+      F_3 | P(F_3)
+      0 | 0.01
+      1 | 0.99
+
+      F_0   F_1 |  P(F_1,F_0)
+      0       0 |  0.6
+      0       1 |  0.4
+      1       0 |  0.3
+      1       1 |  0.7
+
+      F_4   F_2   F_5 |  P(F_2,F_4, F_5)
+      0      0      0 |  1
+      0      0      1 |  0
+      0      1      0 |  1
+      0      1      1 |  0
+      1      0      0 |  1
+      1      0      1 |  0
+      1      1      0 |  0
+      1      1      1 |  1
+
+
+      .... etc .... other factors ....
+      #+end_example
+
+      Now in BigEndian Notation that should be:
+
+      *note first entry still all of 0*
+
+      #+begin_example
+      F_3 | P(F_3)
+      0 | 0.01
+      1 | 0.99
+
+      F_0   F_1 |  P(F_1,F_0)
+      0       0 |  0.6
+      1       0 |  0.3
+      0       1 |  0.4
+      1       1 |  0.7
+
+      F_4   F_2   F_5 |  P(F_2,F_4, F_5)
+      0      0      0 |  1
+      1      0      0 |  1
+      0      1      0 |  1
+      1      1      0 |  0
+      0      0      1 |  0
+      1      0      1 |  0
+      0      1      1 |  0
+      1      1      1 |  1
+
+      F_4   F_2   F_5 |  P(F_2,F_4, F_5)
+      0      0      0 |  1
+      0      0      1 |  0
+      0      1      0 |  1
+      0      1      1 |  0
+      1      0      0 |  1
+      1      0      1 |  0
+      1      1      0 |  0
+      1      1      1 |  1
+
+      .... etc .... other factors ....
+      #+end_example
+
+      Ok perfect. I double checked it with the print statement and
+      everything is fine.
+
+      So you indeed make the transformation as in the case above and
+      get a new factor structure satisfying =bigEndian= notation. For
+      instance for the above you get with the print statement:
+
+      #+begin_example
+Factor over [3]: 0.01 0.99
+Factor over [0,1]: 0.6 0.3 0.4 0.7
+Factor over [2,4,5]: 1 1 1 0 0 0 0 1
+Factor over [1,5,7]: 0.9 0.7 0.8 0.1 0.1 0.3 0.2 0.9
+Factor over [0,2]: 0.1 0.01 0.9 0.99
+Factor over [0]: 0.5 0.5
+Factor over [3,4]: 0.05 0.01 0.95 0.99
+Factor over [5,6]: 0.98 0.05 0.02 0.95
+      #+end_example
+      
+***** DONE BIG ENDIAN VS LITTLE ENDIAN
+      CLOSED: [2021-06-21 Mon 14:50]
+
+      Note that factors are general function mapping from a domain of
+      variables (D) to the real numbers. It is therefore a general
+      function but it is used in our sense as a map from network
+      variables to probability functions. (usually - i.e. if the order is
+      meaningful in the sense that the multiplication of factors follows
+      the conditional independence structure and factors represent ).
+
+   ///
+   /// \brief Factor for graphical models.
+   ///
+   /// Table based representation of a factor for graphical models. A 
+   /// factor encodes a potential (sometimes a probability distribution)
+   /// defined over a subset of discrete random variables, called a *scope*, and 
+   /// associates each configuration of the variables in the scope with a 
+   /// positive real value (sometimes a probability value). The scope is assumed
+   /// to be sorted lexicogaphically (e.g., [x1,x2,x3]) Also, the indexing of
+   /// configurations in the factor table is assumed to be based on the BigEndian
+   /// convention, namely the *first* variable in the ordered scope changes
+   /// the fastest, then the *second* variable changes its value and so on.
+   /// For example, consider a factor over binary variables [x1,x2,x3].
+   /// The corresponding factor table is indexed as follows (internally):
+   ///
+   /// 0: [0,0,0]    4: [0,0,1]
+   /// 1: [1,0,0]    5: [1,0,1]
+   /// 2: [0,1,0]    6: [0,1,1]
+   /// 3: [1,1,0]    7: [1,1,1]
+
+      factor logic and indexing is different from the =.uai= representation
+      and this is described above.
+
+      Note that it is important this piece of code:
+
+      #+begin_example
+   The scope is assumed to be sorted lexicogaphically (e.g., [x1,x2,x3])
+      #+end_example
+
+      Also, the indexing of configurations in the factor table is assumed to
+      be based on the BigEndian, namely the *first* variable in the ordered
+      scope changes the fastest, then the *second* variable changes its
+      value and so on.
+
+      I.e. for each factor you have a /factor table/ that maps your Val(D)
+      to real line. In this table there are all of the possible combinations
+      of Val(D). The question is then on how you keep record of these and
+      the solution is the BigEndian notation.
+
+      There is a function *convert_index*  - maybe not a function have to
+      understand that tomorrow. the syntax is not the one of a
+      function.
    
+      These are in fact both classes that are defined in this file
+      [[file:merlin/include/index.h]].
 
-** How to save the things in the files
+      So notice that this conversion is done because of the following
+      reason:
 
-   I decided to save the input of the hyperparameters in a =.prio=
-   file.
+      #+begin_example
+   // BigEndian assumes that the first variable changes the fastest
+   // UAI input is assumed to follow the LittleEndian convention, whereas
+   // the internal representation of the factors assume BigEndian.
+      #+end_example
 
-   There you will have to specify the hyperparameters for each
-   node(?). Check at the theory again. And understand what you have to
-   use.
-   
+****** Note that in the factor header also all of the functions for factor summation, entropy etc. are defined.    
+  
 
-*** TODO define the structure of such a file
-   
 
-** Otherwise you can also set it at parameter at the beginning
-
-   See for instance the =set_init_factor_method= function in the
-   =merlin.cpp= file.
-
-   And also all of the other parameters that you set when running the
-   merlin engine.
-
-   See =main.cpp=.
-
-   Nonetheless, I think it makes better sense to focus on the file
-   solution as there might be quite some parameters if you need
-   hyperparameters for each node.
-   
-
-** TODO Understand the reading process out of the files.
+** DONE Understand the reading process out of the files.
+   CLOSED: [2021-06-21 Mon 14:52]
 
    There is a function in the =graphical_model.h= file. There the
    =read= function is specified.
@@ -1597,6 +1909,7 @@ bool Merlin::read_hyperparameters(const char* filename) {
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <vector>
 
 void read(std::istream& is, bool positive_mode = false) {
 
@@ -1631,12 +1944,50 @@ void read(std::istream& is, bool positive_mode = false) {
 
 		printf ("%d \n", m_markov);
 
-   }
+		////////////////////////
+		// Read the Variables //
+		////////////////////////
+		
+		// Read the number of variables and their domains //
+		is >> nvar;
+		std::cout << nvar << "\n";
+		std::vector<size_t> dims(nvar);
+		for (size_t i = 0; i < nvar; i++){
+			is >> dims[i];
+		        std::cout << dims[i] << " ";}
 
+		// check at the output of this chunck to understand
+		// how the iostream is interpreted. spaces are
+		// interpreted as different chuncks when passing via
+		// >>.
+
+		// So then always the same structure. See for instance the next thing:
+
+		/// Read the number of factors and their scopes (scope is a variable_set) ///
+		is >> ncliques;
+		std::vector<std::vector<variable> > cliques(ncliques);
+		std::vector<variable_set> sets(ncliques); // store the set of variables associated to each factor
+		for (size_t i = 0; i < ncliques; i++) {
+			is >> csize;
+			cliques[i].reserve(csize);
+			for (size_t j = 0; j < csize; j++) {
+				is >> v;
+				variable V(v, dims[v]);
+				cliques[i].push_back(V);
+				sets[i] |= V;   // save the set of variables. you should understand better the |= operator.
+			}
+		}
+
+		// then in the next chunck you actually process the facotrs.
+
+		// there is again nothing too big to understand you just have to understand the conversion function to bigEndian.
+		// try to print it.
+		
+	}
 
    int main(){
 
-     std::ifstream file ("./merlin/data/multinomial_dirichlet.prio");
+     std::ifstream file ("./merlin/data/cancer.prio");
 
      bool m_positive = true; 
      
@@ -1648,7 +1999,9 @@ void read(std::istream& is, bool positive_mode = false) {
    #+END_SRC
 
    #+RESULTS:
-   : 0
+   | 0 |   |   |   |   |
+   | 5 |   |   |   |   |
+   | 2 | 2 | 2 | 2 | 2 |
 
    Good so you understand now how to read file.
 
@@ -1668,159 +2021,428 @@ void read(std::istream& is, bool positive_mode = false) {
 
    You can borrow from that. I.e. split by comma and store everything
    to a vector.
+   
 
 
-** DONE understand the em-algorithm
-   CLOSED: [2021-06-06 Sun 11:19]
+** IN-PROGRESS Reading function for hyperparameters
+   :properties:
+   :hearder-args:cpp: :session hello
+   :end:
 
-   Note that for the algorithm you will need three components for
-   which you have to specify properties/ways:
+*** Small test for read function and read out of iostream
+   
+    Note that like this it works. You can save functions in headers and
+    get them from there by specifying the =-I= option.
 
-   - factor initialization
+    #+begin_src cpp :libs -std=c++11 -I./my_code_env/include
+#include <vector>
+#include <iostream>
 
-   - inference algorithm
+#include "hello.h"
 
-   - m-algorithm (i.e. threshold for convergence , order etc.)
+int main(){
 
-   There are then three main functions in the code.
+  std::vector<int> input = { 1, 2, 3, 4, 5 };
 
-   One for initializing the algorithm.
+  // so it is correct yourename the variable later
+  input = { 1, 2, 3, 4, 5, 6, 7, 8 };
 
-   One for running the e-step.
+  // input.push_back([70,80,90]); // error. can just push back objects that respect the vector type in this case vector<int>
+  input.push_back(70); // valid
 
-   One for running the m-step.
+  int h = input[0];
 
-   One for running the algorithm until convergence.
+  print(input);
 
-   We will check all of them in turn next.
+  std::cout << h;
+
+  return 0;    
+}
+    #+end_src   
+
+    #+RESULTS:
+    : 1 2 3 4 5 6 7 8 70 1 0
+
+    So that is basically it now you have to embed it in the code. This
+    would be a vector containing the prior hyperparameters, starting
+    with the bayesian learning MAP estimator.
+
+    Following the syntax of the code base you should write a function
+    of the following shape
+
+    #+begin_src cpp
+bool Merlin::read_hyperparameters(const char* filename) {
+	try {
+
+		// Read the graphical model
+		m_filename = std::string(filename);
+		std::ifstream is(filename);
+		if (is.fail()) {
+			std::string err_msg("Cannot open the input file: ");
+			err_msg += std::string(filename);
+			throw std::runtime_error(err_msg);
+		}
+		
+
+                // have to specify and read the input out of the .txt file
+		// std::vector<int> input = { 1, 2, 3, 4, 5 };
+
+		return true;
+	} catch (const std::runtime_error& e) {
+		std::cerr << e.what() << std::endl;
+		return false;
+	}
+}
+    #+end_src
+
+    Then adapt the M-step. Keep everything equal. Just use a different
+    function for the maximization step.
 
    
-*** Run the Algorithm
-    :properties:
-    :custom_id: run_algo
-    :end:
+* DONE understand the em-algorithm
+  CLOSED: [2021-06-06 Sun 11:19]
 
-    So very easy. Just calls the two other methods sequentially and
-    stops when the algorithm converged.
+  Note that for the algorithm you will need three components for
+  which you have to specify properties/ways:
 
-    Note that the stopping criteria is given by the improvement in the
-    log-likelihood.
+  - factor initialization
 
-    You have to find such likelihood. There is in the e-step. Not in
-    the m-step. Makes sense.
+  - inference algorithm
 
-    So that the idea is this one in general. You run the inference
-    engine and get the likelihood of your network. You compute the
-    optimal parameters and iterate.
+  - m-algorithm (i.e. threshold for convergence , order etc.)
+
+  There are then three main functions in the code.
+
+  One for initializing the algorithm.
+
+  One for running the e-step.
+
+  One for running the m-step.
+
+  One for running the algorithm until convergence.
+
+  We will check all of them in turn next.
+   
+** Run the Algorithm
+   :properties:
+   :custom_id: run_algo
+   :end:
+
+   So very easy. Just calls the two other methods sequentially and
+   stops when the algorithm converged.
+
+   Note that the stopping criteria is given by the improvement in the
+   log-likelihood.
+
+   You have to find such likelihood. There is in the e-step. Not in
+   the m-step. Makes sense.
+
+   So that the idea is this one in general. You run the inference
+   engine and get the likelihood of your network. You compute the
+   optimal parameters and iterate.
+
+** Initialize the Algorithm
+
+   so at first checks at the missing and virtual evidence and count
+   how many observations of these are present as well as their share
+   amount.
+
+   then you check which factors are locked. so probably they already
+   started to work on something with locked factors.
+
+   then you initialize the CPTs. you can either do this via uniform
+   or random method.
     
-
-*** Initialize the Algorithm
-
-    so at first checks at the missing and virtual evidence and count
-    how many observations of these are present as well as their share
-    amount.
-
-    then you check which factors are locked. so probably they already
-    started to work on something with locked factors.
-
-    then you initialize the CPTs. you can either do this via uniform
-    or random method.
-    
-    #+begin_src cpp
+   #+begin_src cpp
     	// Initialize the CPTs uniformly at random
 	if (m_init_method == InitMethod::Uniform) {
 		m_gmo.uniform_bayes(m_lockedFactors);
 	} else if (m_init_method == InitMethod::Random){
 		m_gmo.random_bayes(m_lockedFactors);
 	}
-    #+end_src
+   #+end_src
 
-    so notice that this is exactly the step that you will be *required
-    to change*.
+   so notice that this is exactly the step that you will be *required
+   to change*.
 
-    then there is a section about the initialization of the junction
-    tree.
+   then there is a section about the initialization of the junction
+   tree.
 
-    then it follows a bayes net initialization phase. that is quite
-    interesting. it talks about families and that is a bit confusing
-    to me but I guess that there is where you initialize everything
-    together with the initialization of the CPTs above. 
+   then it follows a bayes net initialization phase. that is quite
+   interesting. it talks about families and that is a bit confusing
+   to me but I guess that there is where you initialize everything
+   together with the initialization of the CPTs above. 
+
+** M-step
+
+   Note that I misinterpreted the way the M-step is performed.
+
+   This because I misinterpreted the =m_lockedFactors::find=
+   method. See below how it actually works. 
+
+*** Set find and set end.  
+
+    Understand the set_find == set_end. there is this clause that is
+    highly misleading.
+
+    It is straightforward to understand the clause in the correct way
+    once you read the documentation for the set::find method.
+
+    Notice that when reading online the description for such method you
+    can read that:
+
+    #+begin_example
+   Searches the container for an element equivalent to val and returns
+   an iterator to it if found, otherwise it returns an iterator to
+   set::end.
+    #+end_example
     
-*** M-step
+***** OUTDATED
 
-    To my understanding the key of the the M-step is in the following
-    one-liner.
+      Ok so this M-step is quite particular as it is highly tight to the
+      data structures coming from the =e-step=.
 
-    #+BEGIN_SRC cpp 
+      In this sense it is quite different in comparison to the mental
+      framework you used when writing down the theoretical part.
+
+      I will summarize next the practical structure of the M-step here
+      and how everything works in tandem with the e-step.
+
+      The idea is the following. You run the e-step before running the
+      m-step.
+
+****** QUESTION Ask radu     
+
+      There at each time you compute the new factors given the evidence
+      and save them to a graphical model --> **where is this step??**
+      --> then there is a mapping from factors to theta that you would
+      leverage.
+
+      Then given this new graphical model, *gm* what you do in the
+      M-step is to get the factors that you got in the E-step. From such
+      factors you get your =new_thetas=.
+
+      Then you reinitiate the =m_infer= engine with the new
+      factors/parameterization such that you are ready to run a new
+      inference step in the EM-algorithm.
+
+      That is basically it. You then iterate the cycle.
+
+      ASK RADU WHERE EXACTLY THE CODE IN THE INFERENCE STEP THE
+      GRAPHICAL MODEL IS CHANGED AND FACTORS ARE ADJUSTED.
+    
+
+***** Outdated - way to the final learning
+
+       To my understanding the key of the the M-step is in the following
+       one-liner.
+
+       #+BEGIN_SRC cpp 
     m_infer.reinit(m_gmo.get_factors());
-    #+END_SRC
+       #+END_SRC
 
-    The idea is that such a function specified by argument as
-    reference such that when you call such a function you reinit and
-    get the new factors according to the cte algorithm.
+       The idea is that such a function specified by argument as
+       reference such that when you call such a function you reinit and
+       get the new factors according to the cte algorithm.
 
-    Given such new factors you can then get the new parameters.
+       Given such new factors you can then get the new parameters.
     
-**** DONE Understand map from expected sufficient statistics to marginal of the factors.
-     CLOSED: [2021-06-05 Sat 20:38]
+****** DONE Understand map from expected sufficient statistics to marginal of the factors.
+       CLOSED: [2021-06-05 Sat 20:38]
 
-     I think that the issue why you do not see the counts when
-     computing the new evidence comes from the following comment:
+       I think that the issue why you do not see the counts when
+       computing the new evidence comes from the following comment:
 
-     #+begin_example
+       #+begin_example
      // Counts factors must be aligned to the theta factors (by construction)
-     #+end_example
+       #+end_example
 
-     BUT THAT JUST COUNTS FOR MULTINOMIAL BY CONSTRUCTION - FOR OTHERS
-     YOU MIGHT NEED TO ADJUST THAT COUNT.
+       BUT THAT JUST COUNTS FOR MULTINOMIAL BY CONSTRUCTION - FOR OTHERS
+       YOU MIGHT NEED TO ADJUST THAT COUNT.
      
-     So you have to understand that in order to understand how the new
-     thetas are parameterized. Otherwise you will always miss a piece
-     of evidence.
+       So you have to understand that in order to understand how the new
+       thetas are parameterized. Otherwise you will always miss a piece
+       of evidence.
 
-     Note that this link must in fact exists. Check for instance at
-     the following in the e-step:
+       Note that this link must in fact exists. Check for instance at
+       the following in the e-step:
 
-     #+BEGIN_SRC cpp 
+       #+BEGIN_SRC cpp 
      m_counts[i] += m_infer.get_joint_marginal();
-     #+END_SRC
+       #+END_SRC
 
-     Such that there must exist a clear relation among the
-     joint-marginal and the counts.
+       Such that there must exist a clear relation among the
+       joint-marginal and the counts.
 
-***** Solution
+******* Solution
 
-      Note that this is the case as we showed that in the case of
-      simple multinomial CPD the sufficient statistics corresponds to
-      the probability distribution.
+	Note that this is the case as we showed that in the case of
+	simple multinomial CPD the sufficient statistics corresponds to
+	the probability distribution.
 
-      In this sense you get the joint marginal and the marginal
-      arguments with the evidence and the scope are passed in the
-      previous line:
+	In this sense you get the joint marginal and the marginal
+	arguments with the evidence and the scope are passed in the
+	previous line:
 
 
-      #+BEGIN_SRC cpp 
+	#+BEGIN_SRC cpp 
       for (size_t i = 0; i < m_counts.size(); ++i) {
 	variable_set vs = m_counts[i].vars();
 	temp.joint_marginal(vs, evidence); // so here is where you pass the conditioning variables and get the necessary conditional probabilities
+	#+END_SRC
+
+	Check at your thesis text to see that - equation 38.
+
+	So that is basically it. 
+
+
+**** E-step
+
+     Here the inference step is done via big-clique algorithm.
+
+     Understand this is the mental workflow.
+
+     You have a =read_dataset= function in the =merlin.cpp= file. There
+     you parse the text file you get with the evidence.
+
+     Then the idea is to create a vector of *observations* and save
+     the records in there.
+
+     Notice now the idea of object oriented programming and
+     polymorphism. You specify an observation class where you can
+     instantiate different observation objects with different
+     constructors.
+
+     Then when parsing the file you either get values for the
+     realization or likelihood observations that you store in
+     respective vectors/variables.
+
+     Then you add to the observations vector passing either such value
+     or the likelihood. Depending on what you pass a different
+     constructor will be passed.
+
+     There in the constructor the variable =is_virtual= etc. is
+     initialized in the correct way depending on which constructor is
+     called. And you can then use this information when performing
+     your inference tasks.
+
+     Then given this the structure is the following.
+
+     - You first check if virtual evidence is present and in case
+       augment the virtual network by adding virtual nodes and creating
+       a new graphical model =gm=.
+
+     - After you have a complete network (either because there was no
+       virtual evidence or because you augmented the original network),
+       you run inference. I.e. you pass the graphical model to the
+       inference algorithm. In this case the big-clique algorithm.
+       There you propagate the evidence and get the likelihood of the
+       network.
+
+       Finally you marginalize over the evidence and the scope to get
+       the probability of observing the synthetically completed
+       observations.
+
+       This in the case of multinomial distribution has a one to one
+       relation with the expected sufficient statistics that you would
+       finally use for the new network parameterization.
+
+
+*** Config Parameters
+
+    Notice then that it follows an entire section, where you treat
+    all of the factors indexing according to the bigendian notation
+    etc.
+
+    That is a bit annoying next. Understand it cause then you would
+    actually be over with the understanding of the =em= algorithm.
+
+    To understand that you have to understand the =index.h= there the
+    classes for the indexing of the factors are defined.
+
+    Check at your notes about the bigendian conversion and understand
+    if the way you worked with it is the same.
+
+    So that is correct in the =index.h= file you have the
+    =convert_index= method that transforms the factor input of the
+    =uai= to the bigendian factor notation. This is in fact what it
+    is used internally for the algorithm and apparently the input of
+    the =uai= file is in littleendian.
+
+    So first of all understand the following: the =thetas= variable in
+    the code represent factors not individual parameters.
+
+    You have in fact a loop that gets all of the states from one
+    factor.
+
+    #+BEGIN_SRC cpp 
+     for (size_t j = 0; j < th.num_states(); ++j) {
+       std::map<size_t, size_t> config = cv1.convert(j);
+       size_t k = cv2.convert(config);
+       if (sum.get(k) != 0) {
+	 double v = temp.get(j);
+	 new_th.set(j, v);
+       }
+     }
+    #+END_SRC
+
+    The question is now on this conversions and their usage. Note
+    that it is also interesting that you do not use the results from
+    =cv2.convert= when extracting the content.
+
+**** QUESTION understand difference among index_config and config_index
+
+     have to understand that piece of the cake; not that clear to
+     this moment. especially the functioning of the first.
+
+     I think that the =index_config= is the part that makes
+     everything lexiographically correct. or smth like that
+
+***** index_config
+
+      creates two vectors: =m_dims= and =m_vars=.
+
+      The second, =m_vars= saves the factors. The first =m_dims=
+      saves the states of variables sequentially.
+
+      Then the idea is that given such vectors saving all of the
+      different states and variables you can call the =convert=
+      method to get the variables for a particular index *Represents
+      the Index of a Factor*, in BigEndian or LittleEndian notation.
+
+      Then it starts this weird logic in the code. Have to ask it to
+      Radu:
+
+      #+BEGIN_SRC cpp 
+       if (m_bigendian) {
+	       for (size_t v = 0; v < m_dims.size(); ++v) {
+		       I[v] = index % m_dims[v];
+		       index -= I[v];
+		       index /= m_dims[v];
+	       }
+      #+END_SRC
+             
+
+***** config_index
+
+***** QUESTION start to code everything for next week and then ask for help.
+
+      i.e. code with the same conversion. make smaller checks to see
+      how everything is converted. then based on that
+
+***** QUESTION print the thetas to see the structure of this factor vector.
+
+      looks like a matrix. two entries
+
+      #+BEGIN_SRC cpp 
+       new_th.set(j, v);
       #+END_SRC
 
-      Check at your thesis text to see that - equation 38.
-
-      So that is basically it. 
-
-*** E-step
-
-    
-
-    
-
-    
+      understand why this is the case              
+       
 
 
-
-    
-** General Notes
+* General Notes
    
 *** Recall that in Pearls method the extended virtual node is always set to true.
 
@@ -1887,11 +2509,149 @@ void read(std::istream& is, bool positive_mode = false) {
       4. relate everything and make sense of it also in conjunction
          with the piece of information from the chapter 17 in here.
 
-
-
     \newpage
+    
+
+* How to Run the Engine - Generally the Code
+
+  First compile the entire repository with the help of the Makefile
+  you specified in the root directory of your project. run ~make~ in there.
+
+  Then go to the generated binary file. Run it with the necessary
+  arguments as specified according the merlin engine =API=. You can
+  check at the reference in [[https://github.com/radum2275/merlin][here]].
+
+
+* TODOs in the code
+
+** DONE there is a connection between the m_hyperparameters graphical model and the normal graphical model.
+   CLOSED: [2021-06-26 Sat 14:59]
+
+   this is causing some memory issue. probably they are referencing
+   the same memory space and there is some conflict in this sense.
+
+   have to make well sense of this otherwise you will not be able to
+   progress.
+
+   so very weird pattern. there must be in some for a connection in
+   the memory of the graphical model and hyperparameter model. if you
+   comment out the access to one of the two models you can reference
+   the other but not both in the same run.
 
    
+*** found the problem
+
+    in the ~read_hyperparameter~ function you were calling the clear()
+    method. this was cleaning the =m_gmo= model as it was specified
+    like this. therefore then you could not reference it. 
+
+*** try to get the addresses of all of the different objects
+
+    recall the schema of references, addresses and the object stored
+    at the addresses.
+
+    work through the c++ and your notes above.
+
+    Did that. Got the two addresses in memory. They are
+    *different*. So interestingly must not be that the issue.
+    
+*** it works now in the plain form. just with hyperparameters it does not work.
+
+    probably you are still doing the parsing of the file in the wrong
+    way and you are not entering the if statement. double check that
+    and understand.
+    
+*** check on the internet what the strategies to deal with this issues are. 
+*** DONE check in the programs options if the function for the hyperparametes-file makes sense. there might as well be errors.
+    CLOSED: [2021-06-26 Sat 14:09]
+
+    not this for sure. minor modification just regarding
+    hyperparameterFile.
 
 
+** TODO implemment a set_hyperparameters method in the engine for the EM.
+
+   have to change the ~merlin::em~ function.  I.e. it should not just
+   take the graphical model but as well the hyperparameters. I.e. the
+   graphical model where the hyperparameters are saved =merlin::em
+   s(gm);=.
    
+   Solved by keeping the same constructor and adding a method
+   =set_hyperparameter= that is just called in the case
+   hyperparameters are passed in the CLI.
+
+   you can then call the variable from the =em.cpp= module. This
+   because you specified the m_hyperParameters graphical model storing
+   the hyperparameters as a private function.
+
+
+*** DONE have to understand how to properly use polymorphism.
+    CLOSED: [2021-06-27 Sun 14:11]
+
+    there is this issue that you have to construct the em algorithm in
+    different ways depending on whether the =hyper= graphical model is
+    defined or not.
+
+    have to understand how you can do that because through an if
+    statement it is not working. as then the compiler does not
+    recognize the object.
+
+
+    *note that this might not be the best way to solve this:*
+    constructors /cannot have a virtual declaration/.
+    
+
+*** rewrite the m_step have access in that class to the m_hyperParameters with the graphical model saving the hyperparameters
+
+**** TODO start with parsing the data and get all the factors one by one.
+
+**** DONE make sense of the notation with the Bigendian
+     CLOSED: [2021-06-27 Sun 17:02]
+
+     done - added some logging giving you the factor tables you will
+     have to work with.
+
+     
+***** TODO 
+
+      consider to remove them or added them to the output conditional
+      on the =debug flag=.
+     
+
+**** TODO understand how you differentiate between the case of hyperparameters and the plain case
+
+     i.e. when to run some piece of code and when not.
+
+     understand how you want to differentiate it in the =em.cpp=
+     code. you differentiated it in the =merlin.cpp=, understand if
+     you can use the same logic here.
+
+     - you can use by checking if the number of factors of the
+       m_hyperParametes is 0. this is the reason for instance why when
+       you do not supply the hyperparameters argument your print
+       statement is never executed.
+
+     - solve it via polymorphism. if there are no hyperparameters
+       specify a set_hyperparameters function for the em algorithm and
+       set the m_hyperParameters in that class to =NULL=. no could not
+       do it as it m_hyperParameters was an object of graphical_model
+       class and could not be set to 0. see this is the difference
+       when you program with sum typed languages.
+
+     - so actually solved by introducing a =m_hyper= bool variable in
+       the graphical model. this is set to false at initialization for
+       all of the models and just modified if hyperParameters are
+       supplied. you can then just execute the necessary code upon the
+       conditional statement: ~if (m_hyper == false)~
+
+     
+      
+**** TODO understand the m_factors initialization. will have to modify it.
+     
+     - have to make sure you add it then to the right place. but you
+       are already more less done.
+    
+** TODO should also implement read_hyperparameter method for the binary file and not for path to the file
+
+** TODO check if hyperparameter argument passsed. if yes then read hyperparameters otherwise do not.
+       

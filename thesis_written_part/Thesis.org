@@ -1100,8 +1100,8 @@
 
     #+begin_export latex
     \begin{align} \label{eq:solution}
-    \tilde{\theta}_{y_i | Pa_i} =& \operatorname*{argmax}_{\theta_{y_i | Pa_i}}  \prod_m \prod_{y_i \in Val(Y_i)} P(Y_i[m]|\theta_i) \nonumber  \\
-    \tilde{\theta}_{y_i | Pa_i} =& \operatorname*{argmax}_{\theta_{y_i | Pa_i}} \sum_m \sum_{y_i \in Val(Y_i), pa_i \in Val(Pa_i)} ln(\theta_{y_i | pa_i}) * \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i = pa_i[m]\}}
+    \tilde{\theta}_{y_i | pa_i} =& \operatorname*{argmax}_{\theta_{y_i | Pa_i}}  \prod_m \prod_{y_i \in Val(Y_i)} P_{\theta_{y_i|pa_i}}(y_i[m]|pa_i[m]) \nonumber  \\
+    \tilde{\theta}_{y_i | pa_i} =& \operatorname*{argmax}_{\theta_{y_i | pa_i}} \sum_m ln(\theta_{y_i | pa_i}) * \sum_{h[m] \in Val(\mathscr{H}[m]) : y_i = y_i[m]} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i = pa_i[m]\}}
     \end{align}
     #+end_export
     
@@ -1113,12 +1113,12 @@
 
     #+begin_export latex
     \begin{align} \label{eq:solution}
-    \tilde{\theta}_{y_i | Pa_i} =& \frac{\bar{M}[y_i, Pa_i]}{\sum_j \bar{M}[y_j, Pa_j]}
+    \tilde{\theta}_{y_i | pa_i} =& \frac{\bar{M}[y_i, pa_i]}{\sum_j \bar{M}[y_j, pa_i]}
     \end{align}
     #+end_export
 
-    With $\bar{M}[y_i, Pa_i] = \sum_m^M \sum_{h[m] \in
-    Val(\mathscr{H}[m])} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i =
+    With $\bar{M}[y_i, pa_i] = \sum_m^M \sum_{h[m] \in
+    Val(\mathscr{H}[m]): y_i = y_i[m]} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i =
     pa_i[m]\}} = E_Q(M(y, pa)), \ M(y, pa) = \sum_m \tau(y,pa)$.
     
     Algorithmically it is then possible to write such an EM-application for
@@ -1463,17 +1463,18 @@
 
     Such that taking the argument maximizing the likelihood of the
     adjusted energy functional $\operatorname*{argmax}_{\theta}
-    \tilde{F}[\theta, Q]$ we are left with the following with y[m]
-    representing synthetically created complete observation <h[m],
+    \tilde{F}[\theta, Q]$ we are left with the following, where y[m]
+    represents synthetically created complete observation <h[m],
     d[m]>:
 
     #+begin_export latex
     \begin{align} \label{eq:first-order-condition}
-    \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\frac{\Gamma(\sum_i y[m]_i + 1)}{\prod_i \Gamma(y[m]_i + 1)} \prod_i^K \theta_{y_i | Pa{y_i}}^{y[m]_i} * \frac{1}{B(\alpha)} \prod_{i=1}^K \theta_{y_i | Pa{y_i}}^{\alpha_i - 1})] + H_Q (y[m]) \\
+    \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_i \in Val(Pa_i)}
+    \frac{\Gamma(\sum_i [y[m]_i, pa[m]_i] + 1)}{\prod_i \Gamma([y[m]_i,pa[m]_i] + 1)} \theta_{y_i | pa_{i}}^{[y[m]_i, pa[m]_i]} * \frac{1}{B(\alpha)} \theta_{y_i | pa_{i}}^{\alpha_i - 1})] + H_Q (y[m]) \\
     \nonumber\\   
-    \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \theta_{y_i | Pa{y_i}}^{y[m]_i} * \theta_{y_i | Pa{y_i}}^{\alpha_i - 1})]\\
+    \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_i \in Val(Pa_i)} \theta_{y_i | pa_{i}}^{[y[m]_i, pa[m]_i]} * \theta_{y_i | pa_{i}}^{\alpha_i - 1})]\\
     \nonumber\\   
-    \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \theta_{y_i | Pa{y_i}}^{y[m]_i + \alpha_i - 1})] 
+    \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_i \in Val(Pa_i)} \theta_{y_i | pa_{i}}^{[y[m]_i, pa[m]_i] + \alpha_i - 1})] 
     \end{align}
     #+end_export
 
@@ -1482,7 +1483,7 @@
    
     #+begin_export latex
     \begin{align} \label{eq:solution1}
-    \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K (\sum_m^M E_Q[M[y_i, Pa_{y_i}]] + \alpha_i - 1) * log(\theta_{y_i | Pa{y_i}})] 
+    \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K \sum_{pa_i \in Val(Pa_i)} (\sum_m^M E_Q[M[y_i, pa_{i}]] + \alpha_i - 1) * log(\theta_{y_i | pa_{i}})] 
     \end{align}
     #+end_export
 
@@ -1490,9 +1491,9 @@
 
     #+begin_export latex
     \begin{align} \label{eq:expected_sufficient}
-    \bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M E_Q[M[y_i, Pa_{y_i}]]\\
-    \bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) \mathbbm{1}_{\{Y[m]_i = y[m]_i\}}\\
-    \bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M P(y_i | d[m], \theta)
+    \bar{M}[y_i, pa_{i}]  =& \sum_m^M E_Q[M[y_i, pa_{i}]]\\
+    \bar{M}[y_i, pa_{i}]  =& \sum_m^M \sum_{h[m] \in Val(\mathscr{H}[m]): y_i = y_i[m]} Q(h[m]) \mathbbm{1}_{\{y_i = y[m]_i, pa_i = pa[m]_i\}}\\
+    \bar{M}[y_i, pa_{i}]  =& \sum_m^M P(y_i, pa_i | d[m], \theta)
     \end{align}
     #+end_export   
 
@@ -1500,29 +1501,29 @@
    
     #+begin_export latex
     \begin{align} \label{eq:solution2}
-    \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K (\bar{M}[y_i, Pa_{y_i}] + \alpha_i - 1) * log(\theta_{y_i | Pa{y_i}})] 
+    \tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K  \sum_{pa_i \in Val(Pa_i)} (\bar{M}[y_i, pa_{i}] + \alpha_i - 1) * log(\theta_{y_i | pa{i}})] 
     \end{align}
     #+end_export      
 
-    Given the additional restriction that $\sum_i \theta_{y_i |
-    Pa{y_i}} = 1$, we can obtain the necessary condition for finding
-    the optimum by using the Lagrange method
+    Given the additional restriction that $\sum_i \sum_{pa_i \in
+    Val(Pa_i)} \theta_{y_i | pa_{i}} = 1$, we can obtain the necessary
+    condition for finding the optimum by using the Lagrange method
 
     #+begin_export latex
     \begin{align} \label{eq:first-order1}
-    \frac{\partial}{\partial \theta_{y_i | Pa{y_i}}} \sum_i^K (\bar{M}[y_i, Pa_{y_i}] + \alpha_i - 1) * log(\tilde{\theta}_{y_i | Pa{y_i}})] - \lambda (\sum_i \tilde{\theta}_{y_i | Pa{y_i}} - 1) \mathrel{\stackon[5pt]{$=$}{$\scriptstyle!$}} 0
+    \frac{\partial}{\partial \theta_{y_i | pa_{i}}} \sum_i^K (\bar{M}[y_i, pa_{i}] + \alpha_i - 1) * log(\tilde{\theta}_{y_i | pa_{i}})] - \lambda (\sum_i \tilde{\theta}_{y_i | pa_{i}} - 1) \mathrel{\stackon[5pt]{$=$}{$\scriptstyle!$}} 0
     \end{align}
     \begin{align} \label{eq:first-order2}
-    \lambda = \frac{\bar{M}[y_i, Pa_{y_i}] + \alpha_i - 1}{\tilde{\theta}_{y_i | Pa{y_i}}}
+    \lambda = \frac{\bar{M}[y_i, pa_{i}] + \alpha_i - 1}{\tilde{\theta}_{y_i | pa_{i}}}
     \end{align}
     #+end_export
 
     And inserting this in the first order condition and solving for
-    $\tilde{\theta}_{y_i | Pa{y_i}}$
+    $\tilde{\theta}_{y_i | pa_{i}}$
 
     #+begin_export latex
     \begin{align} \label{eq:solution}
-    \tilde{\theta}_{y_i | Pa{y_i}} =& \frac{\bar{M}[y_i, Pa_{y_i}] + \alpha_i - 1}{\sum_j \bar{M}[y_j, Pa_{y_j}] + \alpha_j - 1}
+    \tilde{\theta}_{y_i | pa_{i}} =& \frac{\bar{M}[y_i, pa_{i}] + \alpha_i - 1}{\sum_j (\bar{M}[y_j, pa_{i}] + \alpha_j - 1)}
     \end{align}
     #+end_export
 
@@ -1888,7 +1889,7 @@
 \Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
 
 \Function{M-Step}{$\mathcal{B}$, $S$}
-   \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}] + \alpha_i - 1}{\sum_j \bar{M}_{\theta^{t}}[x_{j},u_{j}] + \alpha_j - 1}$\\
+   \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}] + \alpha_i - 1}{\sum_j \bar{M}_{\theta^{t}}[x_{j},u_{i}] + \alpha_j - 1}$\\
    
    \textbf{return} $(\theta^{t+1})$
 
@@ -2403,13 +2404,24 @@ Q_{k-1}(x) * \frac{R(x_j)}{Q_{k-1}(x_j)}
      incorporate everything in the next step.
    
 
-* Empirical Results
-
-  
-
   \newpage
      
+* Empirical Results
+  
+  \newpage
 
+  - start to write section on results of MAP-estimation
+
+* Conclusion
+  
+** TODO 1
+
+   say that through the thesis you were able to show that the results
+   presented generalize to the idea of Bayesian Learning with MAP
+   estimator choice and the theory holds other for different types of
+   uncertain evidence such as probabilistic evidence. 
+
+   \newpage   
 
 * TODOs
   

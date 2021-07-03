@@ -1,4 +1,4 @@
-% Created 2021-06-05 Sat 16:12
+% Created 2021-07-03 Sat 15:21
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -76,7 +76,7 @@
 \newpage
 
 \section{Bayesian Networks - Overview and Manuscript Outline}
-\label{sec:org792afab}
+\label{sec:org5a94f28}
 
 
 Probabilistic models based on directed acyclic graphs (DAGs) have
@@ -133,7 +133,7 @@ rigorous definition of the different types of uncertain evidence
 from which we will expand on.
 
 \subsection{Bayesian Networks - Formal Definition}
-\label{sec:org5ec6716}
+\label{sec:org8f89ede}
 Before starting to dig into the material we provide a general
 definition of a Bayesian Network as in \cite{pearl2011bayesian}.
 
@@ -244,7 +244,7 @@ We turn next to a formal definition of evidence and especially of
 research presented in this manuscript.
 
 \subsection{Types of Evidence}
-\label{sec:org6195d13}
+\label{sec:orgef3b6ea}
 
 The most basic case of evidence is the one of complete
 evidence. This occurs when we are provided with complete
@@ -613,7 +613,7 @@ possible anymore to perform local operations for coming to a global
 solution.
 
 \section{On Missing Evidence}
-\label{sec:org1634efa}
+\label{sec:org7399120}
 
 In the case of missing evidence we have two types of findings for
 the random variables in our network \(G(\mathscr{V}, \mathscr{X})\).
@@ -716,7 +716,7 @@ case of missing data, the topic we will address in the next
 section.
 
 \subsection{On the Observed Variables Likelihood under Missing Data}
-\label{sec:org5b054a3}
+\label{sec:org82f223b}
 
 This section sets the focus on the likelihood of the observed data
 in the case of missing evidence.
@@ -881,7 +881,7 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsubsection{The Expectation Step}
-\label{sec:org3ae842f}
+\label{sec:orgd2b8928}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -908,7 +908,7 @@ interpret the E-step as the step involving the maximization of the
 energy functional along the Q coordinate.
 
 \subsubsection{The Maximization Step}
-\label{sec:org731e7a7}
+\label{sec:orgd144e99}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -930,7 +930,7 @@ optimized such that it increases it follows from proposition
 log-likelihood increases such that theorem \ref{thm:one} is proved.
 
 \subsection{An Exponential Family Example}
-\label{sec:org6307bf3}
+\label{sec:org6d9e2ff}
 
 This section provides an application of theory presented above for
 the general case of exponential families. The idea is to
@@ -1064,8 +1064,8 @@ variable \(Y\) representing the \emph{synthetically completed data} \(<H, D>\),
 we have that
 
 \begin{align} \label{eq:solution}
-\tilde{\theta}_{y_i | Pa_i} =& \operatorname*{argmax}_{\theta_{y_i | Pa_i}}  \prod_m \prod_{y_i \in Val(Y_i)} P(Y_i[m]|\theta_i) \nonumber  \\
-\tilde{\theta}_{y_i | Pa_i} =& \operatorname*{argmax}_{\theta_{y_i | Pa_i}} \sum_m \sum_{y_i \in Val(Y_i), pa_i \in Val(Pa_i)} ln(\theta_{y_i | pa_i}) * \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i = pa_i[m]\}}
+\tilde{\theta}_{y_i | pa_i} =& \operatorname*{argmax}_{\theta_{y_i | Pa_i}}  \prod_m \prod_{y_i \in Val(Y_i)} P_{\theta_{y_i|pa_i}}(y_i[m]|pa_i[m]) \nonumber  \\
+\tilde{\theta}_{y_i | pa_i} =& \operatorname*{argmax}_{\theta_{y_i | pa_i}} \sum_m ln(\theta_{y_i | pa_i}) * \sum_{h[m] \in Val(\mathscr{H}[m]) : y_i = y_i[m]} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i = pa_i[m]\}}
 \end{align}
 
 With the additional constraints that \(\sum_{y_i \in Val(Y_i), pa_i
@@ -1075,11 +1075,11 @@ Solving this constrained optimization problem by standard
 Lagrange method you get: 
 
 \begin{align} \label{eq:solution}
-\tilde{\theta}_{y_i | Pa_i} =& \frac{\bar{M}[y_i, Pa_i]}{\sum_j \bar{M}[y_j, Pa_j]}
+\tilde{\theta}_{y_i | pa_i} =& \frac{\bar{M}[y_i, pa_i]}{\sum_j \bar{M}[y_j, pa_i]}
 \end{align}
 
-With \(\bar{M}[y_i, Pa_i] = \sum_m^M \sum_{h[m] \in
-    Val(\mathscr{H}[m])} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i =
+With \(\bar{M}[y_i, pa_i] = \sum_m^M \sum_{h[m] \in
+    Val(\mathscr{H}[m]): y_i = y_i[m]} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i =
     pa_i[m]\}} = E_Q(M(y, pa)), \ M(y, pa) = \sum_m \tau(y,pa)\).
 
 Algorithmically it is then possible to write such an EM-application for
@@ -1302,7 +1302,7 @@ maximizing the score map of \ref{eq:bayes_map2}. This will be the main
 exercise of the next section.
 
 \subsubsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:org110e59e}
+\label{sec:org502ba54}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -1397,55 +1397,56 @@ random variable \(Y\) expressing synthetically completed data observations \(<H,
 
 Such that taking the argument maximizing the likelihood of the
 adjusted energy functional \(\operatorname*{argmax}_{\theta}
-    \tilde{F}[\theta, Q]\) we are left with the following with y[m]
-representing synthetically created complete observation <h[m],
+    \tilde{F}[\theta, Q]\) we are left with the following, where y[m]
+represents synthetically created complete observation <h[m],
 d[m]>:
 
 \begin{align} \label{eq:first-order-condition}
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\frac{\Gamma(\sum_i y[m]_i + 1)}{\prod_i \Gamma(y[m]_i + 1)} \prod_i^K \theta_{y_i | Pa{y_i}}^{y[m]_i} * \frac{1}{B(\alpha)} \prod_{i=1}^K \theta_{y_i | Pa{y_i}}^{\alpha_i - 1})] + H_Q (y[m]) \\
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_i \in Val(Pa_i)}
+\frac{\Gamma(\sum_i [y[m]_i, pa[m]_i] + 1)}{\prod_i \Gamma([y[m]_i,pa[m]_i] + 1)} \theta_{y_i | pa_{i}}^{[y[m]_i, pa[m]_i]} * \frac{1}{B(\alpha)} \theta_{y_i | pa_{i}}^{\alpha_i - 1})] + H_Q (y[m]) \\
 \nonumber\\   
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \theta_{y_i | Pa{y_i}}^{y[m]_i} * \theta_{y_i | Pa{y_i}}^{\alpha_i - 1})]\\
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_i \in Val(Pa_i)} \theta_{y_i | pa_{i}}^{[y[m]_i, pa[m]_i]} * \theta_{y_i | pa_{i}}^{\alpha_i - 1})]\\
 \nonumber\\   
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \theta_{y_i | Pa{y_i}}^{y[m]_i + \alpha_i - 1})] 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_i \in Val(Pa_i)} \theta_{y_i | pa_{i}}^{[y[m]_i, pa[m]_i] + \alpha_i - 1})] 
 \end{align}
 
 It follows given that by the linearity of the expectation and that
 \(y[m]_i = \{0,1\}\), we can re-express the above as:
 
 \begin{align} \label{eq:solution1}
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K (\sum_m^M E_Q[M[y_i, Pa_{y_i}]] + \alpha_i - 1) * log(\theta_{y_i | Pa{y_i}})] 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K \sum_{pa_i \in Val(Pa_i)} (\sum_m^M E_Q[M[y_i, pa_{i}]] + \alpha_i - 1) * log(\theta_{y_i | pa_{i}})] 
 \end{align}
 
 where it holds
 
 \begin{align} \label{eq:expected_sufficient}
-\bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M E_Q[M[y_i, Pa_{y_i}]]\\
-\bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) \mathbbm{1}_{\{Y[m]_i = y[m]_i\}}\\
-\bar{M}[y_i, Pa_{y_i}]  =& \sum_m^M P(y_i | d[m], \theta)
+\bar{M}[y_i, pa_{i}]  =& \sum_m^M E_Q[M[y_i, pa_{i}]]\\
+\bar{M}[y_i, pa_{i}]  =& \sum_m^M \sum_{h[m] \in Val(\mathscr{H}[m]): y_i = y_i[m]} Q(h[m]) \mathbbm{1}_{\{y_i = y[m]_i, pa_i = pa[m]_i\}}\\
+\bar{M}[y_i, pa_{i}]  =& \sum_m^M P(y_i, pa_i | d[m], \theta)
 \end{align}
 
 So that ultimately:
 
 \begin{align} \label{eq:solution2}
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K (\bar{M}[y_i, Pa_{y_i}] + \alpha_i - 1) * log(\theta_{y_i | Pa{y_i}})] 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K  \sum_{pa_i \in Val(Pa_i)} (\bar{M}[y_i, pa_{i}] + \alpha_i - 1) * log(\theta_{y_i | pa{i}})] 
 \end{align}
 
-Given the additional restriction that \(\sum_i \theta_{y_i |
-    Pa{y_i}} = 1\), we can obtain the necessary condition for finding
-the optimum by using the Lagrange method
+Given the additional restriction that \(\sum_i \sum_{pa_i \in
+    Val(Pa_i)} \theta_{y_i | pa_{i}} = 1\), we can obtain the necessary
+condition for finding the optimum by using the Lagrange method
 
 \begin{align} \label{eq:first-order1}
-\frac{\partial}{\partial \theta_{y_i | Pa{y_i}}} \sum_i^K (\bar{M}[y_i, Pa_{y_i}] + \alpha_i - 1) * log(\tilde{\theta}_{y_i | Pa{y_i}})] - \lambda (\sum_i \tilde{\theta}_{y_i | Pa{y_i}} - 1) \mathrel{\stackon[5pt]{$=$}{$\scriptstyle!$}} 0
+\frac{\partial}{\partial \theta_{y_i | pa_{i}}} \sum_i^K (\bar{M}[y_i, pa_{i}] + \alpha_i - 1) * log(\tilde{\theta}_{y_i | pa_{i}})] - \lambda (\sum_i \tilde{\theta}_{y_i | pa_{i}} - 1) \mathrel{\stackon[5pt]{$=$}{$\scriptstyle!$}} 0
 \end{align}
 \begin{align} \label{eq:first-order2}
-\lambda = \frac{\bar{M}[y_i, Pa_{y_i}] + \alpha_i - 1}{\tilde{\theta}_{y_i | Pa{y_i}}}
+\lambda = \frac{\bar{M}[y_i, pa_{i}] + \alpha_i - 1}{\tilde{\theta}_{y_i | pa_{i}}}
 \end{align}
 
 And inserting this in the first order condition and solving for
-\(\tilde{\theta}_{y_i | Pa{y_i}}\)
+\(\tilde{\theta}_{y_i | pa_{i}}\)
 
 \begin{align} \label{eq:solution}
-\tilde{\theta}_{y_i | Pa{y_i}} =& \frac{\bar{M}[y_i, Pa_{y_i}] + \alpha_i - 1}{\sum_j \bar{M}[y_j, Pa_{y_j}] + \alpha_j - 1}
+\tilde{\theta}_{y_i | pa_{i}} =& \frac{\bar{M}[y_i, pa_{i}] + \alpha_i - 1}{\sum_j (\bar{M}[y_j, pa_{i}] + \alpha_j - 1)}
 \end{align}
 
 This will be the way you update the parameters in the M-step.
@@ -1465,7 +1466,7 @@ a posteriori point estimate and we will choose a local maximum
 point estimator for the likelihood of the observed data.
 
 \subsubsection{Bayesian Parameter Learning - An Exponential Family Generalization}
-\label{sec:orge331dad}
+\label{sec:org880481f}
 
 This section generalizes the exercise of the above section for
 general exponential family distributions. As discussed in
@@ -1523,7 +1524,7 @@ and prior distributions, such that a rich modeling set is
 available and easily implementable in statistical software.
 
 \section{On Likelihood Evidence}
-\label{sec:org1528d97}
+\label{sec:org599a64d}
 
 Recall that as defined in \cite{Mrad_2015} in likelihood evidence an
 observation is uncertain due to unreliable source of information.
@@ -1566,7 +1567,7 @@ of parameter learning under likelihood evidence describing the
 approach proposed in \cite{Wasserkrug_all}.
 
 \subsection{Adjusted EM - Likelihood Evidence}
-\label{sec:org7931aed}
+\label{sec:org50bea96}
 
 One of the most widespread ways to deal with likelihood evidence
 was introduced by \cite{pearl2014probabilistic}. The idea is to
@@ -1769,7 +1770,7 @@ it is possible to perform MAP estimation in Bayesian settings.
 \newpage
 
 \subsection{Bayesian Learning MAP - Adjusted EM for Likelihood Evidence}
-\label{sec:orgec2a612}
+\label{sec:org2b0b966}
 
 The idea of this section is to extend \ref{alg:EM-Likelihood} in
 order to obtain the MAP estimator in a Bayesian Learning setting
@@ -1803,7 +1804,7 @@ by replacing line 4 of \ref{alg:EM-Likelihood} with
 \Require Bayesian network $\mathcal{B}=\langle \mathbf{X},\mathbf{D}, G, \mathbf{P} \rangle$, dataset $S$ 
 
 \Function{M-Step}{$\mathcal{B}$, $S$}
-   \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}] + \alpha_i - 1}{\sum_j \bar{M}_{\theta^{t}}[x_{j},u_{j}] + \alpha_j - 1}$\\
+   \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}] + \alpha_i - 1}{\sum_j \bar{M}_{\theta^{t}}[x_{j},u_{i}] + \alpha_j - 1}$\\
    
    \textbf{return} $(\theta^{t+1})$
 
@@ -1817,7 +1818,7 @@ for the MAP estimator.
 
 
 \section{On Probabilistic Evidence}
-\label{sec:org9599df3}
+\label{sec:org406b031}
 
 In the previous chapter we showed how it is possible to rephrase a
 likelihood evidence as an hard evidence by means of augmenting the
@@ -2093,7 +2094,7 @@ discussed in \cite{PENG_2010}, which you could then plug-in
 
 
 \section{On Numerical EM}
-\label{sec:org231d7fd}
+\label{sec:org629fa48}
 
 As argued in the previous section when working with conjugate prior
 we might easily get to closed form solutions for the maximum of the
@@ -2132,7 +2133,7 @@ dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
 \subsection{Numerical EM for MLE estimator}
-\label{sec:orgd08eef9}
+\label{sec:org19042ca}
 
 In order to understand how to compute M-step according to an
 iterative method, think at the following.
@@ -2202,7 +2203,7 @@ for our solution. In that case the EM theory would collapse and
 there is no guarantee to reach a local maximum.
 
 \subsection{Numerical EM for MAP estimator}
-\label{sec:orgc1ce490}
+\label{sec:orgfe84537}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -2236,7 +2237,7 @@ need now to account for the prior distribution influence.
 
 
 \subsection{How to compute the numerical Hessian and Gradient}
-\label{sec:org820a6ce}
+\label{sec:org551eb16}
 
 This section concludes the chapter on Bayesian Parameter Learning
 by substituting the M-step of \ref{alg:Bayes-EM-Likelihood}, by a
@@ -2270,13 +2271,13 @@ analytical derivation of the maximum in the M-step.
 
 
 \subsubsection{{\bfseries\sffamily TODO} formulate the things in the paper below}
-\label{sec:org110a2ca}
+\label{sec:org7489e71}
 
 and incorporate them in the algo above.
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} define how you compute such numerical derivative.
-\label{sec:org4e9c39d}
+\label{sec:org4e0b659}
 
 note that you must have the guarantee of positive definite so that
 you move towards the maximum despite working with an approximate
@@ -2289,7 +2290,7 @@ wow. so you thought well.
 
 
 \item {\bfseries\sffamily TODO} note that the above Q terms are nothing else than the expected score and expected fisher information
-\label{sec:org1ba1120}
+\label{sec:org40abbc6}
 
 good paper in \href{https://arxiv.org/pdf/1608.01734.pdf}{this sense}.
 
@@ -2298,11 +2299,13 @@ good paper in \href{https://arxiv.org/pdf/1608.01734.pdf}{this sense}.
 exactly what I was looking forward to.
 
 incorporate everything in the next step.
+
+
+\newpage
 \end{enumerate}
 
-
 \section{Empirical Results}
-\label{sec:org81c02cb}
+\label{sec:org371faa8}
 
 
 
@@ -2310,20 +2313,36 @@ incorporate everything in the next step.
 
 
 
+\section{Conclusion}
+\label{sec:org00cf705}
+
+
+\subsection{{\bfseries\sffamily TODO} 1}
+\label{sec:org9def0ea}
+
+say that through the thesis you were able to show that the results
+presented generalize to the idea of Bayesian Learning with MAP
+estimator choice and the theory holds other for different types of
+uncertain evidence such as probabilistic evidence. 
+
+
+\newpage   
+
+
 \section{TODOs}
-\label{sec:org46aa4d5}
+\label{sec:org602dd51}
 
 \begin{enumerate}
 \item {\bfseries\sffamily TODO} check if particle formulation in energy functional ok as such
-\label{sec:org41bf692}
+\label{sec:org5117d26}
 \item {\bfseries\sffamily TODO} note that network structure G(V,X) how you described. Correct later
-\label{sec:org69d69b6}
+\label{sec:org4595640}
 \item {\bfseries\sffamily TODO} make more explicit the citation to koller and friedman in the chapter about the mathematics of the EM algo
-\label{sec:org9bec13a}
+\label{sec:org75ea21e}
 \item {\bfseries\sffamily TODO} note that the EM you loose global decomposition such that at the end with the local maxima of CPDs achieved by EM you ultimately just get a local maximum.
-\label{sec:org08c1856}
+\label{sec:org1f80ed4}
 \item {\bfseries\sffamily TODO} for last section - check at the following chapter.
-\label{sec:orgb16bb45}
+\label{sec:org6a59d1a}
 
 Concept: Representation Independence - in chapter 17 of the
 koller book. this is central as if that breaks apart the entire
@@ -2333,16 +2352,16 @@ thesis fall apart.
 you should therefore be careful with it.
 
 \item {\bfseries\sffamily TODO} check chapter 17 for making the point below
-\label{sec:org530287a}
+\label{sec:org32d5901}
 
 say at the end that the entire theory does not hold for locally
 shared and globally shared network parameters. there you would
 have to adjust the entire thing
 
 \item {\bfseries\sffamily TODO} have to insert as well as the sigma as parameter for the ess map in the exercise above
-\label{sec:orgb0f5337}
+\label{sec:org32226dd}
 \item {\bfseries\sffamily TODO} REASON ON HOW JEFFERY's method can work with the EM algorithm
-\label{sec:org087e976}
+\label{sec:org24b84d1}
 
 \newpage
 

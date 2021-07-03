@@ -243,11 +243,7 @@ m_step();
 
     something like that go over it and understand.
 
-
-    
       
-** TODO ask radu
-
 *** what are m_families?
 
     so =m-families= list/ or set of nodes: node =x= and parents.
@@ -255,7 +251,8 @@ m_step();
     I am not sure that this is the case. I think it might also well be
     the set of the variables present in each clique.
 
-**** TODO 
+**** DONE 
+     CLOSED: [2021-07-03 Sat 16:04]
 
      You will use this piece of info
 
@@ -274,7 +271,6 @@ m_step();
 
 * Reminder of c++
   
-
 *** Declaration of pointer
 
     Note that there are two different things you can declare with the
@@ -1459,6 +1455,7 @@ BAYES                 // first line always specify the type of graphical model: 
 
     evid files used for inference. train for parmaters.
 
+
 ** Parameter for the algorithm
 
       #+begin_example
@@ -1526,7 +1523,8 @@ BAYES                 // first line always specify the type of graphical model: 
 
     An example for the structure is given in [[file:merlin/data/cancer.prio][here]]
     
-**** IN-PROGRESS How should you set hyperparameters
+**** DONE How should you set hyperparameters
+     CLOSED: [2021-07-03 Sat 16:06]
 
      check at the book. there is a theory behind that.
 
@@ -1534,6 +1532,7 @@ BAYES                 // first line always specify the type of graphical model: 
      multinomial-dirichlet distribution. So work with integers. Lower
      integers -> less weight on priors and more easy for current data
      to change and influence the posterior.
+
 
 *** So think for instance at the following 0.1 example of the hyperparameters text file
 
@@ -1580,6 +1579,7 @@ BAYES
     Now check at the next section to implement the reading function of
     the hyperparameters.
  
+
 *** OUTDATED - Otherwise you can also set it at parameter at the beginning
     CLOSED: [2021-06-21 Mon 15:19]
 
@@ -1740,8 +1740,8 @@ for (size_t i = 0; i < ncliques; i++) {
 
       #+begin_example
       F_3 | P(F_3)
-      0 | 0.01
-      1 | 0.99
+      0   | 0.01
+      1   | 0.99
 
       F_0   F_1 |  P(F_1,F_0)
       0       0 |  0.6
@@ -2024,7 +2024,8 @@ void read(std::istream& is, bool positive_mode = false) {
    
 
 
-** IN-PROGRESS Reading function for hyperparameters
+** DONE Reading function for hyperparameters
+   CLOSED: [2021-06-27 Sun 19:40]
    :properties:
    :hearder-args:cpp: :session hello
    :end:
@@ -2099,8 +2100,9 @@ bool Merlin::read_hyperparameters(const char* filename) {
     function for the maximization step.
 
    
-* DONE understand the em-algorithm
-  CLOSED: [2021-06-06 Sun 11:19]
+
+
+* understand the em-algorithm
 
   Note that for the algorithm you will need three components for
   which you have to specify properties/ways:
@@ -2141,37 +2143,136 @@ bool Merlin::read_hyperparameters(const char* filename) {
    engine and get the likelihood of your network. You compute the
    optimal parameters and iterate.
 
+
 ** Initialize the Algorithm
 
    so at first checks at the missing and virtual evidence and count
    how many observations of these are present as well as their share
    amount.
 
-   then you check which factors are locked. so probably they already
-   started to work on something with locked factors.
+   
+*** Some notes about init algo 
 
-   then you initialize the CPTs. you can either do this via uniform
-   or random method.
+    then you check which factors are locked. so probably they already
+    started to work on something with locked factors. that is
+    correct. double checked with Radu.
+
+    then you initialize the CPTs. you can either do this via uniform
+    or random method.
     
-   #+begin_src cpp
+    #+begin_src cpp
     	// Initialize the CPTs uniformly at random
 	if (m_init_method == InitMethod::Uniform) {
 		m_gmo.uniform_bayes(m_lockedFactors);
 	} else if (m_init_method == InitMethod::Random){
 		m_gmo.random_bayes(m_lockedFactors);
 	}
-   #+end_src
+    #+end_src
 
-   so notice that this is exactly the step that you will be *required
-   to change*.
+    then there is a section about the initialization of the junction
+    tree.
 
-   then there is a section about the initialization of the junction
-   tree.
+    then it follows a bayes net initialization phase. I will explore
+    here next and make some quick notes about it.
 
-   then it follows a bayes net initialization phase. that is quite
-   interesting. it talks about families and that is a bit confusing
-   to me but I guess that there is where you initialize everything
-   together with the initialization of the CPTs above. 
+    #+BEGIN_SRC cpp 
+	// Initialize the join tree -- INFERENCE ENGINE
+	m_infer = cte(m_gmo);
+	m_infer.set_properties(m_properties);
+	m_infer.init(); // initialize the join tree
+
+	// Initialize the families (Bayes nets only)
+	size_t n = m_gmo.nvar();  // notice nvar == actual variables
+				  // (RV that are present in your
+				  // network)
+	const std::vector<factor>& factors = m_gmo.get_factors(); // factor table - data structure
+	
+	size_t m = factors.size();  // total number of factors 4th line in your uai file
+	m_families.resize(n);
+	m_counts.resize(m);         // you need a sufficient statistics per factor? actually not. understand why this is the case here.
+	for (size_t i = 0; i < m; ++i) {
+	  const factor& f = factors[i];   // one specific factor from the factor table.
+
+	  // have to better understand that with childs how children and parents are defined.
+	  // note that the child are so defined in the graphical_model file:
+	  //
+	  // 	if (m_markov == false) { // for Bayes nets, *last variable* - this is the back function below - is the child
+	  //    factors[i].set_child(cliques[i].back().label());
+	  //    }
+	  int child = f.get_child();
+	  assert(child >= 0); // Bayes factor (CPT)
+	  variable_set ps; // the parents set
+	  std::vector<vindex> pa;
+
+	  // so basically until you do not reach the child you keep
+	  // pushing back the nodes to the parents. note that the
+	  // label is the unique ID of tthe nodes. i.e. the identifier
+	  // starting at 0 in the uai file.
+	  for (variable_set::const_iterator it = f.vars().begin();
+	       it != f.vars().end(); ++it) {
+	    if (it->label() != (size_t)child) {
+	      pa.push_back(it->label());
+	      ps |= *it;
+	    }
+	  }
+
+	  // specify a vector of index m_families and assing to each
+	  // elemnt of the vector a vector containing all of the
+	  // indices of all of the parents of the child in the
+	  // network.
+	  m_families[child] = pa;
+
+	  // assing 0 to all of the variables. you call the
+	  // constructor with the variable set of the factor
+	  // class. this constructor returns a vector with the entries
+	  // for each variables to 0. Note this are in fact all of the
+	  // possible variables realizations. so it si the CPT table
+	  // for each factor.
+	  m_counts[i] = factor(f.vars(), 0.0);
+	  
+	  // note that from a test the =vars()=  method jyields the following:
+	  // [TEST] Understand the vars() method of the factor vector
+	  // [0]
+	  // [TEST] Understand the vars() method of the factor vector
+	  // [0,1]
+	  // [TEST] Understand the vars() method of the factor vector
+	  // [0,2]
+	  // [TEST] Understand the vars() method of the factor vector
+	  // [1,2,3]
+	  // [TEST] Understand the vars() method of the factor vector
+	  // [2,4]
+          // so it is basically a *set* containg the index of the variables associated to a factor.	  
+	}
+
+	if (m_debug) {
+	  std::cout << "Families:" << std::endl;
+	  for (size_t i = 0; i < m_families.size(); ++i) {
+	    std::cout << "var " << i << ": ";
+	    std::copy(m_families[i].begin(), m_families[i].end(),
+		      std::ostream_iterator<int>(std::cout, " "));
+	    std::cout << std::endl;
+	  }
+
+	  std::cout << "Initial parameters:" << std::endl;
+	  for (size_t i = 0; i < m_gmo.get_factors().size(); ++i) {
+	    std::cout << " " << m_gmo.get_factor(i) << std::endl;
+	  }
+	}
+    #+END_SRC
+
+*** DONE have to  bbetter understand these parents and child structures
+    CLOSED: [2021-06-27 Sun 22:18]
+
+    it seems you are performing vector operations in your m-step and
+    then you access the information of interest by indexing.
+
+    that is quite weird cause theoretically there are no vector
+    operations in cpp. have to understand that better.
+
+    -----
+
+    SEE ABOVE I N THE CODE CHUNK THE INTERPRETATION
+    
 
 ** M-step
 
@@ -2211,7 +2312,8 @@ bool Merlin::read_hyperparameters(const char* filename) {
       The idea is the following. You run the e-step before running the
       m-step.
 
-****** QUESTION Ask radu     
+****** DONE Ask radu     
+       CLOSED: [2021-06-27 Sun 22:20]
 
       There at each time you compute the new factors given the evidence
       and save them to a graphical model --> **where is this step??**
@@ -2232,150 +2334,523 @@ bool Merlin::read_hyperparameters(const char* filename) {
       GRAPHICAL MODEL IS CHANGED AND FACTORS ARE ADJUSTED.
     
 
-***** Outdated - way to the final learning
+****** Outdated - way to the final learning
 
-       To my understanding the key of the the M-step is in the following
-       one-liner.
-
-       #+BEGIN_SRC cpp 
-    m_infer.reinit(m_gmo.get_factors());
-       #+END_SRC
-
-       The idea is that such a function specified by argument as
-       reference such that when you call such a function you reinit and
-       get the new factors according to the cte algorithm.
-
-       Given such new factors you can then get the new parameters.
-    
-****** DONE Understand map from expected sufficient statistics to marginal of the factors.
-       CLOSED: [2021-06-05 Sat 20:38]
-
-       I think that the issue why you do not see the counts when
-       computing the new evidence comes from the following comment:
-
-       #+begin_example
-     // Counts factors must be aligned to the theta factors (by construction)
-       #+end_example
-
-       BUT THAT JUST COUNTS FOR MULTINOMIAL BY CONSTRUCTION - FOR OTHERS
-       YOU MIGHT NEED TO ADJUST THAT COUNT.
-     
-       So you have to understand that in order to understand how the new
-       thetas are parameterized. Otherwise you will always miss a piece
-       of evidence.
-
-       Note that this link must in fact exists. Check for instance at
-       the following in the e-step:
-
-       #+BEGIN_SRC cpp 
-     m_counts[i] += m_infer.get_joint_marginal();
-       #+END_SRC
-
-       Such that there must exist a clear relation among the
-       joint-marginal and the counts.
-
-******* Solution
-
-	Note that this is the case as we showed that in the case of
-	simple multinomial CPD the sufficient statistics corresponds to
-	the probability distribution.
-
-	In this sense you get the joint marginal and the marginal
-	arguments with the evidence and the scope are passed in the
-	previous line:
-
+	To my understanding the key of the the M-step is in the following
+	one-liner.
 
 	#+BEGIN_SRC cpp 
+    m_infer.reinit(m_gmo.get_factors());
+	#+END_SRC
+
+	The idea is that such a function specified by argument as
+	reference such that when you call such a function you reinit and
+	get the new factors according to the cte algorithm.
+
+	Given such new factors you can then get the new parameters.
+    
+******* DONE Understand map from expected sufficient statistics to marginal of the factors.
+	CLOSED: [2021-06-05 Sat 20:38]
+
+	I think that the issue why you do not see the counts when
+	computing the new evidence comes from the following comment:
+
+	#+begin_example
+     // Counts factors must be aligned to the theta factors (by construction)
+	#+end_example
+
+	BUT THAT JUST COUNTS FOR MULTINOMIAL BY CONSTRUCTION - FOR OTHERS
+	YOU MIGHT NEED TO ADJUST THAT COUNT.
+     
+	So you have to understand that in order to understand how the new
+	thetas are parameterized. Otherwise you will always miss a piece
+	of evidence.
+
+	Note that this link must in fact exists. Check for instance at
+	the following in the e-step:
+
+	#+BEGIN_SRC cpp 
+     m_counts[i] += m_infer.get_joint_marginal();
+	#+END_SRC
+
+	Such that there must exist a clear relation among the
+	joint-marginal and the counts.
+
+******** Solution
+
+	 Note that this is the case as we showed that in the case of
+	 simple multinomial CPD the sufficient statistics corresponds to
+	 the probability distribution.
+
+	 In this sense you get the joint marginal and the marginal
+	 arguments with the evidence and the scope are passed in the
+	 previous line:
+
+
+	 #+BEGIN_SRC cpp 
       for (size_t i = 0; i < m_counts.size(); ++i) {
 	variable_set vs = m_counts[i].vars();
 	temp.joint_marginal(vs, evidence); // so here is where you pass the conditioning variables and get the necessary conditional probabilities
-	#+END_SRC
+	 #+END_SRC
 
-	Check at your thesis text to see that - equation 38.
+	 Check at your thesis text to see that - equation 38.
 
-	So that is basically it. 
-
-
-**** E-step
-
-     Here the inference step is done via big-clique algorithm.
-
-     Understand this is the mental workflow.
-
-     You have a =read_dataset= function in the =merlin.cpp= file. There
-     you parse the text file you get with the evidence.
-
-     Then the idea is to create a vector of *observations* and save
-     the records in there.
-
-     Notice now the idea of object oriented programming and
-     polymorphism. You specify an observation class where you can
-     instantiate different observation objects with different
-     constructors.
-
-     Then when parsing the file you either get values for the
-     realization or likelihood observations that you store in
-     respective vectors/variables.
-
-     Then you add to the observations vector passing either such value
-     or the likelihood. Depending on what you pass a different
-     constructor will be passed.
-
-     There in the constructor the variable =is_virtual= etc. is
-     initialized in the correct way depending on which constructor is
-     called. And you can then use this information when performing
-     your inference tasks.
-
-     Then given this the structure is the following.
-
-     - You first check if virtual evidence is present and in case
-       augment the virtual network by adding virtual nodes and creating
-       a new graphical model =gm=.
-
-     - After you have a complete network (either because there was no
-       virtual evidence or because you augmented the original network),
-       you run inference. I.e. you pass the graphical model to the
-       inference algorithm. In this case the big-clique algorithm.
-       There you propagate the evidence and get the likelihood of the
-       network.
-
-       Finally you marginalize over the evidence and the scope to get
-       the probability of observing the synthetically completed
-       observations.
-
-       This in the case of multinomial distribution has a one to one
-       relation with the expected sufficient statistics that you would
-       finally use for the new network parameterization.
+	 So that is basically it. 
 
 
-*** Config Parameters
+*** Code notes & understanding
 
-    Notice then that it follows an entire section, where you treat
-    all of the factors indexing according to the bigendian notation
-    etc.
+    it was correct your interpretation. the music plays in the
+    e-step. here you just extract the information and aggregate.
 
-    That is a bit annoying next. Understand it cause then you would
-    actually be over with the understanding of the =em= algorithm.
 
-    To understand that you have to understand the =index.h= there the
-    classes for the indexing of the factors are defined.
+*** M_counts scope & value
 
-    Check at your notes about the bigendian conversion and understand
-    if the way you worked with it is the same.
+    Note that once the scope is clear it will be clear how to extend
+    your current model to make it fit.
 
-    So that is correct in the =index.h= file you have the
-    =convert_index= method that transforms the factor input of the
-    =uai= to the bigendian factor notation. This is in fact what it
-    is used internally for the algorithm and apparently the input of
-    the =uai= file is in littleendian.
+    I.e. you will make the mapping from the m_counts to the adjusted
+    m_counts taking into consideration the hyperparameters.
 
-    So first of all understand the following: the =thetas= variable in
-    the code represent factors not individual parameters.
+    Note that you should not confuse the marginalization over the
+    probability function that you perform, in order to obtain the
+    sufficient statistics and the one you do when summing up the
+    sufficient-statistics m_counts. These are two very separate
+    things that you should not confound with each other.
 
-    You have in fact a loop that gets all of the states from one
-    factor.
+    The first one is done in the e-step with the =.joint-marginal()=
+    method. The other is done via the =sum= method.
+
+    You should not confuse among the two.
+    
+**** DONE Scope of M-counts
+     CLOSED: [2021-07-03 Sat 16:03]
+
+     so note from your introductory session. it is not the same
+     structure the one of m_counts and the one of hyperparameters.
+
+     This means the following:
+
+     - when you create the m_counts you create them per factor -
+       i.e. cliques - i.e. per the number of variables combination
+       =i..e the third line the uai files=.
+
+     - hyperparameters are also defined per factor. same strucutre so
+       they might in fact have the same scope.
+
+     - note that *m_counts* is of type =vector<factor>= so it is a
+       vector of factors.
+
+       how are the factors defined? this is a class and its objects
+       are instantiated in multiple different ways. The three major
+       important elements of such objects are the following:
+
+       - v_ = a /set of variables/ that is associated to the factor.
+
+       - t_ = a /vector of int/ - i.e. the actual values of such factor.
+
+       - c_ = the index of the child variable (this for bayes net).
+
+       given such a basic structure of the factors it is possible to
+       understand the m_counts better.
+
+       note that first of the dimension of the m_counts is the same as
+       the one of the factors present in the original graphical model
+
+       #+BEGIN_SRC cpp 
+const std::vector<factor>& factors = m_gmo.get_factors();
+size_t m = factors.size();
+m_counts.resize(m);
+
+// then you instantiate all of the different factors entries passing
+// the argument for =v_= and =t_=. It follows immediately the strcutre
+// of your table.
+m_counts[i] = factor(f.vars(), 0.0);
+       #+END_SRC
+
+       So that then the entries of the same factors for the
+       hyperparameters and the m_counts should be defined in the same
+       way over the same scope. They should both follow the BigEndian
+       notation.
+
+       Have to double check that.
+
+       Double checked. That is correct. It is the right way to compute
+       it and the factor space is the same.
+
+       So notice that the only thing that you need to do is to
+       transform the obtained m_counts by adding the hyperparameters
+       and subtracting 1 to each entry.
+
+       Notice that there is a parenthesis in the sum in the
+       denominator. Do not forget it. 
+
+       #+BEGIN_SRC cpp 
+       // try to subtract a single value from a factor and check whether such operator overloader works.
+       std::cout << "[TEST] Added Factor: " << std::endl;
+
+       std::cout << 	m_counts[1] + 1 << std::endl;
+       #+END_SRC
+
+       Ok - so as long as it is correct it is all fine.
+
+       
+     
+                         
+**** DONE understand factor division BinOpIP - function specific function. find it and check at it in case of need
+     CLOSED: [2021-07-02 Fri 10:42]
+    
+
+**** DONE you can solve your issue in the following way
+     CLOSED: [2021-07-02 Fri 18:30]
+
+     1. get the end-factor table. adjust and check if it makes sense
+        your update.
+
+	Original sum factor
+
+     #+begin_example
+[DEBUG] Begin M-step
+Factor sum 
+Factor over []: 10
+Factor sum 
+Factor over [0]: 6.5 3.5
+Factor sum 
+Factor over [0]: 6.5 3.5
+Factor sum 
+Factor over [1,2]: 2.25 3.25 3.75 0.75
+Factor sum 
+Factor over [2]: 5.5 4.5
+ 0: log-likelihood = -23.567
+[DEBUG] Begin M-step
+Factor sum 
+Factor over []: 10
+Factor sum 
+Factor over [0]: 6.44923 3.55077
+Factor sum 
+Factor over [0]: 6.44923 3.55077
+Factor sum 
+Factor over [1,2]: 2.30849 2.86195 3.81996 1.0096
+Factor sum 
+Factor over [2]: 5.17044 4.82956
+ 1: log-likelihood = -19.7573
+[DEBUG] Begin M-step
+Factor sum 
+Factor over []: 10
+Factor sum 
+Factor over [0]: 6.24722 3.75278
+Factor sum 
+Factor over [0]: 6.24722 3.75278
+Factor sum 
+Factor over [1,2]: 2.18189 2.68989 3.94005 1.18816
+Factor sum 
+Factor over [2]: 4.87178 5.12822
+ 2: log-likelihood = -18.966
+[DEBUG] Begin M-step
+Factor sum 
+Factor over []: 10
+Factor sum 
+Factor over [0]: 6.0582 3.9418
+Factor sum 
+Factor over [0]: 6.0582 3.9418
+Factor sum 
+Factor over [1,2]: 2.08524 2.5875 4.01193 1.31532
+Factor sum 
+Factor over [2]: 4.67274 5.32726
+ 3: log-likelihood = -18.5057
+[DEBUG] Begin M-step
+Factor sum 
+Factor over []: 10
+Factor sum 
+Factor over [0]: 5.90088 4.09912
+Factor sum 
+Factor over [0]: 5.90088 4.09912
+Factor sum 
+Factor over [1,2]: 2.02288 2.53464 4.04689 1.39559
+Factor sum 
+Factor over [2]: 4.55751 5.44249
+ 4: log-likelihood = -18.1486
+[DEBUG] Begin M-step
+Factor sum 
+Factor over []: 10
+Factor sum 
+Factor over [0]: 5.78219 4.21781
+Factor sum 
+Factor over [0]: 5.78219 4.21781
+Factor sum 
+Factor over [1,2]: 1.97951 2.51521 4.06304 1.44223
+Factor sum 
+Factor over [2]: 4.49473 5.50527
+ 5: log-likelihood = -17.8724
+[DEBUG] Begin M-step
+Factor sum 
+Factor over []: 10
+Factor sum 
+Factor over [0]: 5.70052 4.29948
+Factor sum 
+Factor over [0]: 5.70052 4.29948
+Factor sum 
+Factor over [1,2]: 1.94649 2.51453 4.07086 1.46812
+Factor sum 
+Factor over [2]: 4.46102 5.53898
+ 6: log-likelihood = -17.6655
+[DEBUG] Begin M-step
+Factor sum 
+Factor over []: 10
+Factor sum 
+Factor over [0]: 5.64854 4.35146
+Factor sum 
+Factor over [0]: 5.64854 4.35146
+Factor sum 
+Factor over [1,2]: 1.92041 2.5224 4.07507 1.48212
+Factor sum 
+Factor over [2]: 4.44281 5.55719
+ 7: log-likelihood = -17.5142
+[DEBUG] Begin M-step
+Factor sum 
+Factor over []: 10
+Factor sum 
+Factor over [0]: 5.61757 4.38243
+Factor sum 
+Factor over [0]: 5.61757 4.38243
+Factor sum 
+Factor over [1,2]: 1.89978 2.53294 4.07763 1.48965
+Factor sum 
+Factor over [2]: 4.43272 5.56728
+ 8: log-likelihood = -17.4051
+[DEBUG] Begin M-step
+Factor sum 
+Factor over []: 10
+Factor sum 
+Factor over [0]: 5.6002 4.3998
+Factor sum 
+Factor over [0]: 5.6002 4.3998
+Factor sum 
+Factor over [1,2]: 1.88363 2.54324 4.07936 1.49377
+Factor sum 
+Factor over [2]: 4.42688 5.57312
+ 9: log-likelihood = -17.3268
+     #+end_example
+	
+
+
+
+     2. check if it respects and makes sense.
+     
+
+
+**** DONE ask radu
+     CLOSED: [2021-07-02 Fri 18:30]
+
+     ask about all of that =v_=, =t_= etc... where are they defined.
+
+     ask at radu this piece of code. it does not make sense at all
+
+     #+BEGIN_SRC cpp 
+
+variable_set vx(m_gmo.var(x)); // m_gmo.var(x) seems to return exactly x. makes sense logically. both are index of the variables.
+
+factor sum = m_counts[i].sum(vx); // but it should be a set according
+                                  // to this function. understand how
+                                  // it is possible note that here the
+                                  // music plays. the sum is not
+                                  // defined as the sum for the
+                                  // variable. it must take the
+                                  // variable as argument for doing
+                                  // some references but it is not the
+                                  // sum of it
+
+// the above is in fact true. check at the definition of the sum operator in the factor.h file
+/*
+ factor sum(variable_set const& sum_out) const {
+ 	variable_set t = v_ - sum_out;  // note that v_ is the variable set associated with the factor (m_counts[i] in the above). so t is the set of variables but the chiild.
+	return marginal(t);   // recall that the count is defined as the marginal probability. check your thesis notes to see this.
+ };
+
+ // the marginal function being called - note that is a bit misleading.  where does the num_states come from. t_ is a table of factors try to print it somewhere
+
+ factor marginal(variable_set const& target) const {
+    factor F(target & vars(), 0.0);
+    subindex s(v_, F.vars());
+    for (size_t i = 0; i < num_states(); ++i, ++s)
+
+    // VERY IMPORTANT //
+    // you return the *table entry* (t_[i]). This because the table was updated with the marginal entry in the *e-step*.
+    
+      F[s] += t_[i]; 
+    return F;
+  };
+,*/
+
+
+factor temp = m_counts[i] / sum; // that is true it is a table. how
+				 // the division is specified for two
+				 // factor object is specified in the
+				 // factor class. there the / operator
+				 // is overwritten. have to understand
+				 // binOpIP... ask Radu ok so help
+				 // yourself with the theory. like
+				 // this it is clear then how the
+				 // division is performed. If you have
+				 // to implement it yourself in the
+				 // code you will still have issues at
+				 // the moment.
+
+variable_set scope = th.vars();
+factor new_th = th; // copy the previous factor
+index_config cv1(scope, true);
+config_index cv2(sum.vars(), true);
+for (size_t j = 0; j < th.num_states(); ++j) {
+  std::map<size_t, size_t> config = cv1.convert(j);
+  size_t k = cv2.convert(config);
+  if (sum.get(k) != 0) {
+    double v = temp.get(j);
+    new_th.set(j, v);
+  }
+     #+END_SRC
+	 
+
+**** DONE remove all of the [HELP] entries in the code.
+     CLOSED: [2021-07-03 Sat 16:02]
+
+
+**** TODO add description of .prio in the README
+     
+**** DONE UNDERSTAND BETTER THE SCOPE OF THE SUM - JUST ALL THE POSSIBLE Y WITHOUT CHANGING PARENTS. UPDATE YOUR THESIS NOT THAT CLEAR THERE.
+     CLOSED: [2021-07-03 Sat 16:02]
+
+     this is the local likelihood decomposition property. you did not
+     include it sufficiently well in your thesis.
+
+     i.e. so far you just did the general derivation but do it like
+     that and you will see that everything will simplify.
+
+     also forgot some parents terms in there.
+
+     work through the *local and global decomposition* properties
+     otherwise it becomes quickly messy.
+
+     ok that was wrong. recall that this is exactly the difference in
+     the EM method. the two decomposition properties /do not hold/.
+
+     *you should still do some cleaning with the notation as at the
+     moment it is still too messy.*
+
+     especially with the parents. I think you can leave everything as
+     is but the one of the parents should go away.
+
+     *NOTE* so far all wrong. you are doing the correct
+     corrections. did a poor copy and paste. check at the book and
+     your notes. does not make sense what you have in there. missing
+     completely parents term and did quite some mess there.
+     
+
+**** TODO note that the likelihood that is written is not correct
+
+     would have most likely to update it.
+
+     should get the posterior likelihood of the multinomial-dirichlet
+     distribution but like this you are most likely computing the
+     likelihood of the old distribution - i.e. the multinomial
+     distribution.
+          
+** E-step
+
+   
+*** TODO Thing to understand
+
+    Here it is all clear just would have to make sense to check exactly
+    how the joint-marginal is computed algorithmically and how the
+    following is defined and what it returns
 
     #+BEGIN_SRC cpp 
+    m_counts[i] += m_infer.get_joint_marginal();
+    #+END_SRC
+
+    This especially as it returns an *entire factor* and not a single
+    value.
+   
+
+*** General Notes
+
+    Here the inference step is done via big-clique algorithm.
+
+    Understand this is the mental workflow.
+
+    You have a =read_dataset= function in the =merlin.cpp= file. There
+    you parse the text file you get with the evidence.
+
+    Then the idea is to create a vector of *observations* and save
+    the records in there.
+
+    Notice now the idea of object oriented programming and
+    polymorphism. You specify an observation class where you can
+    instantiate different observation objects with different
+    constructors.
+
+    Then when parsing the file you either get values for the
+    realization or likelihood observations that you store in
+    respective vectors/variables.
+
+    Then you add to the observations vector passing either such value
+    or the likelihood. Depending on what you pass a different
+    constructor will be passed.
+
+    There in the constructor the variable =is_virtual= etc. is
+    initialized in the correct way depending on which constructor is
+    called. And you can then use this information when performing
+    your inference tasks.
+
+    Then given this the structure is the following.
+
+    - You first check if virtual evidence is present and in case
+      augment the virtual network by adding virtual nodes and creating
+      a new graphical model =gm=.
+
+    - After you have a complete network (either because there was no
+      virtual evidence or because you augmented the original network),
+      you run inference. I.e. you pass the graphical model to the
+      inference algorithm. In this case the big-clique algorithm.
+      There you propagate the evidence and get the likelihood of the
+      network.
+
+      Finally you marginalize over the evidence and the scope to get
+      the probability of observing the synthetically completed
+      observations.
+
+      This in the case of multinomial distribution has a one to one
+      relation with the expected sufficient statistics that you would
+      finally use for the new network parameterization.
+
+
+**** Config Parameters
+
+     Notice then that it follows an entire section, where you treat
+     all of the factors indexing according to the bigendian notation
+     etc.
+
+     That is a bit annoying next. Understand it cause then you would
+     actually be over with the understanding of the =em= algorithm.
+
+     To understand that you have to understand the =index.h= there the
+     classes for the indexing of the factors are defined.
+
+     Check at your notes about the bigendian conversion and understand
+     if the way you worked with it is the same.
+
+     So that is correct in the =index.h= file you have the
+     =convert_index= method that transforms the factor input of the
+     =uai= to the bigendian factor notation. This is in fact what it
+     is used internally for the algorithm and apparently the input of
+     the =uai= file is in littleendian.
+
+     So first of all understand the following: the =thetas= variable in
+     the code represent factors not individual parameters.
+
+     You have in fact a loop that gets all of the states from one
+     factor.
+
+     #+BEGIN_SRC cpp 
      for (size_t j = 0; j < th.num_states(); ++j) {
        std::map<size_t, size_t> config = cv1.convert(j);
        size_t k = cv2.convert(config);
@@ -2384,62 +2859,63 @@ bool Merlin::read_hyperparameters(const char* filename) {
 	 new_th.set(j, v);
        }
      }
-    #+END_SRC
+     #+END_SRC
 
-    The question is now on this conversions and their usage. Note
-    that it is also interesting that you do not use the results from
-    =cv2.convert= when extracting the content.
+     The question is now on this conversions and their usage. Note
+     that it is also interesting that you do not use the results from
+     =cv2.convert= when extracting the content.
 
-**** QUESTION understand difference among index_config and config_index
+***** QUESTION understand difference among index_config and config_index
 
-     have to understand that piece of the cake; not that clear to
-     this moment. especially the functioning of the first.
+      have to understand that piece of the cake; not that clear to
+      this moment. especially the functioning of the first.
 
-     I think that the =index_config= is the part that makes
-     everything lexiographically correct. or smth like that
+      I think that the =index_config= is the part that makes
+      everything lexiographically correct. or smth like that
 
-***** index_config
+****** index_config
 
-      creates two vectors: =m_dims= and =m_vars=.
+       creates two vectors: =m_dims= and =m_vars=.
 
-      The second, =m_vars= saves the factors. The first =m_dims=
-      saves the states of variables sequentially.
+       The second, =m_vars= saves the factors. The first =m_dims=
+       saves the states of variables sequentially.
 
-      Then the idea is that given such vectors saving all of the
-      different states and variables you can call the =convert=
-      method to get the variables for a particular index *Represents
-      the Index of a Factor*, in BigEndian or LittleEndian notation.
+       Then the idea is that given such vectors saving all of the
+       different states and variables you can call the =convert=
+       method to get the variables for a particular index *Represents
+       the Index of a Factor*, in BigEndian or LittleEndian notation.
 
-      Then it starts this weird logic in the code. Have to ask it to
-      Radu:
+       Then it starts this weird logic in the code. Have to ask it to
+       Radu:
 
-      #+BEGIN_SRC cpp 
+       #+BEGIN_SRC cpp 
        if (m_bigendian) {
 	       for (size_t v = 0; v < m_dims.size(); ++v) {
 		       I[v] = index % m_dims[v];
 		       index -= I[v];
 		       index /= m_dims[v];
 	       }
-      #+END_SRC
+       #+END_SRC
              
 
-***** config_index
+****** config_index
 
-***** QUESTION start to code everything for next week and then ask for help.
+****** QUESTION start to code everything for next week and then ask for help.
 
-      i.e. code with the same conversion. make smaller checks to see
-      how everything is converted. then based on that
+       i.e. code with the same conversion. make smaller checks to see
+       how everything is converted. then based on that
 
-***** QUESTION print the thetas to see the structure of this factor vector.
+****** QUESTION print the thetas to see the structure of this factor vector.
 
-      looks like a matrix. two entries
+       looks like a matrix. two entries
 
-      #+BEGIN_SRC cpp 
+       #+BEGIN_SRC cpp 
        new_th.set(j, v);
-      #+END_SRC
+       #+END_SRC
 
-      understand why this is the case              
+       understand why this is the case              
        
+
 
 
 * General Notes
@@ -2568,8 +3044,8 @@ bool Merlin::read_hyperparameters(const char* filename) {
     not this for sure. minor modification just regarding
     hyperparameterFile.
 
-
-** TODO implemment a set_hyperparameters method in the engine for the EM.
+** DONE implemment a set_hyperparameters method in the engine for the EM.
+   CLOSED: [2021-07-03 Sat 16:07]
 
    have to change the ~merlin::em~ function.  I.e. it should not just
    take the graphical model but as well the hyperparameters. I.e. the
@@ -2618,7 +3094,8 @@ bool Merlin::read_hyperparameters(const char* filename) {
       on the =debug flag=.
      
 
-**** TODO understand how you differentiate between the case of hyperparameters and the plain case
+**** DONE understand how you differentiate between the case of hyperparameters and the plain case
+     CLOSED: [2021-06-27 Sun 19:27]
 
      i.e. when to run some piece of code and when not.
 
@@ -2643,15 +3120,73 @@ bool Merlin::read_hyperparameters(const char* filename) {
        all of the models and just modified if hyperParameters are
        supplied. you can then just execute the necessary code upon the
        conditional statement: ~if (m_hyper == false)~
-
-     
+            
       
 **** TODO understand the m_factors initialization. will have to modify it.
+
+     - this in the em algorithm implemented in the em.cpp file. Note
+       that at the theoretical level you should be fine with it. You
+       just need one time the m-counts. this because that stores the
+       expected sufficient statistics and you just have one of this.
      
      - have to make sure you add it then to the right place. but you
        are already more less done.
-    
-** TODO should also implement read_hyperparameter method for the binary file and not for path to the file
 
-** TODO check if hyperparameter argument passsed. if yes then read hyperparameters otherwise do not.
+     - in order to properly implement the algorithm you have to
+       distinguish among the =factors= and =variables=. One is the
+       clique storing a set of variables associated with it. The other
+       is the variables themselves. Have to double check the
+       notation. You studied it before when checking the construction
+       of the factor table.
+    
+** DONE check if hyperparameter argument passsed. if yes then read hyperparameters otherwise do not.
+   CLOSED: [2021-07-03 Sat 16:07]
+
+** TODO should also implement read_hyperparameter method for the binary file and not for path to the file
        
+* Logging code as a help - Might Use it in the future
+
+  This is a big chunck of code that you can use to get the factor
+  table and understand how such data structures are used. 
+
+  #+BEGIN_SRC cpp 
+	std::cout << "[EM] + start parsing the hyper graphical model  : " << m_order_method << std::endl;
+
+	// TEST - FUNCTION
+	// ---------------
+	
+	// Use the following *helper* function. It was from the
+	// write_model function from the graphical_model header
+	// file. I guess you can borrow a bit from it.
+
+
+	// Write the factor tables for the hyperparameters
+	if (m_hyper == false){
+	  std::cout << "[EM] + HERE factor table hyperparameters STARTS" << std::endl;
+	  for (size_t i = 0; i < m_hyperParameters.num_factors(); ++i) {
+	    const factor& f = m_hyperParameters.get_factor(i);
+	    std::cout << f.numel() << std::endl;
+	    for (size_t j = 0; j < f.numel(); ++j) {
+	      std::cout << " " << std::setiosflags(std::ios::fixed)
+			<< std::setprecision(8) << f[j];
+	    }
+	    std::cout << std::endl << std::endl;
+	  }
+	}
+
+	std::cout << "[EM] + HERE factor table graphical model STARTS" << std::endl;
+	for (size_t i = 0; i < m_gmo.num_factors(); ++i) {
+	  const factor& f = m_gmo.get_factor(i);
+	  std::cout << f.numel() << std::endl;
+	  for (size_t j = 0; j < f.numel(); ++j) {
+	    std::cout << " " << std::setiosflags(std::ios::fixed)
+		      << std::setprecision(8) << f[j];
+	  }
+	  std::cout << std::endl;
+	}
+
+	// ok - so the mapping is correct. same structure in big
+	// endian as the graphical model. can modify the m_step now
+	// according to the thesis material.
+
+  #+END_SRC

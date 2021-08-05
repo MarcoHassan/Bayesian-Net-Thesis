@@ -1,3 +1,4 @@
+
 * Some general notes on Merlin
   :LOGBOOK:
   CLOCK: [2021-03-29 Mon 17:20]--[2021-03-29 Mon 17:46] =>  0:26
@@ -106,7 +107,8 @@
 
 ** Solved Questions
 
-*** ask radu if the em just works with cte inference method to this stage.
+*** DONE ask radu if the em just works with cte inference method to this stage.
+    CLOSED: [2021-07-04 Sun 12:44]
 
     exact inference algorithm. joint-tree.
 
@@ -138,7 +140,10 @@
      When running the engine for the em-task you pass the original
      network (see the ~merlin::em s(gm);~ command) and then you
      augment for virtual evidence in case of need in the =em.cpp=
-     file.
+     file. AND THIS ONE YOU DO AT EVERY E-STEP. You do not do it at
+     initialization and this is the ultimate reason why you have that
+     piece of the code in em and cannot leverage the one in the
+     =merlin.cpp= engine. 
 
 
 *** What are locked Factors in the M-step?
@@ -164,84 +169,6 @@
 
      
 
-
-
-*** why when you run the em-engine are you calling
-
-    #+BEGIN_SRC cpp 
-e_step();
-m_step();
-    #+END_SRC
-
-    And not the opposite?
-
-    Like this there is convergence and you still update the parameters
-    one last time? Is it not a waste of time.
-
-    Ok so note that also in the book is done like this.
-
-    So apparently that is normal.
-
-
-*** where do you get if the observation is virtual or not
-
-    cannot understand it at the moment. 
-
-    #+BEGIN_SRC cpp 
-    if (obs.is_virtual()) {
-      virtualEvidence.push_back(obs); // note push_back is a function of the vector operator. it adds obs at the end of the vecctor. 
-    } 
-    #+END_SRC
-
-    there you get observations from om entries coming from
-    =m_dataset=. so there on =m_dataset= it must be somehow described
-    how you would use and work with virtual evidence.
-    
-**** Solution
-
-     So understand that this is the mental workflow.
-
-     You have a =read_dataset= function in the =merlin.cpp=
-     file. There you parse the text file you get with the evidence.
-
-     Then the idea is to create a vector of *observations* and save
-     the records in there.
-
-     Notice now the idea of object oriented programming and
-     polymorphism. You specify an observation class where you can
-     instantiate different observation objects with different
-     constructors.
-
-     Then when parsing the file you either get values for the
-     realization or likelihood observations that you store in
-     respective vectors/variables.
-
-     Then you add to the observations vector passing either such value
-     or the likelihood. Depending on what you pass a different
-     constructor will be passed.
-
-     There in the constructor the variable =is_virtual= etc. is
-     initialized in the correct way depending on which constructor is
-     called. And you can then use this information when performing
-     your inference tasks. 
-
-
-*** Virtual evidence syntax
-
-    #+begin_example
-    [0.7;0.5],[0.1;0.4]
-    #+end_example
-
-   ~read_dataset~ function finds virtual evidence in the file and
-   writes it in likelihood vectors.
-   
-**** DONE 
-     CLOSED: [2021-06-06 Sun 10:50]
-
-    when you pass a likelihood vector to the constructor you virtual
-    evidence.
-
-    something like that go over it and understand.
 
       
 *** what are m_families?
@@ -436,6 +363,7 @@ const string& message(); // Read-only
 
     It is therefore clear and immediate that c++ as a language allows
     you a much richer modeling set.
+
 
 *** Pointers and Addresses
 
@@ -1578,7 +1506,6 @@ BAYES
 
     Now check at the next section to implement the reading function of
     the hyperparameters.
- 
 
 *** OUTDATED - Otherwise you can also set it at parameter at the beginning
     CLOSED: [2021-06-21 Mon 15:19]
@@ -1594,9 +1521,6 @@ BAYES
     Nonetheless, I think it makes better sense to focus on the file
     solution as there might be quite some parameters if you need
     hyperparameters for each node.
-   
-
-
 
 
 * Reading Process
@@ -2099,7 +2023,6 @@ bool Merlin::read_hyperparameters(const char* filename) {
     Then adapt the M-step. Keep everything equal. Just use a different
     function for the maximization step.
 
-   
 
 
 * understand the em-algorithm
@@ -2386,7 +2309,6 @@ bool Merlin::read_hyperparameters(const char* filename) {
 	 arguments with the evidence and the scope are passed in the
 	 previous line:
 
-
 	 #+BEGIN_SRC cpp 
       for (size_t i = 0; i < m_counts.size(); ++i) {
 	variable_set vs = m_counts[i].vars();
@@ -2396,7 +2318,6 @@ bool Merlin::read_hyperparameters(const char* filename) {
 	 Check at your thesis text to see that - equation 38.
 
 	 So that is basically it. 
-
 
 *** Code notes & understanding
 
@@ -2631,12 +2552,8 @@ Factor sum
 Factor over [2]: 4.42688 5.57312
  9: log-likelihood = -17.3268
      #+end_example
-	
-
-
 
      2. check if it respects and makes sense.
-     
 
 
 **** DONE ask radu
@@ -2647,7 +2564,6 @@ Factor over [2]: 4.42688 5.57312
      ask at radu this piece of code. it does not make sense at all
 
      #+BEGIN_SRC cpp 
-
 variable_set vx(m_gmo.var(x)); // m_gmo.var(x) seems to return exactly x. makes sense logically. both are index of the variables.
 
 factor sum = m_counts[i].sum(vx); // but it should be a set according
@@ -2714,8 +2630,10 @@ for (size_t j = 0; j < th.num_states(); ++j) {
      CLOSED: [2021-07-03 Sat 16:02]
 
 
-**** TODO add description of .prio in the README
+**** DONE add description of .prio in the README
+     CLOSED: [2021-07-08 Thu 11:17]
      
+
 **** DONE UNDERSTAND BETTER THE SCOPE OF THE SUM - JUST ALL THE POSSIBLE Y WITHOUT CHANGING PARENTS. UPDATE YOUR THESIS NOT THAT CLEAR THERE.
      CLOSED: [2021-07-03 Sat 16:02]
 
@@ -2743,21 +2661,96 @@ for (size_t j = 0; j < th.num_states(); ++j) {
      corrections. did a poor copy and paste. check at the book and
      your notes. does not make sense what you have in there. missing
      completely parents term and did quite some mess there.
-     
 
-**** TODO note that the likelihood that is written is not correct
+
+**** TODO [#A] note that the likelihood that is written is not correct
+
+     understand the stopping criteria for em in the case of Bayesian
+     Learning.
 
      would have most likely to update it.
 
-     should get the posterior likelihood of the multinomial-dirichlet
-     distribution but like this you are most likely computing the
-     likelihood of the old distribution - i.e. the multinomial
-     distribution.
-          
-** E-step
+     the stopping criteria should be the score-map now.
 
+     this is the objective you are trying to maximize and is the
+     measure on which the stopping criteria should be defined.
+          
+***** TODO the likelihood is specified by the dirichlet-multinomial distribution. have to plug-in the values there given the parameterization
+
+      so understand this logical step.
+
+      so this is the other possibility. as maximizing the posterior is
+      the same as maximizing the score-map. it's either or. you can
+      choose one of the two.
+      
+***** TODO understand the likelihood function of the cte algorithm
+
+      there you have a logZ method. you do not get the likelihood in
+      such a way.
+
+      you rather get the likelihood when propagating the evidence.
+
+      you have to understand this cte algorithm better.
+
+      I understand then that in the cte the clique algorithm is used
+      for propagating the nodes. cannot understand where you get the
+      likelihood in there.
+
+      it is the log of the sum of the bielief. which is okey. if the
+      factors are normalized etc.
+
+      then only thing that I do not get is how it is how the factors
+      are initialized.
+      
+****** DONE ask radu
+
+       how are the factors in the cte initialized?
+
+       note that in the case of multinomial distribution the factors
+       are exactly the /thetas/.
+
+       important is however to understand that in the case of bayesian
+       learning the factors change. in the factors you should
+       represent the CPDs.
+
+       so in this sense you should modify your factors if you want to
+       compute the likelihood based on them and propagate correctly.
+
+       so I think it is correct. if the likelihood is still given by
+       the multinomial component then you are fine. you should not
+       update it.
+
+       so the first *term is the same* and coming from the likelihood
+       component. then you just have to add the prior component,
+       which is equally important.
+
+
+***** DONE ask radu
+      CLOSED: [2021-07-16 Fri 18:37]
+
+      you use the =propagate_evidence= method of the cte script to
+      perform the cte inference step in the case of evidence. but when
+      there is no evidence you use the =run= method of the cte class.
+
+      there is in this sense a division among the two. the =run=
+      method is implemented to be used by passing a particular query
+      to the algorithm. i.e. it is a specific task in the merlin
+      engine.
+
+      note that this propagation of evidence is necessary to get and
+      create the new likelihood ratio out of the probabilistic
+      evidence.
+
+
+***** DONE just make an assertion and just allow the case of a single probabilistic evidence.
+      CLOSED: [2021-07-17 Sat 11:38]
+
+      
+      
+** E-step
    
-*** TODO Thing to understand
+*** DONE Thing to understand
+    CLOSED: [2021-07-17 Sat 11:38]
 
     Here it is all clear just would have to make sense to check exactly
     how the joint-marginal is computed algorithmically and how the
@@ -2770,7 +2763,6 @@ for (size_t j = 0; j < th.num_states(); ++j) {
     This especially as it returns an *entire factor* and not a single
     value.
    
-
 *** General Notes
 
     Here the inference step is done via big-clique algorithm.
@@ -2865,7 +2857,16 @@ for (size_t j = 0; j < th.num_states(); ++j) {
      that it is also interesting that you do not use the results from
      =cv2.convert= when extracting the content.
 
-***** QUESTION understand difference among index_config and config_index
+***** DONE understand difference among index_config and config_index
+      CLOSED: [2021-07-05 Mon 08:54]
+
+      went too deep in the code not necessary. once you understand how
+      Big and Little Endian notation works and how they are defined it
+      is ok and you will understand such functions and what they do by
+      example - little print statements here and there.
+
+      ---------
+      OUTDATED
 
       have to understand that piece of the cake; not that clear to
       this moment. especially the functioning of the first.
@@ -2900,13 +2901,13 @@ for (size_t j = 0; j < th.num_states(); ++j) {
 
 ****** config_index
 
-****** QUESTION start to code everything for next week and then ask for help.
+****** start to code everything for next week and then ask for help.
 
        i.e. code with the same conversion. make smaller checks to see
        how everything is converted. then based on that
 
-****** QUESTION print the thetas to see the structure of this factor vector.
 
+****** print the thetas to see the structure of this factor vector.
        looks like a matrix. two entries
 
        #+BEGIN_SRC cpp 
@@ -2914,9 +2915,756 @@ for (size_t j = 0; j < th.num_states(); ++j) {
        #+END_SRC
 
        understand why this is the case              
+
+
+    
+* IN-PROGRESS Probabilistic Evidence
+
+** Important - Do not do confusion
+
+   Jeffery's Propagation method is not based on any message
+   propagating method out of the box. There are algorithm that
+   extended it in order to make it work by leveraging the structure of
+   Bayesian Networks however that is not the intent originally and out
+   of the box.
+
+   in this sense you should not confuse the two and this is why we
+   said that you needed to compute the probabilities in the entire
+   tree which is very computationally intense - no matter how you do
+   that. And here is where you would use BN-inference methods to
+   compute the probabilistic structure of all events-ex-ante. Then
+   once you have it; forget about the network structure and
+   inference. just compute the new probability according to jeffery's
+   kinematics.
+
+   so that if you do not use any algorithm you would have to make the
+   calculation in all of your tree everywhere the variable with the
+   specified posterior is involved.
+
+   very good article to understand [[https://reader.elsevier.com/reader/sd/pii/S0004370204001559?token=83B2399F6380F6BF83D8D490FE49D80E65D35FEA8C7588B499C4752A3E3400BE2134AC3A7C54C5935C0622F81F4A79B7&originRegion=eu-west-1&originCreation=20210704154540][pearl and jeffery's]] - not different
+   just different way to implement the two.
+
+   this is why you can also work with pearl as showed by reference 26
+   in your thesis.
+
+
+** Do the single case probabilistic evidence leveraging likelihood evidence
+
+   Seems not too difficult. Check at the algorithms you have in your
+   theoretical part.
+
+   So basically have to understand how to get the probabilities for the
+   different states realizations.
+
+   ------
+
+   How you understand the thing at the moment:
+
+   you specify the probabilistic evidence for a RV.
+
+   Yeah there is a clear mapping - and when doing it you will quickly
+   understand why the last entry is called the =child=.
+
+   So when you specify a probabilistic evidence for a specific factor
+   you are in fact specifying it for the *child* and can make this
+   exercise of computing the likelihood evidence there.
+   
+*** How you get the probabilities
+
+    Note that the one you save in your factor tables are not
+    probabilities. These you compute exactly depending on the
+    parameterization saved in the factor tables.
+
+    Then given that it will be trivial to create the virtual evidence
+    and get to the solution.
+
+**** DONE on storing the probability distribution
+     CLOSED: [2021-07-11 Sun 10:59]
+
+     here again you can use the graphical model data structure - will
+     work well with it and it is always the same type of store.
+
+     ----
+     FALSE note that it does much more seem that your likelihood
+     evidence is just for one single variable. not for one entire
+     factor. so watch out to remember it when you do your
+     implementations.
+
+     then you need a different data structure to work with it. can
+     also simple work with a vector of int.
+
+     in any case. take your time to think about it and act on it then.
+
+**** DONE understand how you get from parameters to probabilities.
+     CLOSED: [2021-07-11 Sun 10:59]
+
+     - I think that in order to get the probabilities for each
+       variable realization you should still run inference over the
+       entire network.
+
+     - Check if this is indeed the fact. It is check at [[https://www.worldscientific.com/doi/pdf/10.1142/S0218488510006696?casa_token=0371qDcAWtsAAAAA:9G16FxdgNu5sWsJZsjtJrNH-ssM2cWBwOhgTxjLCqO9lxZXlZrIllqq81f73GgBXSUkprXD5eJc][this
+       paper]]. There is a good example for the exercise. You might even
+       consider of creating the same network to see if you are working
+       well.
+
+       ------
+       --> correct: you in fact just have to compute marginal
+       probabilities for the variables for which you specify the
+       probabilistic evidence
+       ------
        
+       In any case one unit test you might want to start to
+       incorporate is that at the end of the propagation the
+       probabilistic evidence for the single node that you specified
+       should still occur. 
+
+     - Notice how it is also weird. You do not specify the
+       *probabilistic evidence* for a factor. In fact you do it for a
+       single *variable*. See the example in the paper.
 
 
+**** DONE understand how you compute the marginal for a variable in the code.
+     CLOSED: [2021-07-17 Sat 11:40]
+
+     there are the functions joint-marginal. I guess that you can use
+     there.
+
+     These you used to get the probabilities that you then used when
+     computing the sufficient statistics in the case of
+     multinomial-dirichlet function.
+
+**** DONE understand when you should compute the marignal - check again the paper
+     CLOSED: [2021-07-11 Sun 10:59]
+
+     yeah so you have to compute it after the inference step on the
+     node of interest.
+
+     i.e. you marignalize there the necessary part.
+
+     
+***** DONE [#A] Make the marginalization now.
+      CLOSED: [2021-07-17 Sat 11:40]
+
+      the issue is that the joint marginal function is performed via
+      the clique algorithm. I am not sure if I understand it
+      well. Check at it later. In the meanwhile start to do some
+      experiments.
+
+      Note that there is a difference among the probabilities and the
+      thetas.
+
+      You should make this more explicit. It is not easy to handle it
+      immediately. Cause should you have probabilities in the CPT then
+      you could actually immediately write a marginalization function
+      by your own.
+
+      So in this sense you should:
+
+      - understand the output of cte - cause when you are computing
+        the marginal you compute the probabilities you would be
+        interest in.
+
+      - once you have the thetas you can compute the probability of a
+        given occurrence depending on the probabilistic structure that
+        you imposed on the network. so you can work based on that. 
+
+      - make a test. create a very simple network maybe based on the
+        papers where you know that the results should be and expand on
+        these.
+      
+***** Pipeline
+      
+****** Start with the case of multinomial CPT without prior - i.e. not Bayesian Learning
+
+       there is more straightforward as the probability of each
+       occurence is just given by the theta entry in the CPT.
+
+       ---
+
+       I think this is not correct for the following reason: 
+       
+       i.e. should you also take into consideration the probability
+       that the variables for the particular event chicked in? --> yes
+       this is why you need to get the probability from *inference*
+       methods.
+
+       The entries in the individual tables - i.e. the thetas there
+       represent single conditional probabilities. I.e. you assume
+       that you are there in the graph.
+
+       So in order to get the overall probability of variable you
+       should also consider the probabilistic structure of the
+       network.
+
+       This is the ultimate reason why you need an inference step.
+
+
+****** DONE Get the probability of an event
+       CLOSED: [2021-07-17 Sat 11:41]
+
+       I.e. understand how you run the inference engine and get the
+       probability of a particular event. 
+
+       I think it should be fine. you do it with the =joint_marginal
+       function= of the cte algorithm.
+
+       there you can pass the scope.
+
+       I think that the below should do the job but ask Radu then just
+       to stay on the safe side
+
+       #+BEGIN_SRC cpp 
+	 variable_set vsz(m_gmo.var(3)); // define the variable you want to get the probability for
+	 m_infer.joint_marginal(vsz); // get the marginal for such
+				      // variable performing inference
+				      // that takes into account the
+				      // probabilistic structure of
+				      // the network.
+	 std::cout << m_infer.get_joint_marginal() << std::endl;  // return
+								  // it. note
+								  // that
+								  // is
+								  // a
+								  // factor
+								  // as
+								  // data
+								  // structure
+								  // so
+								  // that
+								  // you
+								  // operate
+								  // on
+								  // it
+								  // in
+								  // a
+								  // similar
+								  // way
+								  // as
+								  // with
+								  // other
+								  // factors.
+       #+END_SRC
+
+
+******* QUESTION ask radu
+
+       The thing that I do not understand is the propagate evidence
+       step before that is done in the em-algorithm.
+
+       Where does it come from? what are you propagating?
+
+       given the parameterization of the network it should be possible
+       to compute the ultimate probability of interest independent of
+       the evidence. should be a separate process. test this.
+
+       - does not work without the evidence propagation; ask Radu why
+         this is the case.
+
+
+****** Get a vector of factors where you store the probability of each event
+       
+       In any case once the above is cleared you should operate in the
+       following way:
+
+       - given the factor with the probabilities for the variable of
+         interest extracted - create a new virtual node and propagate
+         the likelihood.
+
+       Do this immediately with the probabilities computed in the
+       previous section. No matter then what happens you will be
+       good.
+
+****** given these probabilities you can then immediately create your likelihood ratio vector
+
+       these by summing up all of the factors related to a given
+       variable.
+
+       check at the paper network once more:
+
+       then there you are interested in =dyspnoea= so that if you have
+       a probabilistic evidence on there you should sum over all other
+       variables and get the probability of getting a particular
+       event.
+       
+****** then from there on is the usual propagation mechanism
+
+
+**** DONE understand how you specify probabilistic evidence when it is present in multiple places of the graph
+     CLOSED: [2021-07-10 Sat 10:08]
+
+     here you just made a lot of confusion. you specify a likelihood
+     evidence or a probabilistic statement for one *variable* not for
+     *one factor*. In this sense your factor gives an answer 0-1 for
+     one variable and on that variable you have your *probabilistic
+     statement*.  So in the end you should always assign the virtual
+     evidence to the last node.
+
+     ------
+     OUTDATED
+     
+     in theory you should have multiple virtual evidences. you must
+     satisfy the statement on the probilistic evidence you impose on
+     the particular variable over the *entire network*.
+     ------
+     
+***** DONE ask radu
+      CLOSED: [2021-07-04 Sun 16:55]
+
+      OUTDATED - WRONG INTERPRETATION - SEE ABOVE
+      
+      so understand how this is done. ask radu maybe
+
+      - do you put it in different places? isn't it then the same
+	issue as with propagating multiple times?
+
+      - yes I think this is the case. in the normal likelihood it does
+	not play a role as they do not have to be guaranteed after propagation.
+
+	----
+	Other possibility.
+      
+      - or maybe it is just good in one place - idea - you assure it
+	in one place in the network and it holds then in general?
+     
+
+**** DONE change the likelihood and add to it the prior component.
+     CLOSED: [2021-07-17 Sat 17:50]
+
+     otherwise you will have convergence in the wrong dimension.
+
+     so understand how you can incorporate the prior component and add
+     it to the likelihood in the e-step.
+
+     notice that you cannot modify the general factors as they are
+     used to get the correct =expected sufficient statistics=.
+
+     you can add the log-likelihood of the prior by computing:
+
+     $$ \sum log(\theta_{x_i|pa_i}) * a_i - 1 $$
+
+
+**** TODO note that the BN-IPFP works exactly with clique algorithm that you are working with
+
+     when doing inference. so in this sense the two go in tandem and
+     you can leverage the work you already have for solving this.
+
+     very interesting paper the one of 26 that you are basing yourself
+     on. lots to learn there. algorithms were proposed in order 
+     
+***** TODO Why BN-IPFP
+
+      To address this problem, Valtorta, Kim and Vomlel have devised a
+      variation of Junction-Tree (JT) algorithm based on IPFP19 that
+      utilizes the interdependencies captured in the BN structure.
+
+      The idea is to combine the JT with the IPFP in order to keep the
+      computational costs down as it will be easier to compute all of
+      the different necessary P(X). These due to the strength of the
+      clique algorithm that just with 2 messages manage to cover and
+      infer the entire probabilistic distribution of the trees.
+
+      One version of this algorithm works in situation where all
+      variables in each j Y are contained in one clique j C in the
+      JT. Then the belief update goes iteratively over pthe evidences
+      in cycle: in each iteration, ( )j Q C is updated by the
+      corresponding ( )j R Y and then the change of ( )j Q C is
+      propagated to the rest of the JT by the regular JT method.
+
+      The general situation where a soft evidence may involve
+      variables in more than one cliques is dealt with by another
+      version called big clique algorithm.
+
+      In this algorithm, when constructing the JT, *all soft evidence*
+      nodes (i.e., those variables that are involved in any of the
+      soft evidences) are *fully connected with each other* by
+      additional undirected edges. After triangulation, all soft
+      evidence nodes appear in a single clique (the Big Clique).
+
+      The belief update is done by first updating the big clique using
+      all evidences in R by running IPFP to convergence and then
+      propagating the resulting distribution of this clique to the
+      rest of the JT.
+
+      so you can look around to find that algorithm more specifically
+      as you are already running JT it should not be that difficult to
+      incorporate that evidence. 
+      
+****** BN-IPFP-1
+
+       One limitation with these JT based belief update algorithms is
+       that they cannot be easily adopted by those using inference
+       mechanisms other than JT. they require incorporating IPFP
+       operations into the JT procedure, causing re-coding of the
+       existing JT inference engine.... *annoying... especially in
+       your case*.
+
+       Should be easy to incorporate such method in the code of
+       Radu... *do it tomorrow*.
+
+       this algorithm in the paper manages to deal with multiple
+       probabilistic evidence by conversion into virtual evidence.
+
+       so it is also interesting to your case. understand how easily
+       you can implement this in the merlin engine.
+
+       [[file:~/Desktop/Screenshots/Bildschirmfoto 2021-07-18 um 14.51.46.png]]
+
+       given the above it is quite straightforward to understand how
+       you perform the above.
+       
+****** other more classical methods
+
+       first methods proposed to deal with multiple probabilistic
+       evidences.
+
+       1. big clique algorithm:
+
+          requires a different kind of triangulation, but iteration is
+          localized to a single clique.
+
+	  - more time efficient
+
+	  - here you have to build a single big clique containing all
+            of the different probabilistic evidences.
+
+       2. modified junction tree:
+
+	  e-quires no changes to the junction tree itself, but
+          iteration on all variables is required
+
+	  - more space efficient
+
+	  - three steps algorithm. embedding IPFP into the clique
+            tree. check at [[https://reader.elsevier.com/reader/sd/pii/S0888613X01000561?token=6ABE0277E793DE61F36239E6C091DD8FBAA0E2B2998F94F70086AB84D068A4B59F1D24AE5FCEFACC489B9A0FBD656E31&originRegion=us-east-1&originCreation=20210720123255][this]] paper - section 4.3.
+
+	  - so this is the usual junction tree with the addition that
+            you absorb a Probabilistic Evidence in a clique *using
+            IPFP*.
+
+	  - i.e. the difference is that you apply IPFP at clique level
+            before propagating using the normal junction tree
+            formula. 
+
+
+       so the idea is simply to say .... look with a single run you
+       will not have the property guaranteed as on the second update
+       will destroy the necessary formula.... but if you do ipfp you
+       guarantee that all of the constraints are fulfilled.
+
+       given that property it follows then that when convergence
+       occurs you would actually have the guarantee that the desired
+       property holds.
+
+       write down the theory for the above in your thesis and start to
+       implement it.
+
+       there are essentially two different methods.
+
+****** TODO write down that is a chess game
+
+       iterative step into an iterative step into an iterative
+       step.... computationally it must be massive... think for
+       instance the comparison between this multiple-evidence case and
+       the single probabilistic evidence case.... In the latter case
+       you have an iterative procedure more. Considering that you had
+       to embed the IPFP iterative cycle into the e-step (which is
+       iterative itself) you would have now 3 iterative steps in a
+       matriosca style. difficult to imagine that this can work on
+       normal sized networks. 
+
+** Simultation code
+
+   - Yishai A. Feldman; ask him cog-troubleshooting.
+
+   - branch for simulation that used sergey: =uncertainty_experiments=
+
+*** code review for simulation
+
+    =merlin= there you run the binary of the merlin file and you
+    interact and interface with it.
+
+    
+
+       
+       
+** DONE what is the likelihood in the case of bayesian learning?
+   CLOSED: [2021-07-17 Sat 17:50]
+
+   understand it.
+
+   note that you hard-coded that 100. it is fine for the algorithm but
+   it is not 100% mathematically neat.
+
+** Have understand how the big clique operates in detail
+
+   Read the paper 26. Note that is not exactly the clique method used
+   for doing exact inference.
+
+   It is rather the idea of creating a single big clique that
+   involves all of the variables for which you specified probabilistic
+   evidence in the graph in its factor and get the IPFP Q there and
+   propagate then in the entire network based on such a clique. 
+   
+** Check Again the Code for dealing with Virtual Evidence in the Code
+
+   Note first of all that you deal with virtual evidence in the E-step
+   and not in the =init= step.
+
+   That is interesting and important. You already reasoned one time on
+   it and why it was the case.... and this is the ultimate reason why
+   Radu and the others in their paper talk about creating mulitple
+   networks.
+
+   The code to augment the network and deal with virtual evidence is
+   the following:
+
+   #+BEGIN_SRC cpp 
+// If virtual evidence is present, extend the model with extra variables
+if (!virtualEvidence.empty()) {
+  graphical_model gm(m_gmo); // copy the current graphical model
+  vindex idx = gm.nvar();	// last variable index
+  std::vector<factor> nfs = m_gmo.get_factors();
+
+  for (size_t j = 0; j < virtualEvidence.size(); ++j) {
+    observation obs = virtualEvidence[j];
+    vindex x = (vindex)obs.var();       // virtual evidence
+					// variable. so note that the
+					// observation data structure
+					// saves as well the variable
+					// associated with the
+					// observation
+    likelihood l = obs.likelihood();	// likelihood
+    variable xvar = gm.var(x);  // convert from an index to a variable
+    variable uvar(idx++, 2);    // have to understand this constructor
+				// and the sense of this. you have a
+				// variable given by index idx + 1 and
+				// two states (the second
+				// argument). note idx = num variables
+				// so you actually create a "new
+				// index". makes sense in this sense.
+    variable_set vs;
+    vs |= xvar;  // add them probabily if they are not there already
+    vs |= uvar;
+    factor f(vs, 0.0);   // initialize factor for the created variable_set
+
+
+    f.set_child(uvar.label()); // set the child of the factor to the
+			       // new instantiated variable. the
+			       // idx++.
+
+    evidence.push_back(0); // first value of the U variable. you augment the evidence by 0. why?
+
+    dummies.insert(uvar.label()); // keep track of dummy variables - i.e. the virtual nodes
+
+    // create the factor. this logic with the states is how you
+    // compute what the contra-example is.
+    for (size_t k = 0; k < l.size(); ++k) {
+      f.set(k, l[k]);
+      f.set(k + xvar.states(), 1.0 - l[k]);
+    }
+
+    gm.add_factor(f); // add the extra factor
+  }
+   #+END_SRC
+
+   Note that is also quite interesting. You add and specify the
+   virtual evidence in the evidence file you do not pass a separate
+   file. So you should continue to work in such a way. Makes no sense
+   to switch.
+
+   In order to understand this better with the =virtualEvidence= data
+   structure understand the following.
+
+*** DONE where do you get if the observation is virtual or not
+    CLOSED: [2021-07-05 Mon 16:15]
+
+    cannot understand it at the moment. 
+
+    #+BEGIN_SRC cpp 
+    if (obs.is_virtual()) {
+      virtualEvidence.push_back(obs); // note push_back is a function of the vector operator. it adds obs at the end of the vecctor. 
+    } 
+    #+END_SRC
+
+    there you get observations from om entries coming from
+    =m_dataset=. so there on =m_dataset= it must be somehow described
+    how you would use and work with virtual evidence.
+    
+    
+**** Solution
+
+     So understand that this is the mental workflow.
+
+     You have a =read_dataset= function in the =merlin.cpp=
+     file. There you parse the text file you get with the evidence.
+
+     Then the idea is to create a vector of *observations* and save
+     the records in there.
+
+     Notice now the idea of object oriented programming and
+     polymorphism. You specify an observation class where you can
+     instantiate different observation objects with different
+     constructors.
+
+     Then when parsing the file you either get values for the
+     realization or likelihood observations that you store in
+     respective vectors/variables.
+
+     Then you add to the observations vector passing either such value
+     or the likelihood. Depending on what you pass a different
+     constructor will be passed.
+
+     There in the constructor the variable =is_virtual= etc. is
+     initialized in the correct way depending on which constructor is
+     called. And you can then use this information when performing
+     your inference tasks. 
+
+
+**** Virtual evidence syntax
+
+     #+begin_example
+    [0.7;0.5],[0.1;0.4]
+     #+end_example
+
+    ~read_dataset~ function finds virtual evidence in the file and
+    writes it in likelihood vectors.
+   
+
+
+
+*** DONE on the m_dataset
+    CLOSED: [2021-07-05 Mon 16:15]
+
+    note that you set the m_dataset relevant for training your
+    em-algorithm with a method. ~set_dataset~.
+
+    note that there you pass the dataset that was constructed parsing
+    int dataset file. i.e. dataset is already the parsed text file
+    into a coherent c++ data structure you will use in your program.
+    
+    there when reading the text file you save likelihood objects in
+    likelihood vectors etc.
+
+
+*** DONE change read_dataset in the merlin.cpp to parse probabilistic evidence
+    CLOSED: [2021-07-05 Mon 17:55]
+
+    will have to make a similar exercise for your probabilistic
+    statement.
+
+    
+**** DECISION
+
+     I have decided to state probabilistic evidence in the following
+     way =(0.3, 0.7)= i.e. you have =()= brackets in comparison to the
+     =[]= brackets that you have when expressing the likelihood
+     evidence.
+
+     then the only question that is left over is on how you would
+     parse such evidence.
+
+**** DONE at the moment you have a dataset of size 0. understand why.
+     CLOSED: [2021-07-05 Mon 17:55]
+
+
+*** TODO understand the conversion from likelihood evidence to factor.
+
+    this is the one you ultimately work with when propagating
+    everything.
+    
+**** TODO understand when to update - after inference step theoretically. there each time get a new parameterization.
+
+     and based on it new probabilities after propagating the
+     evidence.... then you would compute the likelihood.... and then
+     you propagate....
+
+     do you need to do it one time at the beginning? or at each round?
+     --> at each round... you also propagate the likelihood at *each
+     round* in the e-step!!!!!!!
+
+
+*** TODO note do not spend too much with the above - not strictly necessary.
+
+    at the end your task will be the following:
+
+    - change the observation constructor to deal with the case of
+      probabilistic evidence. decide how you will pass it
+      syntactically and how you will deal with it then.
+
+    - convert the probabilistic evidence to likelihood evidence
+
+    - then from here on work in the same way you are working now in
+      the presence of probabilistic evidence.
+    
+
+* On Experiments on Bayesian Networks
+  
+*** General Notes
+
+    So the samples are generated according to this =Hugin=
+    engine. Unfortunately that is not open-sourced and you need to get
+    access to it.
+    
+**** Understand exactly how they simulate the network
+
+     Is there any example. I saw there this image. So you can select
+     for instance a node and select the occurrence and then propagate
+     to see how given this realization the probabilistic structure of
+     the network changes.
+
+     this is point 8 of the tutorial pdf.
+
+     as you said it is correct they sample based on the probabilistic
+     structure of the network.
+     
+**** TODO ask sergey
+
+     step 3: The only difference is that when they sample dyspnoeaObs
+     = True they do not set 1 to the node but rather take the
+     *likelihood evidence* as good.
+     
+     step 4: from the sampled dataset, we created a dataset with
+     likelihood evidence by *placing the relevant likelihoods in the
+     parent* of the appropriate observation node in the original
+     network and *deleting data for the observation node*.
+
+     Note that in the above you do not place a single value but rather
+     a vector. I.e. [0.7; 0.3] in the case the dyspnoeaobs child is
+     true and [0.3; 0.7] in case it is false. So then you have a
+     simple case of a dataset with likelihood evidence.
+
+     So you would ultimately just have data for the node of interest
+     with assigned likelihoods to it. In this sense you would have
+     sampled from it.
+
+     step 5: create a deterministic dataset where you set =true= for
+     the likelihood-evidence variable say =dyspnoea= if its
+     observation child is equal to =true=.
+     
+**** TODO ask radu
+
+      Finally, two experiments were performed with the Child
+      network. In the first one (Case 1), uncertainty was as- signed
+      to the “Birth Asphyxia” node, which is not a leaf node.
+
+      --> why experiment? it should be well possible theoretically.
+      
+**** Performance
+
+     In order to measure the goodness-of-fit in all experiments, we
+     computed for each CPT the average and maximum absolute
+     differences between the *probability estimates and their actual
+     values* for each set of values of a CPT of a node and its
+     parents.
+
+     -----
+     So now you have your sample. You forget the above and start to
+     apply your algorithms to the obtained dataset. You will then get
+     different parameters estimations for the two datasets.
+
+     Then check how the likelihood adjusted EM algorithm works in
+     comparison to the deterministic database. 
+     
 
 * General Notes
    
@@ -2988,6 +3736,7 @@ for (size_t j = 0; j < th.num_states(); ++j) {
     \newpage
     
 
+    
 * How to Run the Engine - Generally the Code
 
   First compile the entire repository with the help of the Makefile
@@ -2996,7 +3745,6 @@ for (size_t j = 0; j < th.num_states(); ++j) {
   Then go to the generated binary file. Run it with the necessary
   arguments as specified according the merlin engine =API=. You can
   check at the reference in [[https://github.com/radum2275/merlin][here]].
-
 
 * TODOs in the code
 
@@ -3013,7 +3761,6 @@ for (size_t j = 0; j < th.num_states(); ++j) {
    the memory of the graphical model and hyperparameter model. if you
    comment out the access to one of the two models you can reference
    the other but not both in the same run.
-
    
 *** found the problem
 
@@ -3038,11 +3785,13 @@ for (size_t j = 0; j < th.num_states(); ++j) {
     and understand.
     
 *** check on the internet what the strategies to deal with this issues are. 
+
 *** DONE check in the programs options if the function for the hyperparametes-file makes sense. there might as well be errors.
     CLOSED: [2021-06-26 Sat 14:09]
 
     not this for sure. minor modification just regarding
     hyperparameterFile.
+
 
 ** DONE implemment a set_hyperparameters method in the engine for the EM.
    CLOSED: [2021-07-03 Sat 16:07]
@@ -3060,7 +3809,6 @@ for (size_t j = 0; j < th.num_states(); ++j) {
    because you specified the m_hyperParameters graphical model storing
    the hyperparameters as a private function.
 
-
 *** DONE have to understand how to properly use polymorphism.
     CLOSED: [2021-06-27 Sun 14:11]
 
@@ -3076,19 +3824,20 @@ for (size_t j = 0; j < th.num_states(); ++j) {
     *note that this might not be the best way to solve this:*
     constructors /cannot have a virtual declaration/.
     
+*** DONE rewrite the m_step have access in that class to the m_hyperParameters with the graphical model saving the hyperparameters
+    CLOSED: [2021-07-05 Mon 15:55]
 
-*** rewrite the m_step have access in that class to the m_hyperParameters with the graphical model saving the hyperparameters
-
-**** TODO start with parsing the data and get all the factors one by one.
+**** DONE start with parsing the data and get all the factors one by one.
+     CLOSED: [2021-07-05 Mon 15:55]
 
 **** DONE make sense of the notation with the Bigendian
      CLOSED: [2021-06-27 Sun 17:02]
 
      done - added some logging giving you the factor tables you will
      have to work with.
-
      
-***** TODO 
+***** DONE 
+      CLOSED: [2021-07-05 Mon 15:54]
 
       consider to remove them or added them to the output conditional
       on the =debug flag=.
@@ -3139,11 +3888,15 @@ for (size_t j = 0; j < th.num_states(); ++j) {
        notation. You studied it before when checking the construction
        of the factor table.
     
+
 ** DONE check if hyperparameter argument passsed. if yes then read hyperparameters otherwise do not.
    CLOSED: [2021-07-03 Sat 16:07]
 
-** TODO should also implement read_hyperparameter method for the binary file and not for path to the file
-       
+
+** DONE should also implement read_hyperparameter method for the binary file and not for path to the file
+   CLOSED: [2021-07-15 Thu 15:30]
+
+
 * Logging code as a help - Might Use it in the future
 
   This is a big chunck of code that you can use to get the factor
@@ -3190,3 +3943,7 @@ for (size_t j = 0; j < th.num_states(); ++j) {
 	// according to the thesis material.
 
   #+END_SRC
+
+
+
+  

@@ -1,4 +1,4 @@
-* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [7/10]
+* [[elisp:(org-projectile-open-project "Bayesian_Net_Thesis")][Bayesian_Net_Thesis]] [0/4]
   :PROPERTIES:
   :CATEGORY: Bayesian_Net_Thesis
   :END:
@@ -44,32 +44,17 @@
     doing so. so actually very poor method. would need to compute the
     gradient and hessian for each all of the possible completion.
         
-*** TODO ask radu the 3 networks examples they worked with in their paper
+*** TODO ask radu about the experiment they conducted
 
-    think about a network structure where you can apply the
-    above. check at this link radu sent you with all of the
+    - either prepare a set of questions
 
-    ask radu for them.
+    - or ask him to walk you through it 
 
-*** TODO start to implement the thing in the code
-
-    maybe start with probabilistic evidence as this is the easiest.
-    
-**** TODO start with the probabilistic evidence. there you have to change the smallest amount of things
-
-*** TODO integrate the read evidence in the CLI interface.
-
-    start to do this for next week. the logic of the thing is
-    specified.
-
-    also augment the M-step with your derived solution.
-         
 ** TODO consider to put theorems in the theory and work from there in iterative loops
 
 ** TODO consider splitting numerical reasoning on separate chapter.
 
    would make much more order in the general section.
-
 
 ** WAITING other possible generalizations
    

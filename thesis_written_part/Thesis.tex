@@ -1,4 +1,4 @@
-% Created 2021-08-10 Tue 15:04
+% Created 2021-08-14 Sat 15:32
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -30,53 +30,99 @@
 \begin{document}
 
 \newtheorem{theorem}{Theorem}
+\pagenumbering{roman}%- roman numbering for first few pages
+%% \title{Parameter Learning in Bayesian Networks under Uncertain Evidence  \textendash  \ An Exploratory Research.}
+%% \author{
+%%   Marco Hassan 	           	\\
+%%   Zurich, CH		\\
+%%   \\
+%%   \\n
+%%   Master Thesis \\
+%%   Presented to the Eidgenossische Teschnische Hochschule Zurich \\
+%%   In Fulfillment Of the Requirements for \\ 
+%%   the Master of Science in Statistics \\
+%%   \\
+%%   Supervisor: PhD. Radu Marinescu \\
+%%   Co-Supervisor: Dr. Markus Kalisch \\
+%%   %% examples of more authors
+%%   %% \AND
+%%   %% Coauthor \\
+%%   %% Affiliation \\
+%%   %% Address \\
+%%   %% \texttt{email} \\   
+%%   %% \And
+%%   %% Coauthor \\
+%%   %% Affiliation \\
+%%   %% Address \\
+%%   %% \texttt{email} \\
+%%   %% \And
+%%   %% Coauthor \\
+%%   %% Affiliation \\
+%%   %% Address \\
+%%   %% \texttt{email} \\
+%% }
 
-\title{Parameter Learning in Bayesian Networks under Uncertain Evidence  \textendash  \ An Exploratory Research.}
-\author{
-  Marco Hassan 	           	\\
-  Zurich, CH		\\
-  \\
-  \\
-  Master Thesis \\
-  Presented to the Eidgenossische Teschnische Hochschule Zurich \\
-  In Fulfillment Of the Requirements for \\ 
-  the Master of Science in Statistics \\
-  \\
-  Supervisor: PhD. Radu Marinescu \\
-  Co-Supervisor: Dr. Markus Kalisch \\
-  %% examples of more authors
-  %% \AND
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\   
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% ETH-Style Latex Template vs. Chosen Structure      %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% it is too much work to refactor the entire structure of the latex template.
+%% I decided just to adapt the citation style and take all fo the rest of the structure as in my usual documentation
+%% there is just some minor difference in such a case.
+
+%% For the title take it from the template and paste it in as you did
+%% with the declaration of originality
 \begin{article}
 
-\maketitle
+\includepdf[pages={-}, frame=true,scale=1]{pdf/front-page.pdf}
+\cleardoublepage
+
+%% \maketitle
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Insert here acknowledgements and abstract %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Dedication (optional)
+\markright{}
+\vspace*{\stretch{1}}
+\begin{center}
+    $To \ my \ family,  \ my \ beloved \ ones \ and \ my \ dear \ friends$
+    \newline
+    $that \ make \ difficult \ times \ easier \ to \ face.$
+\end{center}
+\vspace*{\stretch{2}}
+
+% Preface (optional)
+%% \newpage
+%% \markboth{Preface}{Preface}
+%% \include{Preface}
+
+% Abstract should not be longer than one page.
+\newpage
+\markboth{Abstract}{Abstract}
+\section*{Abstract}
+
+Short summary of my thesis.
 
 \newpage
 
 \tableofcontents
+
+\newpage
+
 \listoffigures
 \listofalgorithms
 \listoftables
 
 \newpage
 
+\pagenumbering{arabic}%--- switch back to standard numbering
+
 \section{Bayesian Networks - Overview and Manuscript Outline}
-\label{sec:org00ea27a}
+\label{sec:org287af4b}
 
 
 Probabilistic models based on directed acyclic graphs (DAGs) have
@@ -86,7 +132,7 @@ in the field of genetics in \cite{wright1921correlation}.
 An important moment in the history of such models and the Bayesian
 Networks subclass was, as argued by \cite{pearl2011bayesian}, during
 the late 1970s when such models emerged as the method of choice when
-dealing with uncertainty in reasoning and expert systems;
+dealing with uncertainty in reasoning and expert systems,
 effectively starting to replace the usage of symbolic artificial
 intelligence and rule-based schema.
 
@@ -132,7 +178,7 @@ rigorous definition of the different types of uncertain evidence
 from which we will expand on.
 
 \subsection{Bayesian Networks - Formal Definition}
-\label{sec:org43d29af}
+\label{sec:org52c2c28}
 Before starting to dig into the material we provide a general
 definition of a Bayesian Network as in \cite{pearl2011bayesian}.
 
@@ -243,7 +289,7 @@ We turn next to a formal definition of evidence and especially of
 research presented in this manuscript.
 
 \subsection{Types of Evidence}
-\label{sec:org1397775}
+\label{sec:orgcca7c0c}
 
 The most basic case of evidence is the one of complete
 evidence. This occurs when we are provided with complete
@@ -405,7 +451,7 @@ expressing some degree of knowledge gained over the years, or by
 the usage of non-informative priors as in
 \cite{syversveen1998noninformative}. On the other hand, it is
 necessary to decide on a point estimator for the parameter given
-its posterior distribution. Standard point estimator of choice are
+its posterior distribution. Standard point estimators of choice are
 the maximum a posteriori estimator or the first moment of the
 posterior distribution. Important is to realize that we might not
 be able to integrate over every posterior such that it will be
@@ -464,38 +510,40 @@ there that it is possible to apply the EM algorithm in such a
 setting by adjusting the maximization step in a way that its
 correctness and convergence properties are guaranteed.
 
-Finally, we will move to the case of \emph{probabilistic
-evidence}. There we will reason how the algorithm proposed by
-\cite{Wasserkrug_all} will generalize to the case of \emph{non-fixed
-probabilistic evidence} in the case a single \emph{probabilistic
-finding} is expressed on a node of the Bayesian Network. We will
-then conclude the section by reasoning on how the iterative
-proportional fitting procedure might generalize EM algorithm to the
-case of an arbitrary number of probabilistic evidence in the
-network by incorporating the algorithms proposed by \cite{PENG_2010}
-and \cite{meng2016method} into the EM learning algorithm.
+Finally, we when considering the case of \emph{probabilistic evidence}
+it is important to reason on the iterative proportional fitting
+procedure and its possible extensions for the case of parameter
+learning via the EM-algorithm. In this sense we will reason on how
+we might generalize EM algorithm to the case of an arbitrary number
+of probabilistic evidence by leveraging the work of \cite{PENG_2010},
+\cite{meng2016method} and by trying to incorporate such algorithms
+into the EM-algorithm.
 
 The manuscript continues as follows. Section \ref{complete-learning}
 treats the most basic and fundamental case of parameter learning
 under complete evidence. It will outline the global decomposability
 property of the likelihood such that the maximization task of the
-MLE is facilitated. Section \ref{missing-learning} exposes the case of missing evidence
-and discusses how in such case the global decomposability property
-is lost such that the resulting likelihood for the Bayesian Network
-is a multi-modal function that is difficult to optimize. Moreover,
-it introduces and discusses the mathematics of the EM-algorithm as
-a way to deal with such a case and reach a local optima. It finally
-discusses a few examples of the application of such an algorithm to
-the case of exponential families Bayesian Networks CPDs. Section
-\ref{numerical-em} discusses about some practical concerns of applying
-the algorithms of section \ref{missing-learning}, pointing to the
-possibility of applying some numerical techniques for the M-step of
-the EM-algorithm. The remaining sections deal with the case of
-parameter learning under uncertain evidence. Section \ref{likelihood-em}
-discusses the theoretical fundamentals for parameter learning in
-the case of likelihood evidence. It treats both the case of plain
-MLE parameter learning as well as the case of maximum a posteriori
-parameter learning in a Bayesian Learning setting. Finally section
+MLE is facilitated. Section \ref{missing-learning} exposes the case of
+missing evidence and discusses how in such case the global
+decomposability property is lost such that the resulting likelihood
+for the Bayesian Network is a multi-modal function that is
+difficult to optimize. Moreover, it introduces and discusses the
+mathematics of the EM-algorithm as a way to deal with such a case
+and reach a local optima. Section \ref{bayes-parameter-learning}
+discusses the case of Bayesian Learning and reasons about the
+EM-algorithm and its applicability to deal with the case of maximum
+a posteriori estimators. Section \ref{examples} discusses few examples
+of the application of the algorithms to the case of exponential
+families Bayesian Networks CPDs.  Section \ref{numerical-em} discusses
+about some practical concerns of applying the algorithms of section
+\ref{missing-learning}, pointing to the possibility of applying some
+numerical techniques for the M-step of the EM-algorithm. The
+remaining sections deal with the case of parameter learning under
+uncertain evidence. Section \ref{likelihood-em} discusses the
+theoretical fundamentals for parameter learning in the case of
+likelihood evidence. It treats both the case of plain MLE parameter
+learning as well as the case of maximum a posteriori parameter
+learning in a Bayesian Learning setting. Finally section
 \ref{probabilistic-em} deals with the case of parameter learning in the
 case of probabilistic evidence both in the case of single and
 multiple probabilistic evidence statements. Section \ref{conclusion}
@@ -706,10 +754,10 @@ condition as it is a necessary condition in order to write the
 likelihood function under missing evidence as a product of terms
 involving the parameters governing the probabilistic structure of
 the random variables of interest \(X_i\) and the hiding mechanism
-\(O_{X_i}\). It is then possible as in the case of \emph{missing completely
-at random} to distinguish between the two likelihood terms and just
-focus on the likelihood of the observed variables when estimating
-the \(\theta\) parameters.
+\(O_{X_i}\). It is then possible, as in the case of \emph{missing
+completely at random}, to distinguish between the two likelihood
+terms and just focus on the likelihood of the observed variables
+when estimating the \(\theta\) parameters.
 
 In order to see this note first that in the case of MAR, the
 observation pattern \(o_X\) gives no additional information about the
@@ -740,7 +788,7 @@ case of missing data, the topic we will address in the next
 section.
 
 \subsection{On the Observed Variables Likelihood under Missing Data}
-\label{sec:org79221b6}
+\label{sec:org7df83e2}
 
 This section sets the focus on the likelihood of the observed data
 in the case of missing evidence.
@@ -911,7 +959,7 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsubsection{The Expectation Step}
-\label{sec:org310d511}
+\label{sec:orgfb5826e}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
@@ -938,7 +986,7 @@ the E-step as the step involving the maximization of the energy
 functional along the Q coordinate.
 
 \subsubsection{The Maximization Step}
-\label{sec:org86288ff}
+\label{sec:org2aae784}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -1031,7 +1079,7 @@ maximizing the score map of \ref{eq:bayes_map2}. This will be the main
 exercise of the next section.
 
 \subsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:org3f84698}
+\label{sec:orgd28e9df}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -1090,8 +1138,7 @@ the prior distribution \(P(\theta)\).
 \newpage
 
 \section{Hands On - An Exponential Family Example}
-\label{sec:orga74598f}
-
+\label{examples}
 This section provides an application of theory presented above for
 the general case of exponential families. The idea is to
 crystallize the theory developed so far in the general setting of
@@ -1167,7 +1214,7 @@ probability function over the entire network will be an
 exponential family distribution.
 
 \subsection{Complete Evidence}
-\label{sec:org3781c61}
+\label{sec:org8f9d041}
 
 Given the definition of local CPD it follows from the theory of the
 previous section that in the case of \emph{complete data}, we can solve
@@ -1185,7 +1232,7 @@ P(x_i|\theta_i) = \prod_m^M \frac{1}{Z(\theta_i)} exp[c(\theta_i)^\intercal \tau
 
 
 \subsection{Missing Evidence}
-\label{sec:org5cd63f5}
+\label{sec:org780b112}
 
 Consider now the case of \emph{missing evidence}. Here again it is
 possible to apply the theory exposed in the previous section in a
@@ -1512,7 +1559,7 @@ a posteriori point estimate. A local maximum point estimator for
 the likelihood of the observed data will ultimately result.
 
 \subsection{Bayesian Parameter Learning - An Exponential Family Generalization}
-\label{sec:orgc40a200}
+\label{sec:org229dfc6}
 
 This section generalizes the exercise of the above section for
 general exponential family distributions. As discussed in
@@ -1542,7 +1589,7 @@ distributions are well documented in many statistical textbooks.
 
 In fact, it is possible to note that the Dirichlet prior chosen in
 the previous section is nothing else then the conjugate prior to
-the multinomial distribution. Note however that the resulting
+the multinomial distribution. However, note that the resulting
 posterior is not an exponential distribution such that you cannot
 apply the M-projection theory to get the result above.
 
@@ -1609,7 +1656,7 @@ dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
 \subsection{Numerical EM for MLE estimator}
-\label{sec:org1316529}
+\label{sec:org9bd71a4}
 
 In order to understand how to compute M-step according to an
 iterative method, think at the following.
@@ -1680,7 +1727,7 @@ option for our solution. In that case the EM theory would collapse
 and there is no guarantee to reach a local maximum.
 
 \subsection{Numerical EM for MAP estimator}
-\label{sec:org7099be0}
+\label{sec:org26b8c37}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -1713,7 +1760,7 @@ difference that they now account for the prior distribution
 influence.
 
 \subsection{On the numerical computation of the derivatives of expected log-likelihoods}
-\label{sec:orgd0c2ffa}
+\label{sec:org8962bd4}
 
 This section concludes the chapter on Bayesian Parameter Learning
 by substituting the M-step of \ref{alg:Bayes-EM-Likelihood}, by a
@@ -1798,7 +1845,7 @@ of parameter learning under likelihood evidence describing the
 approach proposed in \cite{Wasserkrug_all}.
 
 \subsection{Adjusted EM - Likelihood Evidence}
-\label{sec:org0c88fef}
+\label{sec:org35cb49b}
 
 One of the most widespread ways to deal with likelihood evidence
 was introduced by \cite{pearl2014probabilistic}. The idea is to
@@ -2001,7 +2048,7 @@ it is possible to perform MAP estimation in Bayesian settings.
 \newpage
 
 \subsection{Bayesian Learning MAP - Adjusted EM for Likelihood Evidence}
-\label{sec:org08b2b97}
+\label{sec:orgfc477e9}
 
 The idea of this section is to extend \ref{alg:EM-Likelihood} in
 order to obtain the MAP estimator in a Bayesian Learning setting
@@ -2471,7 +2518,7 @@ probabilistic evidences.
 \newpage
 
 \section{Conclusion, Criticalities and Further Work}
-\label{criticalities}
+\label{conclusion}
 In this manuscript we exposed the theoretical background in order
 to deal with the parameterization riddle of Bayesian Networks.
 
@@ -2498,9 +2545,9 @@ network by incorporating the likelihood evidence by the means of
 virtual evidence nodes as proposed by
 \cite{pearl1987evidential}. Given such a method it was possible to
 frame likelihood evidence as hard-evidence, such that by the
-elimination of it the Network evidence would just consists of
-missing-evidence and hard-evidence. The classical EM-algorithm as
-discussed in section \ref{missing-learning}.
+elimination of it the network, evidence would just consists of
+missing-evidence and hard-evidence. In that case, the classical
+EM-algorithm as discussed in section \ref{missing-learning} applies.
 
 On the top of the arguments proposed by \cite{Wasserkrug_all} we
 showed that it is possible to extend the EM-algorithm to the case of
@@ -2546,8 +2593,8 @@ characteristic of expanding the time-space complexity trade-off
 of the models of \cite{Valtorta_2002} as well due to their
 characteristic of working via Pearl's virtual evidence
 method. Especially the latter property is useful as it allows both
-to quickly implement the algorithm in statistical software as we
-performed in \href{https://github.com/radum2275/merlin}{merlin} as well as perform the inference step with any
+to quickly implement the algorithm in statistical software, as we
+performed in \href{https://github.com/radum2275/merlin}{merlin}, as well as perform the inference step with any
 algorithm of choice.
 
 Overall, we therefore extended the theory introduced by
@@ -2564,15 +2611,15 @@ We conclude by noting that upon the realization that the
 EM-algorithm consists of an inference and maximization step given a probabilistic
 joint distribution specified by the Bayesian Network it comes as no
 surprise that once the probabilistic structure implied by the
-network satisfies all of the constrained implied by uncertain
+network satisfies all of the constrains implied by uncertain
 evidence the EM-algorithm will find a local maxima parameterization
 of it. When dealing with uncertain evidence the difficulty consists
 therefore much more in computing such constrained joint-probability
 in a computational way that is time and space efficient rather than
-in fundamental re-elaboration of the EM-algorithm itself.
+in a fundamental re-elaboration of the EM-algorithm itself.
 
 \subsection{Criticalities and Further Work}
-\label{sec:orge023cd1}
+\label{sec:orgdd7020b}
 
 The general flaw with this manuscript, is the fact that it focuses
 on the theoretical possibilities of the parameterization learning
@@ -2583,60 +2630,71 @@ necessary. This both at an algebraic level as well as in an
 empirical way performing some simulation exercise as in
 \cite{Wasserkrug_all}\footnote{Consider in this sense the \href{https://www.hugin.com/}{hugin} engine.}.  
 
-
 Starting with the case of maximum a posteriori distribution for the
 case of Bayesian Learning we discussed the limitation of working
 with well known conjugate priors such that the posterior
 distribution will be a well known distribution. On the other hand,
 we briefly touched on the possibility of relying on simulation
 techniques in order to get to the maximum a posteriori
-parameterization. Finally, we mentioned the possibility 
+parameterization. Finally, we mentioned the possibility of finding
+the maximum of the posteriori distribution via gradient-based
+numerical methods. An in depth study of such algorithms and
+especially of the performance of \cite{meng2016method} would be of
+particular interest. 
 
+Turning to the case of the application of the EM-algorithm in the
+case of uncertain evidence, an in depth computational analysis of
+the algorithm is especially important. This because it is necessary
+to obtain a constrained joint-distribution \emph{Q} taking the uncertain
+evidence into account \emph{at each step of the EM-algorithm} until
+convergence. You therefore see that the costs of obtaining a new
+constrained joint-distribution is scaled linearly in the numbers of
+necessary iterations steps. Therefore, it is especially important
+to find the right combination of time-space computational effort
+such that the overall effort of obtaining the constrained
+joint-distribution and performing inference in the network is
+minimized for the network of interest. In this sense, it might be
+useful to elaborate some rule of thumb theory to choose the most
+suitable algorithm for different classes of Bayesian
+Networks. Finally, due to such especially important issues, it might
+be meaningful to further implement the algorithms of
+\cite{Valtorta_2002} into statistical software as \href{https://github.com/radum2275/merlin}{merlin} in order to
+increase the time-space computational mix available and leverage
+the best possible algorithm for each network configuration.
 
-
-\subsection{Criticalities}
-\label{sec:orged9330e}
-
-\begin{itemize}
-\item say that the major issues are in the computational aspects which
-were just marginally touched in this manuscript
-
-\item say that you could improve the computational issues also by
-propagating with approximate inference. (actually you have to
-think if it satisfies the EM-conditions properly).
-\end{itemize}
-
-\subsection{Further Work}
-\label{sec:org197b20c}
-
-\begin{itemize}
-\item you can try to implement the numerical solution proposed in
-chapter 6 and explore its time efficiency.
-
-\item use further approximate learning algorithms.
-\end{itemize}
-
-
-\subsection{{\bfseries\sffamily TODO} Say that you can also work with approximate inference Methods. Does not change the story.}
-\label{sec:org6e5014f}
-
-\newpage
-
-\section{Conclusion}
-\label{conclusion}
-\subsection{{\bfseries\sffamily TODO} Focus on the Point the point that no matter}
-\label{sec:org4b1762b}
-
-
-say that through the thesis you were able to show that the results
-presented generalize to the idea of Bayesian Learning with MAP
-estimator choice and the theory holds other for different types of
-uncertain evidence such as probabilistic evidence. 
-
-
+We conclude by noting that due to the vast literature and modeling
+possibilities available for Bayesian Networks the presented theory
+just scratches the surface of the possible algorithms available for
+obtaining the most suitable network parameterization. A further
+avenue of research that we completely ignored in the manuscript is
+the one of performing the inference step via approximate inference
+methods and the inspection of the behaviour of the EM-algorithm
+method in such a case. Introductory reading material and relevant
+literature may be found in \cite{koller2009probabilistic}. We close
+by noting that an analysis of the benefits of combining such methods
+in computational involving cases such as in the case of the
+algorithms dealing with uncertain evidence might be particularly
+interesting.
 
 \newpage
 
 \bibliography{../literature/references}
-\bibliographystyle{unsrt}
+
+\bibliographystyle{plainnat}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Declaration of originality (Do not remove!)%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Instructions:
+%% -------------
+%% fill in the empty document confirmation-originality.pdf electronically
+%% print it out and sign it
+%% scan it in again and save the scan in this directory with name
+%% confirmation-originality-scan.pdf
+%%
+%% General info on plagiarism:
+%% https://www.ethz.ch/students/en/studies/performance-assessments/plagiarism.html
+\cleardoublepage
+\includepdf[pages={-}, frame=true,scale=1]{pdf/confirmation-originality.pdf}
+\end{article}
 \end{document}

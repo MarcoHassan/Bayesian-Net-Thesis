@@ -195,3 +195,10 @@
     step.
 
     
+** TODO reframe via multivariate random variables
+
+   instead of using this weird notation of sets of random variables.
+
+   recall and see from this experience that is always better to settle
+   everything at the beginning. all of the rest will follow in a
+   second moment.

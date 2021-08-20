@@ -1,4 +1,4 @@
-% Created 2021-08-14 Sat 15:32
+% Created 2021-08-20 Fri 14:56
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -62,7 +62,6 @@
 %%   %% \texttt{email} \\
 %% }
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% ETH-Style Latex Template vs. Chosen Structure      %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,7 +74,7 @@
 %% with the declaration of originality
 \begin{article}
 
-\includepdf[pages={-}, frame=true,scale=1]{pdf/front-page.pdf}
+\includepdf[pages={-}, scale=1]{pdf/title_page.pdf}
 \cleardoublepage
 
 %% \maketitle
@@ -95,17 +94,33 @@
 \end{center}
 \vspace*{\stretch{2}}
 
-% Preface (optional)
-%% \newpage
-%% \markboth{Preface}{Preface}
-%% \include{Preface}
-
-% Abstract should not be longer than one page.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Abstract                         %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
 \newpage
 \markboth{Abstract}{Abstract}
-\section*{Abstract}
+\begin{abstract}
+  This study deals primarily with the topic of parameter learning in Bayesian Networks.
+  In its first sections it proposes a general literature overview of parameter learning
+  in the case of Maximum Likelihood Estimation under complete evidence.
+  A general introduction to the concept of likelihood decomposability
+  is provided before rigorously exposing the EM-algorithm as a viable choice for
+  parameter estimation when the decomposability property does not hold and the maximization problem is a nasty multimodal function.
+  Given the properties of the EM-algorithm, we will argue that it is possible to generalize the algorithm to
+  deal with the case of parameter learning in a full-bayesian learning setting by adjusting the maximization step.
+  The second part of study leverages the classic theory exposed in the previous sections to deal with the
+  case of parameter learning in the case of uncertain evidence. Augmenting the arguments proposed in \cite{Wasserkrug_all}
+  the study will argue that upon finding a constrained joint distribution for the probabilistic graphical model
+  that satisfies the constrains imposed by the uncertain evidence, the EM-algorithm might be used for obtaining a
+  sensible network parameterization with slight adjustments as the virtual evidence method of \cite{pearl1987evidential}.
+  The study shows then by example that that such methods are easily integrable in classical statistical software as
+  in the extension of the \href{https://github.com/radum2275/merlin}{merlin}
+  engine.
+\end{abstract}
 
-Short summary of my thesis.
+% keywords can be removed
+\keywords{Graphical Models \and Iterative Methods \and Bayesian Networks \and Bayesian Statistics \and Parameter Learning \and Bayesian Learning \and Uncertain Evidence \and EM-algorithm \and I-projection \and Inference \and Clique Algorithms}
 
 \newpage
 
@@ -119,11 +134,63 @@ Short summary of my thesis.
 
 \newpage
 
+\markboth{Notation}{Notation}
+\section*{Notation}
+This section introduces some general notation style used in the script.
+
+Sets - i.e. sets of random variables/nodes, edges - are expressed via
+the capital italic notation as \(\mathscr{X}\), \(\mathscr{Y}\). We denote
+a single realization of the random variables within the set as \(x\),
+\(y\) respectively. Finally we denote a set of realizations via the
+following italic notation \(\mathcal{X}\), \(\mathcal{Y}\) respectively.
+
+When expressing the probability of a set of realizations, say
+\(P(\mathcal{D})\), we intend the likelihood of that set of realizations
+under the given probability function.
+
+Random variables themselves are defined via capital letters, while the
+lower case of the respective random variables defines domain
+realization of the variables.  For instance \(X_i\) represents
+a particular random variable while \(x_i\) represents the ralization of
+it. Multivariate random variables are expressed in bold face as \(\textbf{X}\).
+
+We denote a realization for the entire Bayesian Network, i.e. a
+realization containing evidence for each random variable present in
+the set \(\mathscr{X}\) representing the network variables, by \(\xi\).
+
+Moreover, we denote as \(\textbf{PA}_i\) the multivariate random
+variable representing the parent random variables for a particular
+node \(X_i\). Note that a parent random variable is defined as a random
+variable with a directed edge pointing to the node of interest. We
+denote a realization of such multivariate random variable as \(pa_i\). Note as well
+that \(pa_{ij}\) represents the realization of the \(jth\) parent random
+variable of \(x_i\), i.e. a realization of \(PA_{ij}\).
+
+In the case of multiple samples of the same random variable an index
+within square brackets denotes the particular sample of interest, say
+for instance \(\xi[1], ..., \xi[M]\) in the case of \(M\) Bayesian Network
+samples.
+
+Note that the \(Val(\textbf{X})\) operator represents the set of all of
+the possible realizations of the random variable \textbf{X}. When such
+operator is used on a set of realizations, say for instance a set of
+missing evidence \mathcal{H}[m] = \{H\textsubscript{1}[m] = ?, \ldots{}, H\textsubscript{k}[m] = ?\} -
+i.e. when using \(Val (\mathcal{H}[m])\) - we do intend the set of
+possible domain realizations of the random variables in the set.
+
+Finally when indexing the parameters of interest, the
+subscripts represent the index of the random variable as usual, while
+the superscripts denotes the realization for that particular
+variable. An example helps to illustrate the concept. \(\theta_{x_1^0},
+\theta_{x_2^1}\) represents the parameter governing the case of \(x_1 =
+0\) and \(x_2 = 1\) respectively.
+
+\newpage
+
 \pagenumbering{arabic}%--- switch back to standard numbering
 
-\section{Bayesian Networks - Overview and Manuscript Outline}
-\label{sec:org287af4b}
-
+\section{Bayesian Networks - Overview and Script Outline}
+\label{sec:org2c6ab5e}
 
 Probabilistic models based on directed acyclic graphs (DAGs) have
 been consistently studied and researched since the first appearance
@@ -152,7 +219,7 @@ of such models in various subfields of artificial intelligence.
 Given such properties and the fact that the mathematical machinery
 necessary to deal with such graphs spans multiple distinct
 subfields\footnote{Think for instance to the necessary components of mathematical
-statistics, information theory, graph theory and optimization.} the models attracted the interest of multiple
+statistics, information theory, graph theory and optimization.}, the models attracted the interest of multiple
 researchers. It comes as no surprise the fact that there is a
 vibrant research community dealing with such topic. Alone in the
 last 10 (20) years the numbers of published papers on the topic
@@ -169,7 +236,7 @@ evidence. Hence, despite the wealth of research, fundamental issues
 when dealing with uncertain evidence for modeling Bayesian Networks
 have been only marginally addressed that far.
 
-This will pose the focus to this manuscript. By a rigorous literature
+This will pose the focus to this script. By a rigorous literature
 review as well as some minor theoretical contributions we will try to
 partially address such a gap in the Bayesian Network modeling
 research. In this sense, we will start with a formal definition of
@@ -178,7 +245,7 @@ rigorous definition of the different types of uncertain evidence
 from which we will expand on.
 
 \subsection{Bayesian Networks - Formal Definition}
-\label{sec:org52c2c28}
+\label{sec:org066ede8}
 Before starting to dig into the material we provide a general
 definition of a Bayesian Network as in \cite{pearl2011bayesian}.
 
@@ -215,13 +282,13 @@ be found in \cite{koller2009probabilistic}.
 Yet when considering the conditional structure among the variables
 in the set \(\mathscr{X}\), it is possible to leverage the \emph{global
 semantics} of the network to represent the joint-distribution in
-compact form \cite{pearl2011bayesian}:
+compact form as in \cite{pearl2011bayesian}:
 
 \begin{align*} 
 P (x_1, ..., x_n) = \prod_i P(x_i | pa_i)
 \end{align*}
 
-where \(pa_i\) represents the parents nodes of node \(x_i\).
+where \(pa_i\) represents the realization for the parents nodes of node \(x_i\).
 
 It is then possible to see that as well framed by
 \cite{pearl2011bayesian}: "Provided that the number of parents of
@@ -280,16 +347,16 @@ methods as in \cite{pearl1987evidential} or variational methods as in
 \end{quote}
 
 
-In this manuscript, we will focus on (ii) taking (i) as given and
+In this script, we will focus on (ii) taking (i) as given and
 leveraging standard results from the literature as in
 \cite{koller2009probabilistic} for (iii).
 
 We turn next to a formal definition of evidence and especially of
 \emph{uncertain evidence} necessary for the correct outline of the
-research presented in this manuscript.
+research presented in this script.
 
 \subsection{Types of Evidence}
-\label{sec:orgcca7c0c}
+\label{sec:org43b2a87}
 
 The most basic case of evidence is the one of complete
 evidence. This occurs when we are provided with complete
@@ -416,7 +483,7 @@ different types of uncertain evidence we will provide in the next
 section a literature review for the case of parameter learning in
 Bayesian Networks in the case of complete, missing and uncertain
 evidence. We will finally propose the research outline for this
-manuscript. 
+script. 
 
 \subsection{Literature Review and Research Outline}
 \label{literature_review}
@@ -436,7 +503,7 @@ research.
 For MLE we have to guarantee the existence of such an estimator and
 then perform the optimization exercise in order to find the maximum
 likelihood estimator. In this sense a particular important result
-that we will leverage in the manuscript is the realization that in
+that we will leverage in the script is the realization that in
 the case of an exponential family as treated by
 \cite{barndorff1978hyperbolic}, we can obtain the MLE by solving for
 the reverse I-projection (or M-projection) as defined in
@@ -484,7 +551,7 @@ network random variables, some further reasoning is
 necessary. \cite{rubin1976inference} and \cite{little1976inference}
 started to reason about the notion of \emph{missing completely at
 random} and \emph{missing at random} data, a topic we will re-encounter
-in later section of this manuscript. Given such a distinction it is
+in later section of this script. Given such a distinction it is
 possible to set out the fundamentals for the parameter learning
 task. We will show that in the case of \emph{missing completely at
 random} data some of the decomposability properties of the
@@ -510,7 +577,7 @@ there that it is possible to apply the EM algorithm in such a
 setting by adjusting the maximization step in a way that its
 correctness and convergence properties are guaranteed.
 
-Finally, we when considering the case of \emph{probabilistic evidence}
+Finally, when considering the case of \emph{probabilistic evidence}
 it is important to reason on the iterative proportional fitting
 procedure and its possible extensions for the case of parameter
 learning via the EM-algorithm. In this sense we will reason on how
@@ -519,7 +586,7 @@ of probabilistic evidence by leveraging the work of \cite{PENG_2010},
 \cite{meng2016method} and by trying to incorporate such algorithms
 into the EM-algorithm.
 
-The manuscript continues as follows. Section \ref{complete-learning}
+The script continues as follows. Section \ref{complete-learning}
 treats the most basic and fundamental case of parameter learning
 under complete evidence. It will outline the global decomposability
 property of the likelihood such that the maximization task of the
@@ -568,7 +635,7 @@ lost.
 The major result of \cite{spiegelhalter1990sequential}, was the
 realization that in the case of complete data the likelihood of the
 Bayesian Network decomposes over the set of local likelihood
-functions of the individual nodes \textbf{X\textsubscript{i}}. Hence, despite the fact
+functions of the individual nodes \(X_i\). Hence, despite the fact
 that the likelihood function of Bayesian Networks is a product of
 multiple chained CPDs, it is possible to estimate the parameters of
 each CPDs locally in order to get an overall network
@@ -577,10 +644,10 @@ estimation technique.
 
 In order to see that, consider the following network \(\mathscr{B} =
   (\mathscr{G}, P)\) with \(\theta\) parameterization and a set of complete
-evidence \(\mathscr{D}\) consisting of sample instances \(\xi[1], ...,
-  \xi[M]\) for nodes \(i = 1, ..., k\).
+evidence \(\mathcal{D}\) consisting of sample instances \(\xi[1], ...,
+  \xi[M]\).
 
-We note here, that in this manuscript we will work under the
+We note here, that in this script we will work under the
 assumption that the parameters in the network are disjoint. Meaning
 that there is no \emph{global parameter sharing} as well as no \emph{local
 parameter sharing} in the network as described in
@@ -590,7 +657,7 @@ Given such network structure it is possible to express the network
 overall probability via chain rule as:
 
 \begin{equation} \label{eq:global_decomposition}
-P_{\theta} (x_1, ..., x_n) = \prod_i \prod_m P_{\theta_i}(x_i[m] | Pa_i^{\mathscr{G}}[m])  \nonumber
+P_{\theta} (x_1, ..., x_n) = \prod_i \prod_m P_{\theta_i}(x_i[m] | pa_i^{\mathscr{G}}[m])  \nonumber
 \end{equation}
 
 Noting now that it is possible to invert the order of multiplication
@@ -598,16 +665,16 @@ we get the following global likelihood decomposition for the
 Bayesian Network decomposition. 
 
 \begin{align} \label{eq:global_decomposition}
-L(\theta : \mathscr{D})       &= \prod_m P_{\theta} (x_1[m], ..., x_k[m]) \nonumber \\ 
-P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_m \prod_i  P_{\theta_i}(x_i[m] | Pa_i^{\mathscr{G}}[m])  \nonumber \\
-P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_i [\prod_m  P_{\theta_i}(x_i[m] | Pa_i^{\mathscr{G}}[m])]  \nonumber \\
-                              &= \prod_i L(\theta_i : X_i[m])  \nonumber    
+L(\theta : \mathcal{D})       &= \prod_m P_{\theta} (x_1[m], ..., x_k[m]) \nonumber \\ 
+\prod_m P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_m \prod_i  P_{\theta_i}(x_i[m] | pa_i^{\mathscr{G}}[m])  \nonumber \\
+\prod_m P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_i [\prod_m  P_{\theta_i}(x_i[m] | pa_i^{\mathscr{G}}[m])]  \nonumber \\
+                              &= \prod_i L(\theta_i : \mathcal{X}_i | \mathcal{PA}_i)  \nonumber    
 \end{align}
 
 It is then immediate to see that when solving for the MLE
 parameterization of the above you might well get the parameters by
 locally solving for the MLE estimators of the local likelihoods
-\(L(\theta_i : X_i[m])\).
+\(L(\theta_i : \mathcal{X}_i | \mathcal{PA}_i)\).
 
 A similar reasoning holds for the case of Bayesian Learning. In such
 a case we require on the top of complete data the property of \emph{a
@@ -616,28 +683,28 @@ priori independent} parameters defined as follows as in
 
 \begin{definition} \label{def:a_priori_parameters}
 A Priori Global Parameter Independece: Let G be a Bayesian network
-structure with parameters \theta = (\theta_{X_1|Pa_{X_1}} , ...,
-\theta_{X_n|Pa_{X_n}}).
+structure with parameters \theta = (\theta_{X_1|\textbf{PA}_{X_1}} , ...,
+\theta_{X_n|\textbf{PA}_{X_n}}).
 
 A prior $P(\theta)$ is said to satisfy global parameter independence
 if it has the form:
 
-$$P(\theta) = \prod_i P(\theta_{X_i}|Pa_{X_i})$$
+$$P(\theta) = \prod_i P(\theta_{X_i | \textbf{PA}_{X_i}})$$
 
 \end{definition}  
 
 Such that with \emph{a-priori global parameter independence} knowing the
-value of one parameter does not add any information regarding
-another parameter value.
+value of one parameter in a CPD does not add any information regarding
+another CPD parameter value.
 
 With this notion in mind and the global likelihood decomposition
 property it is possible to see that for Bayesian Learning
 under complete data it holds that:
 
 \begin{align} \label{eq:bayes_learning_complete_data}
-\prod_m P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_m \prod_i L(\theta_i : X_i[m])  \nonumber \\
-P(\theta) &= \prod_i P(\theta_{X_i}|Pa_{X_i})   \nonumber \\
-P(\theta | \mathscr{D}) &= \frac{1}{P(\mathscr{D})} \prod_i \prod_m  L(\theta_i : X_i[m]) * P(\theta_{X_i}|Pa_{X_i}) \nonumber
+\prod_m P_{\theta} (x_1[m], ..., x_k[m]) &= \prod_i L(\theta_i : \mathcal{X}_i | \mathcal{PA}_i)  \nonumber \\
+P(\theta) &= \prod_i P(\theta_{X_i|\textbf{PA}_{X_i}})   \nonumber \\
+\prod_m P(\theta | d[m]) &=  \prod_i  L(\theta_i : \mathcal{X}_i | \mathcal{PA}_i) * L(\theta_{X_i | \textbf{PA}_i}) * \prod_m \frac{1}{P(d[m])}  \nonumber
 \end{align}
 
 Such that once more we might for instance be able to compute the
@@ -647,29 +714,29 @@ CPDs.
 
 As a final note, we stress here the point that, in a similar line
 of reasoning, if when observing the data the parameterization of a
-local CPD is d-separated - such that, after observing complete
+\emph{local} CPD is d-separated - such that, after observing complete
 data, \(\theta_{Y|pa_i_j}\) is independent from \(\theta_{Y|pa_i_l}\)
 for all local parents \(j,l = 1, ..., p\) with \(i \neq l\) - then
-a network satisfies the local decomposability property. In such a
+a network satisfies the \emph{local decomposability property}. In such a
 case it would then hold for the parameter local independence:
 
 \begin{align}
-P(\theta) &= \prod_i P(\theta_{X_i}|Pa_i) \nonumber \\ 
-          &= \prod_i \prod_j P(\theta_{X_i}|pa_i_j) \nonumber  
+P(\theta) &= \prod_i P(\theta_{X_i |\textbf{PA}_i}) \nonumber \\ 
+          &= \prod_i \prod_j P(\theta_{X_i |PA_{ij}}) \nonumber  
 \end{align}
 
 And correspondingly for your likelihood
 
 \begin{align} 
-L(\theta : \mathscr{D}) &= \prod_i^K [\prod_m^M [\prod_j^P  P_{\theta_i_j}(x_i[m] | pa_i_j^{\mathscr{G}}[m])]] \nonumber \\
+L(\theta : \mathcal{D}) &= \prod_i^K [\prod_m^M [\prod_j^P  P_{\theta_i_j}(x_i[m] | pa_i_j^{\mathscr{G}}[m])]] \nonumber \\
                         &= \prod_i^K [\prod_j^P [\prod_m^M  P_{\theta_i_j}(x_i[m] | pa_i_j^{\mathscr{G}}[m])]] \nonumber \\
-                        &= \prod_i \prod_j L(\theta_i_j : X_i[m])  \nonumber
+                        &= \prod_i \prod_j L(\theta_i_j : \mathcal{X}_i | \mathcal{PA}_{ij})  \nonumber
 \end{align}
 
 Such that it would ultimately hold for Bayesian Learning
 
-\begin{align} 
-P(\theta | \mathscr{D}) &= \frac{1}{P(\mathscr{D})} \prod_i \prod_j L(\theta_i_j : X_i[m]) * P(\theta_{X_i}|pa_i_j) \nonumber
+\begin{align}
+\prod_m P(\theta | d[m]) &=  \prod_i \prod_j  L(\theta_i_j : \mathcal{X}_i | \mathcal{PA}_{ij}) * L(\theta_{X_i | PA_{ij}}) * \prod_m \frac{1}{P(d[m])} 
 \end{align}
 
 It is then clear that in such a case it is then possible to
@@ -684,6 +751,7 @@ possible anymore to perform local operations for obtaining a global
 solution.
 
 \newpage
+
 
 \section{On Missing Evidence}
 \label{missing-learning}
@@ -710,7 +778,7 @@ We start by defining a data hiding mechanism \(P_\psi(O_{X_i}|X_i)\) where
 \(O_{X_i}\) is a binary random variable representing whether the
 random variable \(X_i\) is observed or missing. It then follows that
 it is possible to express the probability of the random variable
-\(X_i\) realization through \(P_{missing}(X_i, O_{X_i}) = P_{theta}(X_i) *
+\(X_i\) realization through \(P_{missing}(X_i, O_{X_i}) = P_{\theta}(X_i) *
   P_\psi(O_{X_i}|X_i)\).
 
 Given such a model we turn to the definition of the two essential
@@ -733,15 +801,15 @@ data governing mechanism of the random variables \(X_i\), i.e. on
 portion of the likelihood function forgetting about the data hiding
 mechanism.
 
-Defining then the set of random variables \(Y = \{Y_1, . . . , Y_n\}\),
+Defining then the set of random variables \(\mathscr{Y} = \{Y_1, . . . , Y_n\}\),
 where \(Val(Y_i) = Val(X_i) \cup \{?\}\), where \(\{?\}\) represents a
 missing evidence, we can define the following data hiding mechanism:
 
 \begin{definition}
 Missing at Random: A data model $P_{missing}$ is missing at random (MAR)
 if for all observations with $P(y) > 0$, i.e. for all possible realizations,
-and for all $h \in Val(\mathscr{H})$, we have with $d \in \mathscr{D}$
-observed evidence, that $ P_{missing} \models (h \perp o_{X_i} | d) $.
+and for all $h \in Val(\textbf{H})$, we have with $d \in Val(\textbf{D})$
+observed evidence, that $ P_{missing} \models (h \perp o_{X} | d) $.
 \end{definition}  
 
 Or in other words, we talk about data \emph{missing at random} when
@@ -763,32 +831,32 @@ In order to see this note first that in the case of MAR, the
 observation pattern \(o_X\) gives no additional information about the
 hidden variables given the observed variables, that is:
 
-$$ P_{missing} (h | d, o_{X_i}) =  P_{missing} (h | d) $$
+$$ P_{missing} (h | d, o_{X}) =  P_{missing} (h | d) $$
 
 It holds then that 
 
 
 \begin{align}
-P_{missing}(y) &= \sum_h P_{\theta} (h, d) * P_\psi(o_{X_i} | h, d) \nonumber \\
-             &= \sum_h P_{\theta} (h, d) * P_\psi(o_{X_i} | d) \nonumber \\
-             &= P_\psi(o_{X_i} | d) * \sum_h P_{\theta} (h, d)  \nonumber \\
-	     &= P_\psi(o_{X_i} | d) * P_{\theta} (d)  \nonumber		
+P_{missing}(y) &= \sum_h P_{\theta} (h, d) * P_\psi(o_{X} | h, d) \nonumber \\
+             &= \sum_h P_{\theta} (h, d) * P_\psi(o_{X} | d) \nonumber \\
+             &= P_\psi(o_{X} | d) * \sum_h P_{\theta} (h, d)  \nonumber \\
+	     &= P_\psi(o_{X} | d) * P_{\theta} (d)  \nonumber		
 \end{align}
 
 Such that you can easily see that if \(P_{missing}\) is MAR then
-\(L(\theta, \psi : \mathscr{D})\) decomposes into two terms \(L(\theta :
-   \mathscr{D}), L(\psi : \mathscr{D}, O_X)\).
+\(L(\theta, \psi : \mathcal{D})\) decomposes into two terms \(L(\theta :
+   \mathcal{D}), L(\psi : \mathcal{D}, \mathcal{O}_X)\).
 
 Noting now that as we can always reach the \emph{MAR} condition by
 expanding a Bayesian Network, we will assume for the theory in this
-manuscript that the Bayesian Network of interest presenting missing
+script that the Bayesian Network of interest presenting missing
 evidence satisfies \emph{MAR}, such that the question of interest will
 be the functional form of the likelihood \(P_{\theta} (d)\) in the
 case of missing data, the topic we will address in the next
 section.
 
 \subsection{On the Observed Variables Likelihood under Missing Data}
-\label{sec:org7df83e2}
+\label{sec:orgbf3aa25}
 
 This section sets the focus on the likelihood of the observed data
 in the case of missing evidence.
@@ -800,9 +868,9 @@ the parameterization \(\theta\) that maximizes the likelihood of the
 random variables of interest \(X_i\).
 
 Starting from this principle it holds that for a set of observed
-variables \(\mathscr{D}\) we have:
+variables \(\mathcal{D}\) we have:
 
-$$ L(\theta: \mathscr{D}) = \prod_m^M P_\theta(d[m]) $$
+$$ L(\theta: \mathcal{D}) = \prod_m^M P_\theta(d[m]) $$
 
 The above looks similar to the case of complete data
 observations. We might be tempted to say that the learning task
@@ -812,9 +880,8 @@ the parameter independence property. This because, as we will
 reason next, in the case of missing evidence, the trails among
 parameters in the networks are not anymore d-separated such that
 information on one node will not only yield information for the
-particular node parameters governing the observation but rather as
-well yield information for other local and global network
-parameters .
+particular node parameters observation but rather as well yield
+information for other local and global network parameters .
 
 In order to understand why the decomposition property is gone think
 for instance at the following basics network structure with
@@ -850,7 +917,7 @@ all of the possible likelihood realizations of the missing variable
 \(H\), such that the likelihood would be given in general by the
 following expression:
 
-$$ L(\theta: \mathscr{D}) = \prod_m \sum_h P_\theta(d, h)$$
+$$ L(\theta: \mathcal{D}) = \prod_m \sum_{h[m] \in Val(\mathcal{H}[m])} P_\theta(d[m], h[m])$$
 
 It is immediate to see that it is not anymore possible to invert
 the order of the multiplication due to the interaction of summing
@@ -885,7 +952,7 @@ following theorem
 \begin{theorem}\label{thm:one}
 When applying the EM-algorithm it holds that the likelihood function increases at each iteration step:
 
-$$l(\theta^{t+1} : \mathscr{D}) \geq l(\theta^{t} : \mathscr{D}) \tab \forall \ t$$
+$$l(\theta^{t+1} : \mathcal{D}) \geq l(\theta^{t} : \mathcal{D}) \tab \forall \ t$$
 \end{theorem}
 
 In order to prove this, we propose the theory developed in
@@ -893,7 +960,7 @@ In order to prove this, we propose the theory developed in
 function:
 
 \begin{equation} \label{eq:energy_functional}
-F[P(X), Q] = E_Q[log (\tilde{P}(X))] + H_Q (X)
+F[P(\textbf{X}), Q] = E_Q[log (\tilde{P}(\textbf{X}))] + H_Q (\textbf{X})
 \end{equation}
 
 Where \(\tilde{P}\) is an unnormalized state probability \(P =
@@ -915,28 +982,31 @@ We will choose next the following distribution for the particle
 distribution:
 
 \begin{equation} \label{eq:particle_distribution}
-P (\mathscr{H} | \mathscr{D}, \theta) =   \frac{P (\mathscr{H}, \mathscr{D}| \theta)}{P (\mathscr{D}| \theta)}
+P (\textbf{H} | \textbf{D}, \theta) =   \frac{P (\textbf{H}, \textbf{D}| \theta)}{P (\textbf{D}| \theta)}
 \end{equation}
 
-With this choice it becomes clear that \(Z = P (\mathscr{D}|
-   \theta)\) and \(\tilde{P} = P (\mathscr{H}, \mathscr{D}| \theta)\). It
-follows then immediately that given such probability function we
-can compute the likelihood of realizations \(\mathscr{D}, \mathscr{H}\):
+With this choice it becomes clear that \(Z = P (\textbf{D}| \theta)\)
+and \(\tilde{P} = P (\textbf{H}, \textbf{D}| \theta)\). \textbf{D}
+and \textbf{H} represents multivariate random variables and will
+later represent multivariate random variables composed of observed
+and missing random variables respectively.
+
+Moreover, recall that using our notation it holds:
 
 \begin{align} \label{eq:likelihood_particle}
-L (\theta: \mathscr{D}, \mathscr{H}) =& \  P (\mathscr{H}, \mathscr{D}| \theta)\\
-L (\theta: \mathscr{D}) =& \ P (\mathscr{D}| \theta)
+L (\theta: \mathcal{D}, \mathcal{H}) =& \  P (\mathcal{H}, \mathcal{D}| \theta)\\
+L (\theta: \mathcal{D}) =& \ P (\mathcal{D}| \theta)
 \end{align}
 
-where \(\mathscr{D}\) represents the observed evidence and
-\(\mathscr{H}\) the missing evidence.
+where \(\mathcal{D}\) represents observed evidence and \(\mathcal{H}\)
+represents missing evidence.
 
 Such that using \ref{eq:energy_refurmolation} we can get to the
-log-likelihood of the observed data in the following way:
+log-likelihood function of the observed data by:
 
 \begin{align} \label{eq:likelihood_energy_functional_relation}
-l (\theta: \mathscr{D}) =& \  F_D[\theta, Q] + D (Q (\mathscr{H}) || P (\mathscr{H}| \theta, \mathscr{D})) \\
-l (\theta: \mathscr{D}) =& \  E_Q[l (\theta: \mathscr{D}, \mathscr{H})]+ H_Q (\mathscr {H}) + D (Q (\mathscr{H}) || P (\mathscr{H}| \theta, \mathscr{D}))
+l (\theta: \mathcal{D}) =& \  F_D[\theta, Q] + D (Q (\mathcal{H}) || P (\mathcal{H}| \theta, \mathcal{D})) \\
+l (\theta: \mathcal{D}) =& \  E_Q[l (\theta: \mathcal{D}, \mathcal{H})]+ H_Q (\mathcal {H}) + D (Q (\mathcal{H}) || P (\mathcal{H}| \theta, \mathcal{D}))
 \end{align}
 
 The above are two fundamental equations. It is in fact
@@ -946,7 +1016,7 @@ side above is an upper bound for the energy functional and the expected
 log-likelihood relative to Q, for any choice of Q.
 
 Moreover it is straightforward to see in the above that choosing the
-Q-measure as \(P (\mathscr{H}| \mathscr{D}, \theta)\) the relative term
+Q-measure as \(P (\textbf{H}| \textbf{D}, \theta)\) the relative term
 fades away such that the entropy term is the overall measure on the
 difference between the expected log-likelihood and the real
 log-likelihood. It is in fact clear that in such a case the
@@ -959,21 +1029,21 @@ coordinate ascent optimization of the energy functional. To see this
 consider the E-step and M-step as follows.
 
 \subsubsection{The Expectation Step}
-\label{sec:orgfb5826e}
+\label{sec:orgb95a745}
 
 Consider the first coordinate ascent - Q, keeping \(\theta\)
 fixed. We look for \(\operatorname*{argmax}_{Q} F_D[\theta, Q]\). It
 is then immediate that:
 
 \begin{align} \label{eq:q_optimum}
-Q^* =& \ P (\mathscr{H}|\mathscr{D}, \theta) \\
-F_D[\theta, Q^*] =& \ l (\theta: \mathscr{D}) \\
+Q^* =& \ P (\textbf{H}|\textbf{D}, \theta) \\
+F_D[\theta, Q^*] =& \ l (\theta: \mathcal{D}) \\
 F_D[\theta, Q^*] \geq& \ F_D[\theta, Q]
 \end{align}
 
 The reason because the above is the actual searched maximum
 argument is the following: You have in general an upper bound on
-the energy functional given by log-likelihood. If you now choose
+the energy functional given by the log-likelihood. If you now choose
 the distribution Q in the way described above you know that you
 have reached the upper bound and that such upper bound is
 tight. I.e. it is straightforward to see that your are at the
@@ -986,7 +1056,7 @@ the E-step as the step involving the maximization of the energy
 functional along the Q coordinate.
 
 \subsubsection{The Maximization Step}
-\label{sec:org2aae784}
+\label{sec:orgbec8899}
 
 This is the second coordinate ascent - \(\theta\). Here we look
 towards \(\operatorname*{argmax}_{\theta} F_D[\theta, Q]\).
@@ -995,7 +1065,7 @@ It follows then quoting from
 \cite{koller2009probabilistic}:
 
 "Suppose Q is fixed, because the only term in F that involves \(\theta\) is
-\(E_Q[l (\theta: \mathscr{D}, \mathscr{H})]\), the maximization is
+\(E_Q[l (\theta: \mathcal{D}, \mathcal{H})]\), the maximization is
 equivalent to maximizing the expected log-likelihood."
 
 This is in fact exactly the standard M-step of the EM algorithm so
@@ -1033,11 +1103,11 @@ statistics of interest.
 
 
 \begin{equation} \label{eq:bayes_formula}
-P (\theta | \mathscr{D}) = \frac{P (\mathscr{D} | \theta) * P(\theta)}{P (\mathscr{D})} 
+P (\theta | \textbf{D}) = \frac{P (\textbf{D} | \theta) * P(\theta)}{P (\textbf{D})} 
 \end{equation}
 
 It is straightforward to see that that the posterior is proportional
-to a likelihood term \(P (\mathscr{D} | \theta)\) multiplied by the
+to a likelihood term \(P (\textbf{D} | \theta)\) multiplied by the
 prior distribution.
 
 It follows that depending the choice of point estimate of the
@@ -1053,14 +1123,14 @@ point estimate maximizing your posteriori likelihood,
 i.e. mathematically it is expressed as follows:
 
 \begin{align} \label{eq:bayes_map}
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \frac{P (\mathscr{D} | \theta) * P(\theta)}{P (\mathscr{D})} \nonumber\\
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} P (\mathscr{D} | \theta) * P(\theta)\\ 
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} log (P (\mathscr{D} | \theta)) + log (P(\theta)) \nonumber
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \frac{P (\mathcal{D} | \theta) * P(\theta)}{P (\mathcal{D})} \nonumber\\
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} P (\mathcal{D} | \theta) * P(\theta)\\ 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} log (P (\mathcal{D} | \theta)) + log (P(\theta)) \nonumber
 \end{align}
 \begin{align} \label{eq:bayes_map2}
-score_{MAP} (\theta : \mathscr{D}) =& \ log (P (\mathscr{D} | \theta)) + log (P(\theta)) \nonumber\\
+score_{MAP} (\theta : \mathcal{D}) =& \ log (P (\mathcal{D} | \theta)) + log (P(\theta)) \nonumber\\
 \nonumber\\
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} score_{MAP}(\theta : \mathscr{D}) 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} score_{MAP}(\theta : \mathcal{D}) 
 \end{align}
 
 Where the last equation in \ref{eq:bayes_map} follows immediately
@@ -1079,7 +1149,7 @@ maximizing the score map of \ref{eq:bayes_map2}. This will be the main
 exercise of the next section.
 
 \subsection{Bayesian Parameter Learning - EM Generalization}
-\label{sec:orgd28e9df}
+\label{sec:orgac33163}
 
 Maximum a posteriori Bayesian Parameter Learning is a
 straightforward generalization of the discussion of \ref{math_em}.
@@ -1087,7 +1157,7 @@ straightforward generalization of the discussion of \ref{math_em}.
 In fact noting that the score of the MAP estimator is defined as
 
 \begin{equation} 
-score_{MAP} (\theta : \mathscr{D}) =& \ log (P (\mathscr{D} | \theta)) + log (P(\theta)) 
+score_{MAP} (\theta : \mathcal{D}) =& \ log (P (\mathcal{D} | \theta)) + log (P(\theta)) 
 \end{equation}
 
 it is possible to see that the previous results apply.
@@ -1096,17 +1166,17 @@ In order to see that define the following adjusted energy
 functional:
 
 \begin{equation} \label{eq:adj_energy_functional}
-\tilde{F}[\theta, Q] = E_Q[log (\tilde{P}(X))] + H_Q (X) + log (P(\theta)) 
+\tilde{F}[\theta, Q] = E_Q[log (\tilde{P}(\textbf{X}))] + H_Q (\textbf{X}) + log (P(\theta)) 
 \end{equation}
 
 Such that:
 
 \begin{align} \label{eq:adj_likelihood_energy_functional_relation}
-l (\theta: \mathscr{D}) + log (P(\theta)) =& \ \tilde{F}_D[\theta, Q] + D (Q (\mathscr{H}) || P (\mathscr{H}| \theta, \mathscr{D})) 
+l (\theta: \mathcal{D}) + log (P(\theta)) =& \ \tilde{F}_D[\theta, Q] + D (Q (\mathcal{H}) || P (\mathcal{H}| \theta, \mathcal{D})) 
 \end{align}
 
 It follows immediately that choosing \(Q\) as \(P
-   (\mathscr{H}|\mathscr{D}, \theta)\) and maximizing the adjusted
+   (\textbf{H}|\textbf{D}, \theta)\) and maximizing the adjusted
 energy functional we are in fact maximizing the score-map such
 that the results of the previous section apply.
 
@@ -1127,13 +1197,9 @@ However, what is affected is the optimization along the other
 coordinate. That is the computation of
 \(\operatorname*{argmax}_{\theta} \tilde{F}_D[\theta, Q]\) keeping Q
 fixed. In this case the terms depending on \(\theta\) is not limited to
-the expected likelihood \(E_Q[l (\theta: \mathscr{D}, \mathscr{H})]\)
+the expected likelihood \(E_Q[l (\theta: \mathcal{D}, \mathcal{H})]\)
 as was the case before but it is rather important to also consider
 the prior distribution \(P(\theta)\).
-
-
-
-
 
 \newpage
 
@@ -1144,21 +1210,21 @@ the general case of exponential families. The idea is to
 crystallize the theory developed so far in the general setting of
 exponential families CPDs.
 
-Given such a procedure it will be possible for the user to apply
-the presented theory to a general class of distribution allowing
-rich modeling for probabilistic graphical models. Moreover we will
-leverage such models for implementing the algorithms proposed into
-the open source \href{https://github.com/radum2275/merlin}{merlin} engine. 
+Given such a procedure it will be possible for the user to apply the
+presented theory to a general class of distribution allowing a rich
+modeling possibility for probabilistic graphical models. Moreover, we
+will leverage such models for implementing the algorithms proposed
+into the open source \href{https://github.com/radum2275/merlin}{merlin} engine.
 
 In order to see this define at first the set \(\mathscr{Q}\) of
 parametric distributions belonging to the exponential family
-P\textsubscript{\(\theta\)}(X), defined as:
+P\textsubscript{\(\theta\)}(\textbf{X}), defined as:
 
 \begin{align} \label{eq:exponential-family}
-P_{\theta}(X) = \frac{1}{Z(\theta)} exp[\sum_i c(\theta_i)\tau(X_i)] * A(X)
+P_{\theta}(\textbf{X}) = \frac{1}{Z(\theta)} exp[\sum_i c(\theta_i)\tau(X_i)] * A(\textbf{X})
 \end{align}
 
-where, \(Z(\theta)\) is a normalizing term and \(\tau(X) = (\tau(X_1),
+where, \(Z(\theta)\) is a normalizing term and \(\tau(\textbf{X}) = (\tau(X_1),
   ..., \tau(X_K))\) is the sufficient statistic.
 
 You can then see that multiple distributions belong to such class
@@ -1172,19 +1238,19 @@ Recall that for the multinomial table-CPDs with binary random variables \(X_i\) 
 local probability function is given by:
 
 \begin{align} \label{eq:multinomial-cpd}
-P(X_i|\theta) = \prod_{x_i \in Val(X_i), pa_i \in Val(Pa_i)} \theta_{x_i | pa_i}^{x_i}
+P(X_i|\theta) = \prod_{x_i \in Val(X_i), pa_{ij} \in Val(\textbf{PA}_i)} \theta_{x_i | pa_{ij}}
 \end{align}
 
 It is now possible to frame the above in the exponential family form by
-defining the sufficient statistics as \(\tau(x_i | pa_i) =
-  \mathbbm{1}_{\{X = x, Pa_i = pa_i : x \in Val(X), pa_i \in
-  Val(Pa_i)\}}\) and \(c(\theta_{x_i | Pa_i}) = ln(\theta_{x_i |
-  pa_i})\).
+defining the sufficient statistics as \(\tau(x_i | pa_{ij}) =
+  \mathbbm{1}_{\{X = x, \textbf{PA}_i = pa_{ij} : x \in Val(X), pa_{ij} \in
+  Val(\textbf{PA}_i)\}}\) and \(c(\theta_{x_i | pa_{ij}}) = ln(\theta_{x_i |
+  pa_{ij}})\).
 
 Given that it is immediate to see that
 
 \begin{align} \label{eq:multinomial-cpd}
-P(X_i|\theta) = exp[\sum_{x_i \in Val(X_i), pa_i \in Val(Pa_i)} c(\theta_{x_i | pa_i}) * \tau(x_i | pa_i)] 
+P(X_i|\theta) = exp[\sum_{x_i \in Val(X_i), pa_{ij} \in Val(\textbf{PA}_i)} c(\theta_{x_i | pa_{ij}}) * \tau(x_i | pa_{ij})] 
 \end{align}
 
 Another of such examples are linear Gaussian Bayesian networks. In
@@ -1203,9 +1269,9 @@ P(X_i|\theta_i) = \frac{1}{\sqrt{2\pi\sigma_i^2}} exp[-\frac{1}{2\sigma_i^2} (x_
 \end{align}
 
 You can then see by expanding the square that the sufficient
-statistics for such local exponential distribution is: \(\tau(x|pa) =
-  (1,x,pa_1, ..., pa_p, x^2, xpa_1, . . . , xpa_p, pa_1^2, pa_1pa_2,
-  . . . , pa_p^2)\).
+statistics for such local exponential distribution is: \(\tau(x_i|pa_i) =
+  (1,x_i,pa_{i1}, ..., pa_{ip}, x^2, x_ipa_{i1}, . . . , x_ipa_{ip}, pa_{i1}^2, pa_{i1}pa_{i2},
+  . . . , pa_{ip}^2)\).
 
 Leaving such examples and going back to the general definition of
 exponential family distributions it is immediate to see that if
@@ -1214,7 +1280,7 @@ probability function over the entire network will be an
 exponential family distribution.
 
 \subsection{Complete Evidence}
-\label{sec:org8f9d041}
+\label{sec:orged86a56}
 
 Given the definition of local CPD it follows from the theory of the
 previous section that in the case of \emph{complete data}, we can solve
@@ -1232,7 +1298,7 @@ P(x_i|\theta_i) = \prod_m^M \frac{1}{Z(\theta_i)} exp[c(\theta_i)^\intercal \tau
 
 
 \subsection{Missing Evidence}
-\label{sec:org780b112}
+\label{sec:org86fe91f}
 
 Consider now the case of \emph{missing evidence}. Here again it is
 possible to apply the theory exposed in the previous section in a
@@ -1245,14 +1311,14 @@ the likelihood of the observed data.
 In the case of missing evidence, for each instance we might have
 both observed evidence \(d_i[m]\) as well as missing evidence \(h_i[m]\).
 
-Given the inference step where, given the current network
-parameterization, we compute the probabilistic realization of
+Given the inference step on the current network
+parameterization where we compute the probabilistic realization of
 possible synthetically complete data, we can express and maximize
 the following expected local likelihood function.
 
 \begin{align} \label{eq:complete-exponential-family-likelihood}
-E_Q(l(\theta_i :D_i, H_i)) =& \ - Mlog(Z(\theta_i) + \sum_m^M \sum_{h_i[m] \in Val(\mathscr{H}_i[m])} Q(h_i[m]) * \mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])\\
-            & + \sum_m^M \sum_{h_i[m] \in Val(\mathscr{H}_i[m])} Q(h_i[m]) * log(A(d_i[m], h_i[m]))  \nonumber \\
+E_Q(l(\theta_i :D_i, H_i)) =& \ - Mlog(Z(\theta_i) + \sum_m^M \sum_{h_i[m] \in Val(\textbf{H}_i[m])} Q(h_i[m]) * \mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])\\
+            & + \sum_m^M \sum_{h_i[m] \in Val(\textbf{H}_i[m])} Q(h_i[m]) * log(A(d_i[m], h_i[m]))  \nonumber \\
 E_Q(l(\theta_i :D_i, H_i)) =& \ - Mlog(Z(\theta_i)) + \sum_m^M E_Q[\mathbf{c(\theta_i)}^\intercal \mathbf{\tau}(d_i[m], h_i[m])] + E_Q[log(A(d_i[m], h_i[m]))]
 \end{align}
 
@@ -1274,27 +1340,27 @@ Performing this exercise for the two examples above we get the
 following.
 
 Starting with the multinomial table CPDs and defining a random
-variable \(Y\) representing the \emph{synthetically completed data} \(<H, D>\),
-we have that
+variable \(\textbf{Y}\) representing the \emph{synthetically completed
+data} \(<\textbf{H}, \textbf{D}>\), we have that
 
 \begin{align} \label{eq:solution}
-\tilde{\theta}_{y_i | pa_i} =& \operatorname*{argmax}_{\theta_{y_i | Pa_i}}  \prod_m \prod_{y_i \in Val(Y_i)} P_{\theta_{y_i|pa_i}}(y_i[m]|pa_i[m]) \nonumber  \\
-\tilde{\theta}_{y_i | pa_i} =& \operatorname*{argmax}_{\theta_{y_i | pa_i}} \sum_m ln(\theta_{y_i | pa_i}) * \sum_{h[m] \in Val(\mathscr{H}[m]) : y_i = y_i[m]} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i = pa_i[m]\}}
+\tilde{\theta}_{y_i | pa_{ij}} =& \operatorname*{argmax}_{\theta_{y_i | pa_{ij}}}  \prod_m \prod_{y_i \in Val(Y_i)} P_{\theta_{y_i|pa_{ij}}}(y_i[m]|pa_{ij}[m]) \nonumber  \\
+\tilde{\theta}_{y_i | pa_{ij}} =& \operatorname*{argmax}_{\theta_{y_i | pa_{ij}}} \sum_m ln(\theta_{y_i | pa_{ij}}) * \sum_{h[m] \in Val(\textbf{H}[m]) : y_i = y_i[m]} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_{ij} = pa_i[m]\}}
 \end{align}
 
-With the additional constraints that \(\sum_{y_i \in Val(Y_i), pa_i
-     \in Val(Pa_i)} \theta_{y_i | pa_i} = 1\).
+With the additional constraints that \(\sum_{y_i \in Val(Y_i), pa_{ij}
+     \in Val(\textbf{PA}_i)} \theta_{y_i | pa_{ij}} = 1\).
 
 Solving this constrained optimization problem by standard
 Lagrange method you get: 
 
 \begin{align} \label{eq:solution}
-\tilde{\theta}_{y_i | pa_i} =& \frac{\bar{M}[y_i, pa_i]}{\sum_j \bar{M}[y_j, pa_i]}
+\tilde{\theta}_{y_i | pa_{ij}} =& \frac{\bar{M}[y_i, pa_{ij}]}{\sum_j \bar{M}[y_j, pa_{ij}]}
 \end{align}
 
-With \(\bar{M}[y_i, pa_i] = \sum_m^M \sum_{h[m] \in
-     Val(\mathscr{H}[m]): y_i = y_i[m]} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_i =
-     pa_i[m]\}} = E_Q(M(y, pa)), \ M(y, pa) = \sum_m \tau(y,pa)\).
+With \(\bar{M}[y_i, pa_{ij}] = \sum_m^M \sum_{h[m] \in
+     Val(\textbf{H}[m]): y_i = y_i[m]} Q(h[m]) * \mathbbm{1}_{\{y_i = y_i[m], pa_{ij} =
+     pa_{ij}[m]\}} = E_Q(M(y, pa)), \ M(y, pa) = \sum_m \tau(y,pa)\).
 
 Algorithmically it is then possible to write the EM-application for
 the above case as in \ref{alg:EM-Likelihood-Missing-Data}.
@@ -1318,7 +1384,7 @@ the above case as in \ref{alg:EM-Likelihood-Missing-Data}.
 
   \ForAll{$i=1, \ldots, n$}
 
-    \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+    \ForAll{$x_{i},u_{i}\in Val(X_{i},\textbf{PA}_{X_{i}}^{\mathcal{B}})$}
 
       \State $\theta_{x_{i}|u_{i}}^{t+1}=\frac{\bar{M}_{\theta^{t}}[x_{i},u_{i}]}{\bar{M}_{\theta^{t}}[u]}$
     \EndFor
@@ -1329,7 +1395,7 @@ the above case as in \ref{alg:EM-Likelihood-Missing-Data}.
 \Function{Compute-ESS}{$\mathcal{B}=(G,\theta)$, $S$} 
 
 \ForAll {$i\in1,\ldots,n$}
-  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+  \ForAll {$x_{i},u_{i}\in Val(X_{i},\textbf{PA}_{X_{i}}^{\mathcal{B}})$}
    \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
   \EndFor
 \EndFor
@@ -1339,7 +1405,7 @@ the above case as in \ref{alg:EM-Likelihood-Missing-Data}.
 \ForAll{example $S_{j}\in S$}
     \State Run inference on $(G,\theta)$ with evidence $d_{j}$
     \ForAll{i$ = 1,\ldots,n$}
-      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+      \ForAll{$x_{i},u_{i}\in Val(X_{i},\textbf{PA}_{X_{i}}^{\mathcal{B}})$}
 
         \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G,\theta)}(x_{i},u_{i}|d_{j})$
       \EndFor
@@ -1356,7 +1422,7 @@ Turning to the second example, the one of linear Gaussian CPDs we
 have for the local CPD
 
 \begin{align} \label{eq:like-gaussian-cpd}
-P(X|\theta) = &\prod_m \prod_{y_i \in Val(Y_i), pa_i \in Val(Pa_i)} \prod_{h[m] \in Val(\mathscr{H}[m])} \frac{1}{\sqrt{2\pi\sigma^2}} exp[-\frac{1}{2\sigma^2} (Q(h[m]) * y[m]  \\
+P(X|\theta) = &\prod_m \prod_{y_i \in Val(Y_i), pa_i \in Val(\textbf{PA}_i)} \prod_{h[m] \in Val(\textbf{H}[m])} \frac{1}{\sqrt{2\pi\sigma^2}} exp[-\frac{1}{2\sigma^2} (Q(h[m]) * y[m]  \\
 	    & - (\beta_0 + \beta_1 * pa_1[m] + ... + \beta_K * pa_K[m]))^2]  \nonumber
 \end{align}
 
@@ -1385,7 +1451,7 @@ Given the above results from information theory it is generally
 possible to compute the MLE of exponential families in the presence
 of missing data by firstly computing a map
 
-$$ess(\theta) = E_{P_\theta}(E_Q(\tau(Y)))$$
+$$ess(\theta) = E_{P_\theta}(E_Q(\tau(\textbf{Y})))$$
 
 Then, if possible, inverting such map
 
@@ -1410,8 +1476,8 @@ single parent would result in the following picture:
 		 \beta_1
 		 \end{pmatrix} \\
 		 &= \begin{pmatrix}
-		 E_{P_\theta}(E_Q(Y)) = \beta_0 + \beta_1 E_{P_\theta}(Pa_1) \\
-		 E_{P_\theta}(E_Q(Y * Pa_1)) = \beta_0 E_{P_\theta}(Pa_1) + \beta_1 E_{P_\theta}(Pa_1^2)
+		 E_{P_\theta}(E_Q(\textbf{Y})) = \beta_0 + \beta_1 E_{P_\theta}(\textbf{PA}_1) \\
+		 E_{P_\theta}(E_Q(\textbf{Y} * \textbf{PA}_1)) = \beta_0 E_{P_\theta}(\textbf{PA}_1) + \beta_1 E_{P_\theta}(\textbf{PA}_1^2)
 		 \end{pmatrix}
 \end{align*}
 
@@ -1425,13 +1491,13 @@ we get
 		 \hat{\beta_1}
            \end{pmatrix} 
         = \begin{pmatrix}
-		 E_D(E_Q(Y)) - \frac{E_D(E_Q(Y*Pa_1))- E_D(E_Q(Y))E_D(Pa_1)}{E_D(Pa_1^2) - E_D(Pa_1)^2} * E_D(Pa_1)\\
-		 \frac{E_D(E_Q(Y*Pa_1))- E_D(E_Q(Y))E_D(Pa_1)}{E_D(Pa_1^2) - E_D(Pa_1)^2}
+		 E_D(E_Q(\textbf{Y})) - \frac{E_D(E_Q(\textbf{Y}*\textbf{PA}_1))- E_D(E_Q(\textbf{Y}))E_D(\textbf{PA}_1)}{E_D(\textbf{PA}_1^2) - E_D(\textbf{PA}_1)^2} * E_D(\textbf{PA}_1)\\
+		 \frac{E_D(E_Q(\textbf{Y}*\textbf{PA}_1))- E_D(E_Q(\textbf{Y}))E_D(\textbf{PA}_1)}{E_D(\textbf{PA}_1^2) - E_D(\textbf{PA}_1)^2}
            \end{pmatrix}
 \end{align}
 
-where the empirical moments are given by \(E_D(E_Q(Y)) = \frac{1}{M}
-    \sum_m \sum_{h[m] \in Val(\mathscr{H}[m])} Q(h[m]) y[m]\) and
+where the empirical moments are given by \(E_D(E_Q(\textbf{Y})) = \frac{1}{M}
+    \sum_m \sum_{h[m] \in Val(\textbf{H}[m])} Q(h[m]) y[m]\) and
 similar.    
 
 It is now clear that such an approach can be used in the general
@@ -1457,7 +1523,7 @@ treated in this section.
 The theory proceeds with the most classic network structure. The
 one of table conditional probability distributions where the
 realizations are distributed according to a multinomial
-distribution given the \(\theta\)\textsubscript{X\textsubscript{i} | Pa\textsubscript{X\textsubscript{i}}} local parameters and
+distribution given the \(\theta\)\textsubscript{X\textsubscript{i} | \textbf{PA}\textsubscript{X\textsubscript{i}}} local parameters and
 where possible realizations are binary, \(Val(X_i) = \{0,1 \}\).
 
 Specifying a Dirichlet distribution as the prior of such parameters
@@ -1475,17 +1541,17 @@ Consider in this sense the unnormalized probability for the
 Dirichlet-Multinomial posterior distribution:
 
 \begin{align} \label{eq:dirichlet-multinomial-score}
-P(\theta | X) = \frac{\Gamma(\sum_i x_i + 1)}{\prod_i \Gamma(x_i + 1)} \prod_i^K \theta_{x_i | Pa_i}^{x_i}  * \frac{1}{B(\alpha)} \prod_{i=1}^K \theta_{x_i | Pa_i}^{\alpha_i - 1}
+P(\theta | X) = \frac{\Gamma(\sum_i x_i + 1)}{\prod_i \Gamma(x_i + 1)} \prod_i^K \theta_{x_i | \textbf{PA}_i}^{x_i}  * \frac{1}{B(\alpha)} \prod_{i=1}^K \theta_{x_i | \textbf{PA}_i}^{\alpha_i - 1}
 \end{align}
 
 And consider the adjusted energy functional
 \ref{eq:adj_energy_functional}. We can derive the new likelihood
 expression in the case of missing evidence by defining a new
-random variable \(Y\) expressing synthetically completed data observations \(<H,
-   D>\):
+multivariate random variable \(\textbf{Y}\) expressing synthetically completed data observations \(<\textbf{H},
+   \textbf{D}>\):
 
 \begin{align} \label{eq:dirichlet-multinomial-likelihood}
-\tilde{F}[\theta, Q] =& \ E_Q[P_\theta(Y)] + H_Q (Y) + log(P_{hyperparameters}(\theta))
+\tilde{F}[\theta, Q] =& \ E_Q[P_\theta(\textbf{Y})] + H_Q (\textbf{Y}) + log(P_{hyperparameters}(\theta))
 \end{align}
 
 Such that taking the argument maximizing the likelihood of the
@@ -1495,51 +1561,51 @@ represents synthetically created complete observation <h[m],
 d[m]>:
 
 \begin{align} \label{eq:first-order-condition}
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_i \in Val(Pa_i)}
-\frac{\Gamma(\sum_i [y[m]_i, pa[m]_i] + 1)}{\prod_i \Gamma([y[m]_i,pa[m]_i] + 1)} \theta_{y_i | pa_{i}}^{[y[m]_i, pa[m]_i]} * \frac{1}{B(\alpha)} \theta_{y_i | pa_{i}}^{\alpha_i - 1})] + H_Q (y[m]) \\
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_{ij} \in Val(\textbf{PA}_i)}
+\frac{\Gamma(\sum_i [y[m]_i, pa[m]_{ij}] + 1)}{\prod_i \Gamma([y[m]_i,pa[m]_{ij}] + 1)} \theta_{y_i | pa_{ij}}^{[y[m]_i, pa[m]_{ij}]} * \frac{1}{B(\alpha)} \theta_{y_i | pa_{ij}}^{\alpha_i - 1})] + H_Q (y[m]) \\
 \nonumber\\   
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_i \in Val(Pa_i)} \theta_{y_i | pa_{i}}^{[y[m]_i, pa[m]_i]} * \theta_{y_i | pa_{i}}^{\alpha_i - 1})]\\
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_{ij} \in Val(\textbf{PA}_i)} \theta_{y_i | pa_{ij}}^{[y[m]_i, pa[m]_{ij}]} * \theta_{y_i | pa_{ij}}^{\alpha_i - 1})]\\
 \nonumber\\   
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_i \in Val(Pa_i)} \theta_{y_i | pa_{i}}^{[y[m]_i, pa[m]_i] + \alpha_i - 1})] 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_m E_Q[log(\prod_i^K \prod_{pa_{ij} \in Val(\textbf{PA}_i)} \theta_{y_i | pa_{ij}}^{[y[m]_i, pa[m]_{ij}] + \alpha_i - 1})] 
 \end{align}
 
 It follows given that by the linearity of the expectation and that
 \(y[m]_i = \{0,1\}\), we can re-express the above as:
 
 \begin{align} \label{eq:solution1}
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K \sum_{pa_i \in Val(Pa_i)} (\sum_m^M E_Q[M[y_i, pa_{i}]] + \alpha_i - 1) * log(\theta_{y_i | pa_{i}})] 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K \sum_{pa_{ij} \in Val(\textbf{PA}_i)} (\sum_m^M E_Q[M[y_i, pa_{ij}]] + \alpha_i - 1) * log(\theta_{y_i | pa_{ij}})] 
 \end{align}
 
 where it holds
 
 \begin{align} \label{eq:expected_sufficient}
-\bar{M}[y_i, pa_{i}]  =& \sum_m^M E_Q[M[y_i, pa_{i}]]\\
-\bar{M}[y_i, pa_{i}]  =& \sum_m^M \sum_{h[m] \in Val(\mathscr{H}[m]): y_i = y_i[m]} Q(h[m]) \mathbbm{1}_{\{y_i = y[m]_i, pa_i = pa[m]_i\}}\\
-\bar{M}[y_i, pa_{i}]  =& \sum_m^M P(y_i, pa_i | d[m], \theta)
+\bar{M}[y_i, pa_{ij}]  =& \sum_m^M E_Q[M[y_i, pa_{ij}]]\\
+\bar{M}[y_i, pa_{ij}]  =& \sum_m^M \sum_{h[m] \in Val(\textbf{H}[m]): y_i = y_i[m]} Q(h[m]) \mathbbm{1}_{\{y_i = y[m]_i, pa_{ij} = pa[m]_{ij}\}}\\
+\bar{M}[y_i, pa_{ij}]  =& \sum_m^M P(y_i, pa_{ij} | d[m], \theta)
 \end{align}
 
 So that ultimately:
 
 \begin{align} \label{eq:solution2}
-\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K  \sum_{pa_i \in Val(Pa_i)} (\bar{M}[y_i, pa_{i}] + \alpha_i - 1) * log(\theta_{y_i | pa{i}})] 
+\tilde{\theta} =& \operatorname*{argmax}_{\theta} \sum_i^K  \sum_{pa_{ij} \in Val(\textbf{PA}_i)} (\bar{M}[y_i, pa_{ij}] + \alpha_i - 1) * log(\theta_{y_i | pa_{ij}})] 
 \end{align}
 
-Given the additional restriction that \(\sum_i \sum_{pa_i \in
-   Val(Pa_i)} \theta_{y_i | pa_{i}} = 1\), we can obtain the necessary
+Given the additional restriction that \(\sum_i \sum_{pa_{ij} \in
+   Val(\textbf{PA}_i)} \theta_{y_i | pa_{ij}} = 1\), we can obtain the necessary
 condition for finding the optimum by using the Lagrange method
 
 \begin{align} \label{eq:first-order1}
-\frac{\partial}{\partial \theta_{y_i | pa_{i}}} \sum_i^K (\bar{M}[y_i, pa_{i}] + \alpha_i - 1) * log(\tilde{\theta}_{y_i | pa_{i}})] - \lambda (\sum_i \tilde{\theta}_{y_i | pa_{i}} - 1) \mathrel{\stackon[5pt]{$=$}{$\scriptstyle!$}} 0
+\frac{\partial}{\partial \theta_{y_i | pa_{ij}}} \sum_i^K (\bar{M}[y_i, pa_{ij}] + \alpha_i - 1) * log(\tilde{\theta}_{y_i | pa_{ij}})] - \lambda (\sum_i \tilde{\theta}_{y_i | pa_{ij}} - 1) \mathrel{\stackon[5pt]{$=$}{$\scriptstyle!$}} 0
 \end{align}
 \begin{align} \label{eq:first-order2}
-\lambda = \frac{\bar{M}[y_i, pa_{i}] + \alpha_i - 1}{\tilde{\theta}_{y_i | pa_{i}}}
+\lambda = \frac{\bar{M}[y_i, pa_{ij}] + \alpha_i - 1}{\tilde{\theta}_{y_i | pa_{ij}}}
 \end{align}
 
 And inserting this in the first order condition and solving for
-\(\tilde{\theta}_{y_i | pa_{i}}\)
+\(\tilde{\theta}_{y_i | pa_{ij}}\)
 
 \begin{align} \label{eq:solution}
-\tilde{\theta}_{y_i | pa_{i}} =& \frac{\bar{M}[y_i, pa_{i}] + \alpha_i - 1}{\sum_j (\bar{M}[y_j, pa_{i}] + \alpha_j - 1)}
+\tilde{\theta}_{y_i | pa_{ij}} =& \frac{\bar{M}[y_i, pa_{ij}] + \alpha_i - 1}{\sum_j (\bar{M}[y_j, pa_{ij}] + \alpha_j - 1)}
 \end{align}
 
 This will be the way you update the parameters in the M-step.
@@ -1559,7 +1625,7 @@ a posteriori point estimate. A local maximum point estimator for
 the likelihood of the observed data will ultimately result.
 
 \subsection{Bayesian Parameter Learning - An Exponential Family Generalization}
-\label{sec:org229dfc6}
+\label{sec:org26a2a09}
 
 This section generalizes the exercise of the above section for
 general exponential family distributions. As discussed in
@@ -1594,7 +1660,7 @@ posterior is not an exponential distribution such that you cannot
 apply the M-projection theory to get the result above.
 
 Turning to the linear Gaussian parametric model presented in this
-manuscript it is possible to see that the conditional distribution
+script it is possible to see that the conditional distribution
 of local nodes in the network arises by a multivariate normal
 distribution of the parents, see for instance
 \cite{koller2009probabilistic}.
@@ -1605,11 +1671,11 @@ normal-inverse Wishart prior distribution on the multivariate mean
 and co-variance matrix of the local nodes of the parents.
 
 After obtaining the new posterior hyperparameters depending on the
-prior hyperparameters and the sufficient (expected) sufficient
-statistics in the case of complete (missing) data, it is possible
-to obtain the maximum by getting the mode of the resulting
-multivariate t-distribution parameterized according to the
-hyperparameters and expected sufficient statistics.
+prior hyperparameters and the (expected) sufficient statistics in
+the case of complete (missing) data, it is possible to obtain the
+maximum by getting the mode of the resulting multivariate
+t-distribution parameterized according to the hyperparameters and
+expected sufficient statistics.
 
 Similar reasonings are possible by specifying accordingly the CPDs
 and prior distributions, such that a rich modeling set is
@@ -1656,44 +1722,43 @@ dimensional problems. One of the major benefits in using the EM over
 gradient based methods would be lost in this sense.
 
 \subsection{Numerical EM for MLE estimator}
-\label{sec:org9bd71a4}
+\label{sec:orgb9cb36f}
 
-In order to understand how to compute M-step according to an
+In order to understand how to compute the M-step according to an
 iterative method, think at the following.
 
-Consider that in the E-step you set \(Q = P (\mathscr{H}| \mathscr{D}, \theta_0)\), such
+Consider that in the E-step you set \(Q = P (\textbf{H}| \textbf{D}, \theta_0)\), such
 that you can reformulate
 \ref{eq:likelihood_energy_functional_relation} as follows
 
 \begin{align} \label{eq:likelihood_energy_iterative}
-l (\theta: \mathscr{D}) =& \ H_Q (\mathscr {H}) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H}) \\
+l (\theta: \mathcal{D}) =& \ H_Q (\mathcal{H}) + \sum_{h \in Val(\mathcal{H})} P(h | \mathcal{D}, \theta_0) * l (\theta: \mathcal{D}, h) \\
 \nonumber\\
-Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
+Q(\theta, \theta_0 : \mathcal{D}) \eqdef& \sum_{h \in Val(\mathcal{H})} P(h | \mathcal{D}, \theta_0) * l (\theta: \mathcal{D}, h)\\
 \nonumber\\  
-H(\theta_0, \theta: \mathscr{D}) \eqdef& \ Q(\theta, \theta_0 : \mathscr{D}) - l (\theta: \mathscr{D}) \\
-                                 =& H_Q (\mathscr {H}) = \sum_h - P(h | \mathscr{D}, \theta_0) * P(\theta | h, \mathscr{D}) \nonumber
+H(\theta_0, \theta: \mathcal{D}) \eqdef& \ Q(\theta, \theta_0 : \mathcal{D}) - l (\theta: \mathcal{D}) 
 \end{align}
 
 It follows
 
 \begin{align} 
-\frac{\partial}{\partial \theta} l (\theta: \mathscr{D}) =& \ l_1 (\theta: \mathscr{D}) = \frac{\partial}{\partial \theta} Q(\theta, \theta_0, \mathscr{D}) - \frac{\partial}{\partial \theta} H(\theta, \theta_0, \mathscr{D}) \nonumber \\
-=& Q_1(\theta, \theta_0 : \mathscr{D}) - H_1(\theta, \theta_0 : \mathscr{D})  \label{eq:m-condition-iterative1} \\
+\frac{\partial}{\partial \theta} l (\theta: \mathcal{D}) =& \ l_1 (\theta: \mathcal{D}) = \frac{\partial}{\partial \theta} Q(\theta, \theta_0, \mathcal{D}) - \frac{\partial}{\partial \theta} H(\theta, \theta_0, \mathcal{D}) \nonumber \\
+=& Q_1(\theta, \theta_0 : \mathcal{D}) - H_1(\theta, \theta_0 : \mathcal{D})  \label{eq:m-condition-iterative1} \\
 \nonumber \\
-\frac{\partial^2}{\partial \theta \partial \theta'} l (\theta: \mathscr{D}) =& \frac{\partial^2}{\partial \theta \partial \theta'}  Q(\theta, \theta_0, \mathscr{D}) -  \frac{\partial^2}{\partial \theta \partial \theta'}  H(\theta, \theta_0, \mathscr{D}) \nonumber \\
-  =& \ Q_{11}(\theta, \theta_0 : \mathscr{D}) - H_{11}(\theta, \theta_0 : \mathscr{D}) \label{eq:m-condition-iterative2}
+\frac{\partial^2}{\partial \theta \partial \theta'} l (\theta: \mathcal{D}) =& \frac{\partial^2}{\partial \theta \partial \theta'}  Q(\theta, \theta_0, \mathcal{D}) -  \frac{\partial^2}{\partial \theta \partial \theta'}  H(\theta, \theta_0, \mathcal{D}) \nonumber \\
+  =& \ Q_{11}(\theta, \theta_0 : \mathcal{D}) - H_{11}(\theta, \theta_0 : \mathcal{D}) \label{eq:m-condition-iterative2}
 \end{align}
 
 Moreover given the following condition
 
 \begin{align} 
- H_1(\theta_0, \theta_0 : \mathscr{D})  = 0 \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative}
+ H_1(\theta_0, \theta_0 : \mathcal{D})  = 0 \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative}
 \end{align}
 
 we have for \ref{eq:m-condition-iterative1} that:
 
 \begin{align} 
- l_1(\theta_0: \mathscr{D})  = Q_1(\theta_0, \theta_0: \mathscr{D}) \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative2} 
+ l_1(\theta_0: \mathcal{D})  = Q_1(\theta_0, \theta_0: \mathcal{D}) \tab \forall \theta_0 \label{eq:m-condition-entropy-iterative2} 
 \end{align}
 
 Such that ultimately it holds using the classical derivation of the
@@ -1727,7 +1792,7 @@ option for our solution. In that case the EM theory would collapse
 and there is no guarantee to reach a local maximum.
 
 \subsection{Numerical EM for MAP estimator}
-\label{sec:org26b8c37}
+\label{sec:orgfb964a5}
 
 This section generalizes the arguments of the previous section to
 the case of MAP estimator in the case of Bayesian Parameter
@@ -1737,12 +1802,11 @@ Using \ref{eq:adj_energy_functional} it follows immediately using the
 notation of the last section that:
 
 \begin{align} \label{eq:likelihood_energy_map_iterative}
-l (\theta: \mathscr{D}) + log(P(\theta)) =& \ H_Q (\mathscr {H}) + log(P(\theta)) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
+l (\theta: \mathcal{D}) + log(P(\theta)) =& \ H_Q (\mathcal{H}) + log(P(\theta)) + \sum_{h \in Val(\mathcal{H})} P(h | \mathcal{D}, \theta_0) * l (\theta: \mathcal{D}, h)\\
 \nonumber\\
-Q(\theta, \theta_0 : \mathscr{D}) \eqdef& \ log(P(\theta)) + \sum_h P(h | \mathscr{D}, \theta_0) * l (\theta: \mathscr{D}, \mathscr{H})\\
+Q(\theta, \theta_0 : \mathcal{D}) \eqdef& \ log(P(\theta)) + \sum_{h \in Val(\mathcal{H})} P(h | \mathcal{D}, \theta_0) * l (\theta: \mathcal{D}, h)\\
 \nonumber\\  
-H(\theta_0, \theta: \mathscr{D}) \eqdef& \ Q(\theta, \theta_0 : \mathscr{D}) - l (\theta: \mathscr{D}) \\
-                                 =& H_Q (\mathscr {H}) = \sum_h - P(h | \mathscr{D}, \theta_0) * P(\theta | h, \mathscr{D}) \nonumber
+H(\theta_0, \theta: \mathcal{D}) \eqdef& \ Q(\theta, \theta_0 : \mathcal{D}) - l (\theta: \mathcal{D}) 
 \end{align}
 
 The idea is that as long as the likelihood and the prior are
@@ -1752,7 +1816,7 @@ Newton-Raphson method to get iteratively to the maximum of the
 function.
 
 \begin{align} 
- \theta_{EM}  = \theta_{0} - Q_{11}^{-1} Q_1 + o(||\theta_{EM} - \theta_{0}||) \label{eq:em-iterative}
+ \theta_{EM}  = \theta_{0} - Q_{11}^{-1} Q_1 + o(||\theta_{EM} - \theta_{0}||) \label{eq:em-iterative2}
 \end{align}
 
 where \(Q_{11}, Q_1\) are defined as in the previous section with the
@@ -1760,7 +1824,7 @@ difference that they now account for the prior distribution
 influence.
 
 \subsection{On the numerical computation of the derivatives of expected log-likelihoods}
-\label{sec:org8962bd4}
+\label{sec:org464a44f}
 
 This section concludes the chapter on Bayesian Parameter Learning
 by substituting the M-step of \ref{alg:Bayes-EM-Likelihood}, by a
@@ -1807,10 +1871,10 @@ Recall that as defined in \cite{Mrad_2015}, in the case of
 likelihood evidence an observation is uncertain due to unreliable
 source of information.
 
-Then the evidence in of a finding is expressed as a vector
-containing the relative likelihood of a random variable
-realization. Consider for instance a random variable \textbf{X} then its
-likelihood evidence is defined as:
+Then the evidence of a finding is expressed as a vector containing
+the relative likelihood of a random variable realization. Consider
+for instance a random variable \textbf{X} then its likelihood evidence is
+defined as:
 
 \begin{align} \label{eq:likelihood-evidence}
  L(X) = (L(X = x_1): ... : L(X = x_k))
@@ -1823,7 +1887,7 @@ Or when normalized you can express the likelihood-evidence as
 \end{align}
 
 Note that here the relative likelihoods do not have to sum to
-one. Thus they cannot be not be interpreted as probabilities.
+one. Thus they cannot be interpreted as probabilities.
 
 Moreover, the key take-away that distinguish likelihood evidence
 from probabilistic evidence is, as mentioned, the fact that a
@@ -1831,7 +1895,7 @@ likelihood evidence vector as in \ref{eq:likelihood-evidence} is
 specified without a prior. This means that the prior encoding the
 probabilistic structure of the network for the local random
 variable realization is not taken into account. I.e. the
-information resulting from \(P(X_i|Pa(X_i))\) is not considered when
+information resulting from \(P(X_i|\textbf{PA}_{X_i})\) is not considered when
 expressing such an evidence.
 
 This means, that when updating the belief on the realization of
@@ -1840,12 +1904,12 @@ evidence provided by the unreliable source of information must be
 combined with the prior probability resulting from the
 probabilistic structure implied by the network.
 
-We will turn next to the task of doing such inference and the task
+We will turn next to the task of performing such inference and the task
 of parameter learning under likelihood evidence describing the
 approach proposed in \cite{Wasserkrug_all}.
 
 \subsection{Adjusted EM - Likelihood Evidence}
-\label{sec:org35cb49b}
+\label{sec:orgb0ffc1e}
 
 One of the most widespread ways to deal with likelihood evidence
 was introduced by \cite{pearl2014probabilistic}. The idea is to
@@ -2004,7 +2068,7 @@ it is possible to perform MAP estimation in Bayesian settings.
 \Function{Compute-ESS}{$\mathcal{B}=(G,\theta)$, $S$} 
 
 \ForAll {$i\in1,\ldots,n$}
-  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+  \ForAll {$x_{i},u_{i}\in Val(X_{i},\textbf{PA}_{X_{i}}^{\mathcal{B}})$}
    \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
   \EndFor
 \EndFor
@@ -2021,7 +2085,7 @@ it is possible to perform MAP estimation in Bayesian settings.
     \EndFor
     \State Run inference on $(G',\theta')$ with evidence $d_{j}$
     \ForAll{i$ = 1,\ldots,n$}
-      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+      \ForAll{$x_{i},u_{i}\in Val(X_{i},\textbf{PA}_{X_{i}}^{\mathcal{B}})$}
     
         \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} P_{(G',\theta')}(x_{i},u_{i}|d_{j})$
     
@@ -2048,7 +2112,7 @@ it is possible to perform MAP estimation in Bayesian settings.
 \newpage
 
 \subsection{Bayesian Learning MAP - Adjusted EM for Likelihood Evidence}
-\label{sec:orgfc477e9}
+\label{sec:org1ae907b}
 
 The idea of this section is to extend \ref{alg:EM-Likelihood} in
 order to obtain the MAP estimator in a Bayesian Learning setting
@@ -2155,17 +2219,17 @@ is possible to compute the probability of a given event by means of
 Jeffrey's rule:
 
 \begin{equation} \label{eq:Jeffreys_Update}
- Q(Z = z) = \sum_{x_i \in Val(X_i)} P(Z = z | X = x_i) R(X = x_i)
+ Q(\textbf{Z} = z) = \sum_{x_i \in Val(X_i)} P(\textbf{Z} = z | X = x_i) R(X = x_i)
 \end{equation}
 
 Albeit being theoretically compelling, Jeffrey's formula above
 \ref{eq:Jeffreys_Update}, cannot be directly applied in Bayesian
 Networks. In fact such a formula requires the specification and
 functional form of the full probabilistic structure of the network
-in any state of the network in order to compute \(P(Z = z | X_i =
+in any state of the network in order to compute \(P(\textbf{Z} = z | X_i =
   x_i)\). I.e. in order to compute the new probabilistic structure
 Q\textsubscript{\(\theta\)} you would need to perform an inference step over all
-possible sates combinations. A very computationally intensive task.
+possible states combinations. A very computationally intensive task.
 
 The solution to this problem as suggested by \cite{Chan_2005} and
 \cite{PENG_2010} is to frame probabilistic evidence into likelihood
@@ -2326,7 +2390,7 @@ This is summarized in algorithm \ref{alg:EM-Probabilistic}.
 \State {$Q \leftarrow$ Return convergence distribution of algorithm IPFP above} 
 
 \ForAll {$i\in1,\ldots,n$}
-  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+  \ForAll {$x_{i},u_{i}\in Val(X_{i},\textbf{PA}_{X_{i}}^{\mathcal{B}})$}
    \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
   \EndFor
 \EndFor
@@ -2336,7 +2400,7 @@ This is summarized in algorithm \ref{alg:EM-Probabilistic}.
     \State {Run inference on $(G, Q_k, \theta)$ with evidence $d_{j}$}
 
     \ForAll{i$ = 1,\ldots,n$}
-      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+      \ForAll{$x_{i},u_{i}\in Val(X_{i},\textbf{PA}_{X_{i}}^{\mathcal{B}})$}
 
         \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} Q_{(G,\theta)}(x_{i},u_{i}|d_{j})$ \Comment {Note that inference is based on the adjusted distriution Q obtained above}
       \EndFor
@@ -2364,7 +2428,7 @@ new probabilistic structure for all possible realizations in the
 network \(x \in Val(\textbf{X})\). In order to perform such task the
 full joint probability distribution P(\textbf{X}) is be necessary. It
 is obvious that for big Bayesian Networks the task of estiamting the
-full-joint would be often infeasible to compute, without the help of cost
+full-joint would be often infeasible to compute without the help of cost
 efficient inference algorithms such as the clique tree/ junction tree algorithms.
 
 In this sense, further refinements were propose such as the \emph{big
@@ -2377,7 +2441,7 @@ explained in \cite{koller2009probabilistic}, using clique algorithms
 it is possible to run the inference and get the entire joint
 P(\textbf{X}) in an efficient way by propagating up- and downstreams
 the messages with the factor updates of interest. In such a way it is
-possible to get the entire joint-proability of the network in an
+possible to get the entire joint-proability of the network in a
 computationally efficient way.
 
 However, note that the clique tree inference algorithms as proposed by
@@ -2411,7 +2475,7 @@ Important is, once more, to note the high computational
 costs of applying such an algorithm given the necessary IPFP step
 embedded at propagation time and the need to repeat the cycle until
 convergence as outlined in \cite{Valtorta_2002}. Two iterations cycles are
-involved in such an algorithm that would then be embedded in the e-step
+involved in such an algorithm that would then be embedded in the E-step
 cycles of the EM-algorithm necessary for performing the parameter learning task. 
 
 A better solution might be the one of leveraging the \emph{big clique}
@@ -2452,10 +2516,10 @@ similar in spirit to the one of the standard IPFP and junction-tree
 based algorithms.
 
 We conclude by expressing algorithm
-\ref{alg:EM-Multiple-Probabilistic} in order to perform
-parameter learning in the case of multiple probabilistic evidence
-R(\textbf{Y}) with \(\textbf{Y} = {Y_1, ..., Y_J}\) - i.e. a set of \emph{j}
-probabilistic evidences.
+\ref{alg:EM-Multiple-Probabilistic} in order to perform parameter
+learning in the case of multiple probabilistic evidence R(\textbf{Y}) with
+\(\textbf{Y} = {Y_1, ..., Y_J}\) - i.e. a multivariate random
+variable composed of \emph{j} probabilistic evidences.
 
 \algrenewcommand\algorithmicindent{1.5em}%
 
@@ -2478,14 +2542,14 @@ probabilistic evidences.
 \State {$Q \leftarrow$ BN-IPFP-1($\mathcal{B}, R(X_1, ..., X_j, ...,X_J), P(\textbf{X}), S$)} \Comment {You can also alternatively use BN-IPFP-2 as in PENG et. all paper.}
 
 \ForAll {$i\in1,\ldots,n$}
-  \ForAll {$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+  \ForAll {$x_{i},u_{i}\in Val(X_{i},\textbf{PA}_{X_{i}}^{\mathcal{B}})$}
    \State $\bar{M}[x_{i},u_{i}]\leftarrow 0$
   \EndFor
 \EndFor
 
 \ForAll{example $S_{j}\in S$}
     \ForAll{i$ = 1,\ldots,n$} \Comment {Run inference on $(G, Q_k, \theta)$ with evidence $D$ and compute ESS}
-      \ForAll{$x_{i},u_{i}\in Val(X_{i},Pa_{X_{i}}^{\mathcal{B}})$}
+      \ForAll{$x_{i},u_{i}\in Val(X_{i},\textbf{PA}_{X_{i}}^{\mathcal{B}})$}
 
         \State $\bar{M}[x_{i},u_{i}] \mathrel{{+}{=}} Q_{(G,\theta)}(x_{i},u_{i}|d_{j})$ \Comment {Note that inference is based on the adjusted distriution Q obtained above}
       \EndFor
@@ -2515,11 +2579,11 @@ probabilistic evidences.
 %\end{\algsize}
 \end{algorithm*}
 
-\newpage
+\cleardoublepage
 
 \section{Conclusion, Criticalities and Further Work}
 \label{conclusion}
-In this manuscript we exposed the theoretical background in order
+In this script we exposed the theoretical background in order
 to deal with the parameterization riddle of Bayesian Networks.
 
 The theory was elaborated bottom up. Starting with the most basic
@@ -2582,7 +2646,7 @@ probabilistic structure of choice. We then exposed multiple modeling
 possibilities to incorporate the IPFP step - or derivate of it -
 into the EM algorithm. We mentioned the algorithms of
 \cite{Valtorta_2002} offering good performance and different
-space-time complexity. We noted then that implementing such
+space-time complexity trade-off. We noted then that implementing such
 algorithms in statistical software would require to refactor the
 entire code-base of the junction tree algorithm used at inference
 step. Moreover, they are restricted by definition to the usage of
@@ -2619,9 +2683,9 @@ in a computational way that is time and space efficient rather than
 in a fundamental re-elaboration of the EM-algorithm itself.
 
 \subsection{Criticalities and Further Work}
-\label{sec:orgdd7020b}
+\label{sec:orgcbd3512}
 
-The general flaw with this manuscript, is the fact that it focuses
+The general flaw with this script, is the fact that it focuses
 on the theoretical possibilities of the parameterization learning
 task in Bayesian Networks without an in depth analysis of the
 computational burden to obtain it. In this sense, a deeper analysis
@@ -2666,7 +2730,7 @@ We conclude by noting that due to the vast literature and modeling
 possibilities available for Bayesian Networks the presented theory
 just scratches the surface of the possible algorithms available for
 obtaining the most suitable network parameterization. A further
-avenue of research that we completely ignored in the manuscript is
+avenue of research that we completely ignored in the script is
 the one of performing the inference step via approximate inference
 methods and the inspection of the behaviour of the EM-algorithm
 method in such a case. Introductory reading material and relevant
@@ -2695,6 +2759,6 @@ interesting.
 %% General info on plagiarism:
 %% https://www.ethz.ch/students/en/studies/performance-assessments/plagiarism.html
 \cleardoublepage
-\includepdf[pages={-}, frame=true,scale=1]{pdf/confirmation-originality.pdf}
+\includepdf[pages={-}, scale=1]{pdf/confirmation-originality.pdf}
 \end{article}
 \end{document}

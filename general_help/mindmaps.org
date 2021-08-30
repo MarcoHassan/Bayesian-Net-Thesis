@@ -1,0 +1,152 @@
+* MindMaps
+
+** Global Decomposition
+
+   So basically the global decomposition of the MLE with complete data
+   works as follows:
+
+#+begin_src plantuml :file ./images/mind_global_decomposition.png :exports results
+(*) -right-> "use conditional independence structure of \nBayesian Networks to decompose \njoint likelihood in \nconditional terms"
+
+-right-> "you will have for the joint prob \na product concerning all of the \nvariables (index i) and instances (index m)"
+
+-down->  "as each conditional probability just depends on the \nlocal parameters X|PA_X \nyou can observe them all as local probabilities \nwhich do not share param"
+
+-left->  "you can now invert the order of multiplication \ni.e. it plays no role if you first multiply \nby instances or variables"
+
+-down->  "you finally arrived to a representation of the \njoint-prob that just depends on local probabilities \ndepending just on local factors"
+
+-right-> "so you can optimize each of this local likelihood separately \nfor each of the local factors \nand you would arrive to a global optimum solution"
+
+-down->  "this is the idea of global decomposition of MLE \nunder complete data"
+
+-LEFT-> (*) 
+#+end_src
+
+#+RESULTS:
+[[file:./images/mind_global_decomposition.png]]
+
+** Bayesian Learning - Complete, Missing and Partially Observed
+
+#+BEGIN_SRC plantuml :file ./images/mind_bayes_complete.png  :exports results
+@startmindmap
+/'Styling'/
+<style>
+node {
+    Padding 12
+    Margin 3
+    HorizontalAlignment center
+    RoundCorner 40
+    MaximumWidth 200
+}
+</style>
+
+*[#lightgreen] Bayesian Parameter Learning 
+**[#lightblue] In Bayesian you loose the property of independent observations. As the parameter is not known but is rather a RV and each observation adds information to the RV, i.e. it informs about the true data generating process, you cannot treat two observations and instances as independent. One will influence the other. \n\n Given such posterior distribution, you have conditional independence on the other observations. So the task is to get to such posterior and then marginalizing the parameter out to get the probability of some realization.
+***[#lightblue] So here when you want to discover the probability of some future realization you do not simply consider your parameters of choice. You rather must consider also the previous observations that influenced your belief on the data generating process. So you must consider your posterior distribution, i.e. a product involving past observations and prior instantiation.
+
+/'Very Important - We work with a strong assumption here in Bayesian'/
+****[#lightblue] Global Parameter Sharing: \n\n Treated in the notes of the book; I guess I will not work with it.
+
+****[#lightblue] We assume that in a Bayesian Network individual parameters are *a priori independent* - check in your notes online for what that means
+
+
+/'Complete Data Case'/
+*****[#lightgrey] Complete Data - Compact Representation of Posterior
+
+******[#lightgrey] With complete data and the a priori independence assumption you have the key property: \n\n *parameters of different CPDs are d-separated*.
+
+*******[#lightgrey] This means that your posterior factorizes as the product of individual posteriors \n\n I.e., given the data you can determine the posterior of different CPDs independently
+
+********[#lightgrey] Bottom line: we can work locally and solve each posterior separately and then combine the results.
+
+
+/'Missing Data Case'/
+*****[#lightred] Missing Evidence
+******[#lightred] Note that on top of the result of the other path - i.e. the fact that individual likelihood CPDs do not decompose - also global decomposition is lost in the case of missing evidence. Such that ultimately your likelihood function will be a very messy function.
+
+******[#lightred] Central Question for this sections is how do you specify Likelihood Function? \n\n I.e. what is the likelihood of Missing Evidence? \n\n we consider a model where you have true realizations governed by RVs and observables of such RV - a RV O - that specify if we observe the realizations of X or not. So actually two data generating processes.
+
+  /'Likelihood via Observable'/
+*******[#lightred] specify the likelihood considering the observed variables.
+
+     /'Case 1 - Ignore Missing Evidence. Does not influence outcome. Unrelated to it'/
+********[#lightred] either you ignore the missing evidence \n\n This can be a solution when the observations and the RV of interest are unrealted. \n\n We say  missing completely at random. \n\n In this case the likelihood would be specified simply by the observed evidence.
+*********[#lightred] here you have likelihood that decomposes in parameters just depending on the RV of interest and parameter specifying the observation mechanism
+**********[#lightred] Here you can in fact ignore the parameters governing the observation mechanism all together. It is not of interest to us the observable schema as our interest lies ultimately in X. So ignore such component and maximize parameters of X.
+
+
+     /'Case 2 - Missing Evidence depends on Outcome. Two processes are dependent.'/
+********[#lightred] or in the case where the missing evidence and the observation are tight together you have to take this relation in consideration when specifying the likelihood
+*********[#lightred] here the likelihood does not decompose in terms just depending on the parameters of the observation mechanism and the true underlying RV. \n\n so you cannot maximize the paramaters separately leveraging the local property
+**********[#lightred] I.e. changing the parameter governing the data generating process for the flip realization also affects the observation outcome
+***********[#red] We will not deal with this case in the book or thesis
+
+  /'Likelihood decoupling variable of interest X and observable process'/
+*******[#lightred] Decoupling the Observation Mechanism - Get easier Likelihood
+********[#lightred] Missing completely at random data in the other path is a sufficient but not necessary condition for the decomposition of the likelihood function. \n\n You can come to the same property given some conditionally independent structure. (See example in notes)
+*********[#lightred] Read the notes for getting this concept of conditional independence and why it saves the local decomposability property. \n\n We call this local decomposability achieved via conditional independence structure Missing at Random (MAR)
+**********[#lightred] Here likelihood also decomposes so that we can focus on the realizations that were actually observed without having to consider the cases where the hiding mechanism kicked in. \n\n So notice that the case of missing completely at random belongs basically to this case. Same concept and ways you would work.
+***********[#lightred] In this case the likelihood just depends on the sum_hidden of p(x_obs, x_hidden). \n\n i.e. on the join of this marginalizing the hidden away. See the notes to understand this
+************[#green] The book focuses on this case and so will we.
+*************[#lightred] Note that summing hidden variables out makes the likelihood nasty and it is not well behaved anymore.
+
+/'Partially Observed Data Case'/
+*****[#ee9572] Partially Observed
+
+  /'Likelihood Evidence'/
+******[#ee9572] Likelihood evidence
+
+*******[#ee9572] Pearl's Method
+
+********[#ee9572] Here the idea is to convert the likelihood evidence into a hard-evidence on a virtual node. I.e. the idea is to augment the network by a virtual node where it's CPD initial parameterization is specified by the likelihood evidence passed to it.
+
+  /'Probabilistic Evidence'/
+******[#ee9572] Probabilistic evidence
+
+*******[#ee9572] TODO Describe Jeffery's Method
+@endmindmap
+#+END_SRC
+
+#+RESULTS:
+[[file:./images/mind_bayes_complete.png]]
+
+
+** EM algorihtm Theory
+
+
+#+BEGIN_SRC plantuml :file ./images/em_theory.png  :exports results
+@startmindmap
+/'Styling'/
+<style>
+node {
+    Padding 12
+    Margin 3
+    HorizontalAlignment center
+    RoundCorner 40
+    MaximumWidth 200
+}
+</style>
+
+/'Expectation Maximization Algorithm - Functioning'/
+*[#008b8b] Expectation Maximization Algorithm
+
+**[#008b8b] The issue of missing data is that you try to solve two problems at once: learning the parameters, and hypothesizing values for the unobserved variables in each of the data cases. \n\n Each of these tasks is fairly easy when we have the solution to the other. \n \n Given complete data, we have the statistics, and we can estimate parameters using the MLE formulas we discussed previously. \n\n Conversely, given a choice of parameters, we can use probabilistic inference to hypothesize the likely values (or the distribution over possible values) for unobserved variables.
+
+***[#008b8b] Mathematical theories proved then the relation among the EM steps and the likelihood function - our objective function. We will treat them later and see that there is a tight realation among the two and that at each step the EM improves the likelihood.
+
+***[#008b8b] EM solves this chicken-egg problem iteratively. Start with a parameterization and impute the missing data based on such paramterization via an inference step. Then given complete data compute the new MLE parameterization and iterate.
+
+/'Expectation Step'/
+****[#8db6cd] Expectation Step
+*****[#8db6cd] So in a similar way to the likelihood function in the case of missing data where we had to marginalize the hidden variables out, we do a similar step in the EM algorihtm. I.e. we create synthetic networks with complete data. The difference is in that in the expectation step of the EM we take then an expectation of these bayed on the current paramterization (resulting from Maximization Step). I.e. we associate weights to it according to the parameterization (this can be reformulated into an inference step - see your notes).
+
+/'Maximization Step'/
+****[#cdaf95] Maximization Step
+*****[#cdaf95] Given the complete data observations for each instance of the network, and the weight associated to it by the expectation step we compute the new MLE by replacing the suffcient statistics of a complete data likelihood function by the expected sufficient statistics - i.e. the suffcient statistics as in the standard case where the observations entries of the sufficient statistics are weighted by the probability of observing them as computed in the expectation step.
+
+@endmindmap
+#+END_SRC
+
+#+RESULTS:
+[[file:./images/em_theory.png]]

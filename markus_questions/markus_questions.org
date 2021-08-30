@@ -1,0 +1,188 @@
+# -*- mode:org; mode:reftex; indent-tabs-mode:nil; tab-width:2 -*-
+#+TITLE: Answer to Markus Kalisch Questions on Bayesian Networks Software Packages
+#+AUTHOR:    Marco Hassan
+#+LANGUAGE:  en
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_HEADER: \usepackage[margin=0.5in]{geometry}
+#+LATEX: \setlength\parindent{0pt}
+#+LATEX_HEADER: \usepackage{parskip}
+#+options: toc:nil
+
+* Question 1: On Hugin
+
+  #+begin_quote
+  I understand that hugin is the top choice for real world
+  applications in idustry, is that correct ?
+  #+end_quote
+
+  It is for sure one of the most known software packages. I
+  encountered it many times in multiple papers I came across when
+  doing research - so even in academic research it seems to be the
+  default go-to software package.
+
+  However, I think that it is not the most established due to its
+  completeness or strength but rather due to historical reasons as
+  being one of the first developed solid piece of software dealing
+  with Bayesian Networks - see in this sense the [[https://d1wqtxts1xzle7.cloudfront.net/49642660/HUGIN_-_A_Shell_for_Building_Bayesian_Be20161016-6003-9fm92w.pdf?1476636550=&response-content-disposition=inline%3B+filename%3DHUGIN_A_Shell_for_Building_Bayesian_Beli.pdf&Expires=1629908608&Signature=bhntyNgHmv2Mq-QgPlJOeOObSPuVYVft5MJ0UckslCY8wU80gRSEgFJ63-TNFAj4Wz3HdaqYSv4AkrGKOvH0obgO-FdGYXV8vp~ve6thEpUAK2M7bD~F-JNV82h33wd1exhZS03a9JYjt7nRI52q7VokU8h9XOqBKuWZcBT80zOWPWrzp4Y5pTK2-2MFeWfua8iuEDH97ljdHhFe3z~dOn4SvJ-Afnl~N7v-jjtevpgME3HLjcTZ23ITUHa8LTP85CatjPT~i5cFkvA8kxStu-7LkgvqFydLGN-UEdlnkCwGRRrhMuT0WRzLCw~wjJnukGYQS4Gic~T4uhISqSUiGQ__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA][1989 paper]] presenting
+  it. On the top of it, it is very well documented with tons of
+  papers/[[https://link.springer.com/chapter/10.1007/978-3-540-45062-7_49][books]] written on it by now.
+
+  I think that, in this sense, it got a lot of traction as being that
+  present in the literature. There are a couple of other alternatives
+  that, to my mind, are as good. Moreover, once you move away from the
+  typical tasks of Bayesian Networks the software falls short and it
+  is necessary to rely on more niche software. See for instance our
+  application of parameter learning in the case of uncertain evidence.
+
+  
+* Question 2: On GeNIe
+
+  #+begin_quote
+  I heard that GeNIe (https://www.bayesfusion.com/) might be a good
+  choice in the academic setting. Can you or your supervisor comment
+  on this ?
+  #+end_quote
+
+  Unfortunately, my knowledge of it is too little. It looks as another
+  viable option but it would take me more time to double check.
+
+  From the documentation it looks as well established and has a
+  similar UI to Hugin. Furthermore, it looks as if there is a lot of
+  abstraction such that the user focuses in the nitty gritty
+  implementation rather than on the algorithm behind. Also the SMILE
+  API seems to be quite high-level without giving too much the
+  possibility to tackle advanced cases and operate on the algorithms
+  working behind it. It makes sense given its license based nature.
+
+  Finally, as far as my understanding goes, both Hugin and GeNIe cover
+  the main classical issues when dealing with Bayesian Networks but do
+  not cover extensively edge cases where the mathematical theory for
+  it has already been outlined. In this sense, for instance in the
+  case of uncertain evidence, GeNIe provides similar functions to
+  Hugin. Both perform similar operations implementing inference in the
+  case of likelihood evidence via Pearl's virtual method but never
+  go as far as dealing with inference in the case of probabilistic
+  evidence.
+
+  Overall, yes. I think that GeNIe and its academic version could have
+  been/can be used as a valuable substitute to Hugin for performing
+  the simulation exercise in order to test the implemented algorithm
+  in Merlin. From the documentation of it and checking at the SMILE
+  programming API, I think that it might even be more exhaustive than
+  Hugin.
+
+  Nonetheless, I guess that the most suitable option for my
+  application would be still to obtain a Hugin license as there is
+  already the code base to run the necessary simulations in Hugin via
+  its API and a pipeline to pass the result and perform the parameter
+  learning exercise via the Merlin Engine. That would save a couple
+  of weeks of work for testing the algorithms.
+
+* Question 3: On the Merlin Engine
+
+  #+begin_quote
+  And how does the "merlin engine" fit in (I just know this from
+  rockets until now ;): From the github description I understand that
+  this is a stand-alone program for all sorts of BayesNet applications
+  in C++, right ?
+  #+end_quote
+
+  Correct. Merlin is a stand-alone program through which it is
+  possible to solve a wide range of Bayesian Networks tasks - mainly
+  in the domain of parameter learning and network inference. Structure
+  learning is completely missing in the engine and is not covered as a
+  Bayesian Network challenge in the source code.
+
+  From my personal experience the strength of the engine is rather in
+  the inference task than in the parameter learning task. In this
+  sense multiple inference techniques were implemented in the engine,
+  raging from the most classic message passing algorithms to
+  approximate inference algorithms. A shortcoming of the engine is, in
+  this sense, the fact that in the EM-algorithm, and adaptations of
+  it, it is possible to perform inference just using junction tree
+  inference algorithms. This limits the extent to which parameter
+  learning can be applied to some broader class of Bayesian Networks -
+  say for instance linear Gaussian Networks etc.
+
+  On the question on where the algorithm fits in the general picture I
+  would therefore say the following: while a dozen of engines were
+  developed to deal with Bayesian Networks there are still quite some
+  differences among them and it seems that there was still no
+  convergence to a predominant software platform. I think that this
+  mostly due to the difficulty of applying such methods and the fact
+  that the most mature software packages are not-open source and
+  require in fact some licensing. A good paper that gives the overview
+  over such fragmented landscape is [[https://link.springer.com/article/10.1007/s10489-015-0678-6][Mrad et all (2015)]]. There you can
+  find what major software packages cover in the case of uncertain
+  evidence. You can see that, for instance, - as said - both Hugin
+  and GeNIe do not cover inference in the case of probabilistic
+  evidence. The only established software package that seems to do
+  that is https://www.bayesia.com/. In any case none of the
+  established software embeds the inference step in the case of
+  uncertain evidence into the EM-algorithm for performing parameter
+  learning. This was in fact the major contribution there at Research
+  and the reason to extend the merlin engine. I understood that they
+  had a client in the manufacturing space where such a solution was
+  needed and therefore they started implementing such a solution and
+  subsequently [[https://ojs.aaai.org/index.php/AAAI/article/view/17447][published their paper on it]]. The paper I am expanding
+  on so to say.
+
+  I guess that a similar picture would result when looking at similar
+  specialized subfields of different software bundles. I.e. I think
+  that there are a couple of niche software bundles such as merlin
+  that grow out of some practical need that was not covered by
+  classical software bundles such as Hugin and GeNIe and due to the
+  non-open source nature of them they were not built on the top of
+  such more mature software bundles yet. However, note that such niche
+  software bundles do not aim to be as user-friendly and do not cover
+  every case of treating Bayesian Networks as the more widespread
+  ones. Think for instance at merlin where there is no nice UI to work
+  with Bayesian Networks as well as no simulation APIs, no APIs for structural learning, no
+  game-theory utility based APIs, no opportunity to implement
+  dynamical Bayesian Networks etc.
+
+  I conclude by noting that the integration of Hugin and Merlin I
+  mentioned in my previous mail was for the sake of testing the
+  implemented algorithms in the Merlin engine. Nonetheless, Merlin is,
+  as said, a stand-alone software.
+
+  In this sense, while it is theoretically possible to extend the
+  Merlin engine to perform simulations out of it, there is no API to
+  this stage to draw samples given a network parameterization. Such a
+  task was performed by Research by leveraging the Hugin software and
+  then running the Merlin Algorithms on such simulated data to get a
+  feeling on the difference in performance when using the proposed
+  algorithms for parameter estimation in comparison to the classical ones.
+
+  
+* Question 4: On R Packages
+
+  #+begin_quote
+  Is there any reasonable R package to do at least small scale
+  applications (what would "small" and "large" mean in this context?)
+  #+end_quote
+  
+  I did not look into it to be honest as it was clear from the 
+  onset that we were developing on merlin and the work of the research
+  published in [[https://ojs.aaai.org/index.php/AAAI/article/view/17447][their paper]].
+
+  Nonetheless, with all of that open source C++ code dealing with it,
+  I guess that there are a tons of wrappers that have been implemented
+  in R. I guess that the performance of them would be similar to the
+  C++ counterparts and that "small" and "large" would depend on the
+  exact task that one aims to perform and its computational
+  burden. In any case, given that the burden of the tasks generally
+  increase in an exponential way in the number of variables in the
+  network - I guess that the smaller the network - the better it
+  is. From my personal experience in the case of small networks of
+  around 6-10 variables all of the algorithms works smoothly. I guess
+  that sound studies have been published extensively covering the
+  topic. I did not cover extensively such a topic as mentioned in the
+  conclusion of my thesis as this was not the focus of it.
+
+  A final solution when dealing with too large networks is the one of
+  trying to splitting up the problem by leveraging the concept of
+  conditional Bayesian Networks. 
+

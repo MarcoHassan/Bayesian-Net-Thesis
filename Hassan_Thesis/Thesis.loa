@@ -1,0 +1,8 @@
+\contentsline {algorithm}{\numberline {1}{\ignorespaces EM-Learning: the classical EM algorithm for learning with missing evidence\relax }}{21}{algorithm.1}% 
+\contentsline {algorithm}{\numberline {2}{\ignorespaces Replace M-step for Bayesian Parameter Learning\relax }}{28}{algorithm.2}% 
+\contentsline {algorithm}{\numberline {3}{\ignorespaces EM-Likelihood: an EM algorithm for learning with likelihood evidence\relax }}{32}{algorithm.3}% 
+\contentsline {algorithm}{\numberline {4}{\ignorespaces Replace M-step for Bayesian Parameter Learning\relax }}{33}{algorithm.4}% 
+\contentsline {algorithm}{\numberline {5}{\ignorespaces EM-Single Probabilistic Evidence: an EM algorithm for learning in the case of a single probabilistic evidence\relax }}{35}{algorithm.5}% 
+\contentsline {algorithm}{\numberline {6}{\ignorespaces IPFP Algorithm\relax }}{36}{algorithm.6}% 
+\contentsline {algorithm}{\numberline {7}{\ignorespaces EM-Proabilistic: an EM algorithm for learning with probabilistic evidence\relax }}{37}{algorithm.7}% 
+\contentsline {algorithm}{\numberline {8}{\ignorespaces EM-Proabilistic: an EM algorithm for learning with multiple probabilistic evidence\relax }}{39}{algorithm.8}% 
